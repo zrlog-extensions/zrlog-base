@@ -1,7 +1,7 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.zrlog</groupId>
+    <groupId>com.hibegin</groupId>
     <artifactId>zrlog-base</artifactId>
     <packaging>pom</packaging>
     <version>3.2.5-SNAPSHOT</version>
@@ -26,6 +26,18 @@
         <project.build.outputTimestamp>2025-07-21T02:33:44Z</project.build.outputTimestamp>
         <gpg.passphrase/>
     </properties>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>https://apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+    <scm>
+        <connection>scm:git:https://github.com/zrlog-extensions/zrlog-base</connection>
+        <developerConnection>scm:git:https://github.com/zrlog-extensions/zrlog-base</developerConnection>
+        <url>https://github.com/zrlog-extensions/zrlog-base</url>
+    </scm>
 
     <developers>
         <developer>
@@ -56,15 +68,8 @@
 
     <issueManagement>
         <system>Github Issue</system>
-        <url>https://github.com/94fzb/zrlog</url>
+        <url>https://github.com/zrlog-extensions/zrlog-base</url>
     </issueManagement>
-
-    <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>https://apache.org/licenses/LICENSE-2.0.txt</url>
-        </license>
-    </licenses>
 
     <dependencies>
         <dependency>
@@ -88,17 +93,17 @@
                 <version>${sws.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.zrlog</groupId>
+                <groupId>com.hibegin</groupId>
                 <artifactId>common</artifactId>
                 <version>3.2.5-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>com.zrlog</groupId>
+                <groupId>com.hibegin</groupId>
                 <artifactId>data</artifactId>
                 <version>3.2.5-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>com.zrlog</groupId>
+                <groupId>com.hibegin</groupId>
                 <artifactId>service</artifactId>
                 <version>3.2.5-SNAPSHOT</version>
             </dependency>

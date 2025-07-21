@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>zrlog-base</artifactId>
-        <groupId>com.zrlog</groupId>
+        <groupId>com.hibegin</groupId>
         <version>3.2.5-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -12,11 +12,11 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.zrlog</groupId>
+            <groupId>com.hibegin</groupId>
             <artifactId>common</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.zrlog</groupId>
+            <groupId>com.hibegin</groupId>
             <artifactId>data</artifactId>
         </dependency>
     </dependencies>
