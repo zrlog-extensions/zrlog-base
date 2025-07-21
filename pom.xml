@@ -4,7 +4,7 @@
     <groupId>com.zrlog</groupId>
     <artifactId>zrlog-base</artifactId>
     <packaging>pom</packaging>
-    <version>3.2.1-SNAPSHOT</version>
+    <version>3.2.1</version>
     <modules>
         <module>service</module>
         <module>common</module>
@@ -22,7 +22,7 @@
         <maven.test.skip>true</maven.test.skip>
         <sws.version>4.0.84</sws.version>
         <disableJava21>false</disableJava21>
-        <project.build.outputTimestamp>2025-07-21T02:18:17Z</project.build.outputTimestamp>
+        <project.build.outputTimestamp>2025-07-21T02:19:34Z</project.build.outputTimestamp>
         <gpg.passphrase/>
     </properties>
 
@@ -89,17 +89,17 @@
             <dependency>
                 <groupId>com.zrlog</groupId>
                 <artifactId>common</artifactId>
-                <version>3.2.1-SNAPSHOT</version>
+                <version>3.2.1</version>
             </dependency>
             <dependency>
                 <groupId>com.zrlog</groupId>
                 <artifactId>data</artifactId>
-                <version>3.2.1-SNAPSHOT</version>
+                <version>3.2.1</version>
             </dependency>
             <dependency>
                 <groupId>com.zrlog</groupId>
                 <artifactId>service</artifactId>
-                <version>3.2.1-SNAPSHOT</version>
+                <version>3.2.1</version>
             </dependency>
             <dependency>
                 <groupId>com.google.code.gson</groupId>
