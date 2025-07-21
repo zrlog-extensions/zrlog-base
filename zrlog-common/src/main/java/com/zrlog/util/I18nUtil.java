@@ -1,9 +1,6 @@
 package com.zrlog.util;
 
-import com.hibegin.common.util.BeanUtil;
-import com.hibegin.common.util.EnvKit;
-import com.hibegin.common.util.LoggerUtil;
-import com.hibegin.common.util.StringUtils;
+import com.hibegin.common.util.*;
 import com.hibegin.http.server.api.HttpRequest;
 import com.hibegin.http.server.util.PathUtil;
 import com.zrlog.common.Constants;
@@ -210,7 +207,11 @@ public class I18nUtil {
         if (Objects.isNull(i18nVO)) {
             return "";
         }
-        return Objects.requireNonNullElse(getAdmin().get(i18nVO.getLocale()).get(key), "").toString();
+        Map<String, Object> local = getAdmin().get(i18nVO.getLocale());
+        if (Objects.isNull(local)) {
+            return "";
+        }
+        return Objects.requireNonNullElse(local.get(key), "").toString();
     }
 
     public static String getBackendStringFromRes(String key) {
@@ -218,11 +219,12 @@ public class I18nUtil {
         if (Objects.isNull(i18nVO)) {
             return "error";
         }
-        Object obj = i18nVO.getBackend().get(i18nVO.getLocale()).get(key);
-        if (obj != null) {
-            return obj.toString();
+        Map<String, Object> local = i18nVO.getBackend().get(i18nVO.getLocale());
+
+        if (Objects.isNull(local)) {
+            return "";
         }
-        return "";
+        return ObjectUtil.requireNonNullElse((String) local.get(key), "");
     }
 
     public static Map<String, Map<String, Object>> getBlog() {
