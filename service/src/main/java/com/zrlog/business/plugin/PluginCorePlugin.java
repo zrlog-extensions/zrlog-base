@@ -28,6 +28,7 @@ public interface PluginCorePlugin extends IPlugin {
      * @return true 表示请求正常执行，false 代表遇到了一些问题
      * @throws IOException
      * @throws InstantiationException
+     * @throws InterruptedException
      */
     boolean accessPlugin(String uri, HttpRequest request, HttpResponse response, AdminTokenVO adminTokenVO) throws IOException, URISyntaxException, InterruptedException;
 
