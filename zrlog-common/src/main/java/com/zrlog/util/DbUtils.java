@@ -1,5 +1,6 @@
 package com.zrlog.util;
 
+import com.hibegin.common.dao.DataSourceWrapper;
 import com.hibegin.common.util.EnvKit;
 import com.hibegin.common.util.IOUtil;
 import com.hibegin.common.util.LoggerUtil;
@@ -7,7 +8,6 @@ import com.hibegin.common.util.StringUtils;
 import com.hibegin.http.server.util.PathUtil;
 import com.zrlog.common.ZrLogConfig;
 
-import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -66,7 +66,7 @@ public class DbUtils {
     }
 
 
-    public static DataSource configDatabaseWithRetry(int timeoutInSeconds, ZrLogConfig zrLogConfig) {
+    public static DataSourceWrapper configDatabaseWithRetry(int timeoutInSeconds, ZrLogConfig zrLogConfig) {
         try {
             return zrLogConfig.configDatabase();
         } catch (Exception e) {

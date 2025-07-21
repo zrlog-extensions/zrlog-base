@@ -1,5 +1,7 @@
 package com.zrlog.common;
 
+import com.hibegin.common.dao.DAO;
+import com.hibegin.common.dao.DataSourceWrapper;
 import com.hibegin.common.util.EnvKit;
 import com.hibegin.common.util.LoggerUtil;
 import com.hibegin.common.util.StringUtils;
@@ -35,7 +37,7 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
     protected final Updater updater;
     protected final long uptime;
     protected final List<WebSetup> webSetups;
-    protected DataSource dataSource;
+    protected DataSourceWrapper dataSource;
     protected final File dbPropertiesFile;
     protected final ServerConfig serverConfig;
     protected CacheService<?> cacheService;
@@ -74,7 +76,7 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
         return "junit-test".equals(System.getProperties().getProperty("env"));
     }
 
-    public DataSource configDatabase() {
+    public DataSourceWrapper configDatabase() throws Exception {
         // 如果没有安装的情况下不初始化数据
         if (!isInstalled()) {
             return null;
@@ -82,6 +84,7 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
         Properties dbProperties = DbUtils.getDbProp(dbPropertiesFile);
         //启动时候进行数据库连接
         dataSource = DataSourceUtil.buildDataSource(dbProperties);
+        DAO.setDs(dataSource);
         return dataSource;
     }
 
