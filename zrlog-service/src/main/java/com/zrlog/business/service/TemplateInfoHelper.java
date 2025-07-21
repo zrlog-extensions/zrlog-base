@@ -2,7 +2,7 @@ package com.zrlog.business.service;
 
 import com.hibegin.common.util.LoggerUtil;
 import com.hibegin.common.util.StringUtils;
-import com.zrlog.business.util.StaticFileCacheUtils;
+import com.zrlog.util.StaticFileCacheUtils;
 import com.zrlog.common.Constants;
 import com.zrlog.common.vo.TemplateVO;
 import com.zrlog.util.I18nUtil;

@@ -37,9 +37,11 @@ import java.util.concurrent.locks.Lock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static com.zrlog.plugin.BaseStaticSitePlugin.STATIC_USER_AGENT;
+import static com.zrlog.plugin.BaseStaticSitePlugin.isStaticPluginRequest;
+
 public interface StaticSitePlugin extends IPlugin {
 
-    String STATIC_USER_AGENT = "Static-Blog-Plugin/" + UUID.randomUUID().toString().replace("-", "");
     String STATIC_SITE_PLUGIN_HTML_FILE_KEY = "_htmlFile";
 
 
@@ -87,16 +89,7 @@ public interface StaticSitePlugin extends IPlugin {
         return htmlFile;
     }
 
-    static boolean isStaticPluginRequest(HttpRequest request) {
-        if (Objects.isNull(request)) {
-            return false;
-        }
-        String ua = request.getHeader("User-Agent");
-        if (Objects.isNull(ua)) {
-            return false;
-        }
-        return Objects.equals(ua, STATIC_USER_AGENT);
-    }
+
 
     default String getSiteVersion() {
         StringBuilder sb = new StringBuilder();

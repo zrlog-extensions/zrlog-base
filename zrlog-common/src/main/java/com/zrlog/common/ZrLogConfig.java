@@ -2,23 +2,25 @@ package com.zrlog.common;
 
 import com.hibegin.common.util.EnvKit;
 import com.hibegin.common.util.LoggerUtil;
+import com.hibegin.common.util.StringUtils;
 import com.hibegin.http.server.api.HttpRequest;
 import com.hibegin.http.server.config.AbstractServerConfig;
 import com.hibegin.http.server.config.RequestConfig;
 import com.hibegin.http.server.config.ResponseConfig;
 import com.hibegin.http.server.config.ServerConfig;
+import com.hibegin.http.server.util.PathUtil;
+import com.zrlog.common.vo.IDataInitVO;
 import com.zrlog.common.web.ZrLogErrorHandle;
 import com.zrlog.common.web.ZrLogHttpJsonMessageConverter;
 import com.zrlog.plugin.IPlugin;
 import com.zrlog.plugin.Plugins;
-import com.zrlog.util.BlogBuildInfoUtil;
-import com.zrlog.util.ThreadUtils;
+import com.zrlog.util.*;
+import com.zrlog.web.BaseWebSetup;
+import com.zrlog.web.WebSetup;
 
 import javax.sql.DataSource;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.io.File;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.logging.Logger;
@@ -28,10 +30,38 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
 
     protected static final Logger LOGGER = LoggerUtil.getLogger(ZrLogConfig.class);
     public static boolean nativeImageAgent = false;
+    protected final File installLockFile;
+    protected final Plugins plugins;
+    protected final Updater updater;
+    protected final long uptime;
+    protected final List<WebSetup> webSetups;
+    protected DataSource dataSource;
+    protected final File dbPropertiesFile;
+    protected final ServerConfig serverConfig;
+    protected CacheService<?> cacheService;
+    protected TokenService tokenService;
+
 
     static {
         disableHikariLogging();
     }
+
+    protected ZrLogConfig(Integer port, Updater updater, String contextPath) {
+        this.serverConfig = initServerConfig(contextPath, port);
+        this.installLockFile = PathUtil.getConfFile("/install.lock");
+        this.dbPropertiesFile = DbUtils.initDbPropertiesFile(this);
+        this.dataSource = DbUtils.configDatabaseWithRetry(30, this);
+        this.uptime = System.currentTimeMillis();
+        this.plugins = new Plugins();
+        this.updater = updater;
+        this.webSetups = new ArrayList<>();
+        this.webSetups.add(new BaseWebSetup(this));
+    }
+
+    public String getProgramUptime() {
+        return ParseUtil.toNamingDurationString(System.currentTimeMillis() - uptime, I18nUtil.getCurrentLocale().contains("en"));
+    }
+
 
     private static void disableHikariLogging() {
         System.setProperty("org.slf4j.simpleLogger.log.com.zaxxer.hikari", "off");
@@ -44,14 +74,20 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
         return "junit-test".equals(System.getProperties().getProperty("env"));
     }
 
-    /**
-     * 调用了该方法，主要用于配置，启动插件功能，以及相应的ZrLog的插件服务。
-     */
-    public abstract void startPluginsAsync();
+    public DataSource configDatabase() {
+        // 如果没有安装的情况下不初始化数据
+        if (!isInstalled()) {
+            return null;
+        }
+        Properties dbProperties = DbUtils.getDbProp(dbPropertiesFile);
+        //启动时候进行数据库连接
+        dataSource = DataSourceUtil.buildDataSource(dbProperties);
+        return dataSource;
+    }
 
-    public abstract DataSource configDatabase() throws Exception;
-
-    public abstract Plugins getAllPlugins();
+    public Plugins getAllPlugins() {
+        return this.plugins;
+    }
 
     public <T extends IPlugin> T getPlugin(Class<T> pluginClass) {
         for (IPlugin plugin : getAllPlugins()) {
@@ -72,16 +108,31 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
         return plugins;
     }
 
-    public abstract Updater getUpdater();
+    public Updater getUpdater() {
+        return updater;
+    }
 
-    public abstract CacheService<?> getCacheService();
+    public CacheService<?> getCacheService() {
+        return cacheService;
+    }
 
-    public abstract TokenService getTokenService();
+    public TokenService getTokenService() {
+        return tokenService;
+    }
 
-    public abstract String getProgramUptime();
+    public DataSource getDataSource() {
+        return dataSource;
+    }
 
 
-    public abstract DataSource getDataSource();
+    /**
+     * 配置的常用参数，这里可以看出来推崇使用代码进行配置的，而不是像Spring这样的通过预定配置方式。代码控制的好处在于高度可控制性，
+     * 当然这也导致了很多程序员直接硬编码的问题。
+     */
+    @Override
+    public ServerConfig getServerConfig() {
+        return serverConfig;
+    }
 
     public abstract void stop();
 
@@ -98,8 +149,12 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
     /**
      * 通过检查特定目录下面是否存在 install.lock 文件，同时判断环境变量里面是否存在配置，进行判断是否已经完成安装
      */
-    public abstract boolean isInstalled();
-
+    public boolean isInstalled() {
+        if (StringUtils.isNotEmpty(ZrLogUtil.getDbInfoByEnv())) {
+            return true;
+        }
+        return installLockFile.exists();
+    }
 
     public ServerConfig initServerConfig(String contextPath, Integer port) {
         ServerConfig serverConfig = new ServerConfig().setApplicationName("zrlog").setApplicationVersion(BlogBuildInfoUtil.getVersionInfo()).setDisablePrintWebServerInfo(true);
@@ -143,6 +198,38 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
         config.setEnableGzip(true);
         config.setGzipMimeTypes(Arrays.asList("text/", "application/javascript", "application/json"));
         return config;
+    }
+
+    public abstract List<IPlugin> getBasePluginList();
+
+    /**
+     * 调用了该方法，主要用于配置，启动插件功能，以及相应的ZrLog的插件服务。
+     */
+    public void startPluginsAsync() {
+        if (!isInstalled()) {
+            return;
+        }
+        this.plugins.forEach(IPlugin::stop);
+        this.plugins.clear();
+        this.plugins.addAll(getBasePluginList());
+        this.webSetups.forEach(e -> plugins.addAll(e.getPlugins()));
+        ThreadUtils.start(() -> {
+            IDataInitVO initVO = (IDataInitVO) this.cacheService.refreshInitData();
+            for (IPlugin plugin : plugins) {
+                if (!plugin.autoStart()) {
+                    continue;
+                }
+                if (plugin.isStarted()) {
+                    continue;
+                }
+                try {
+                    plugin.start();
+                } catch (Exception e) {
+                    LOGGER.severe("plugin error, " + e.getMessage());
+                }
+            }
+            refreshPluginCacheData(initVO.getVersion() + "", null);
+        });
     }
 
 }

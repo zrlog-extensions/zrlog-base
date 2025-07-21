@@ -1,5 +1,7 @@
 package com.zrlog.data.cache.vo;
 
+import com.zrlog.common.vo.IDataInitVO;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,7 +11,7 @@ import java.util.Map;
 /**
  * 程序初始化的数据（及全局的数据），存放了标签，分类，网站设置等信息。
  */
-public class BaseDataInitVO implements Serializable {
+public class BaseDataInitVO extends IDataInitVO implements Serializable {
 
     public BaseDataInitVO() {
     }
@@ -26,7 +28,6 @@ public class BaseDataInitVO implements Serializable {
     private List<Map<String, Object>> logNavs = new ArrayList<>();
     private List<HotTypeLogInfo> typeHotLogs;
     private Statistics statistics = new Statistics();
-    private Long version;
 
     public List<Map<String, Object>> getTags() {
         return tags;
@@ -156,13 +157,5 @@ public class BaseDataInitVO implements Serializable {
 
     public void setWebSiteVersion(Long webSiteVersion) {
         this.webSiteVersion = webSiteVersion;
-    }
-
-    public Long getVersion() {
-        return version;
-    }
-
-    public void setVersion(Long version) {
-        this.version = version;
     }
 }

@@ -1,11 +1,10 @@
-package com.zrlog.business.util;
+package com.zrlog.util;
 
 import com.hibegin.common.util.FileUtils;
 import com.hibegin.common.util.LoggerUtil;
 import com.hibegin.common.util.SecurityUtils;
 import com.hibegin.http.server.util.PathUtil;
 import com.zrlog.common.Constants;
-import com.zrlog.data.cache.CacheServiceImpl;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -85,7 +84,7 @@ public class StaticFileCacheUtils {
             return s;
         }
         if (("/" + uri).startsWith(Constants.DEFAULT_TEMPLATE_PATH) || uri.startsWith("assets/") || uri.startsWith("pwa/") || Objects.equals(uri, "favicon.ico")) {
-            InputStream inputStream = CacheServiceImpl.class.getResourceAsStream("/" + uri);
+            InputStream inputStream = StaticFileCacheUtils.class.getResourceAsStream("/" + uri);
             if (Objects.isNull(inputStream)) {
                 return null;
             }

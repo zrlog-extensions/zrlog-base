@@ -1,4 +1,4 @@
-package com.zrlog.data;
+package com.zrlog.util;
 
 import com.hibegin.common.dao.DataSourceWrapperImpl;
 import com.hibegin.common.util.EnvKit;

@@ -1,6 +1,7 @@
 package com.zrlog.business.service;
 
 import com.hibegin.common.dao.DAO;
+import com.hibegin.common.dao.DataSourceWrapper;
 import com.hibegin.common.dao.DataSourceWrapperImpl;
 import com.hibegin.common.util.IOUtil;
 import com.hibegin.common.util.LoggerUtil;
@@ -29,7 +30,7 @@ public class DbUpgradeService {
     private final String dbName;
     private final long currentSqlVersion;
 
-    public DbUpgradeService(DataSourceWrapperImpl dataSource,
+    public DbUpgradeService(DataSourceWrapper dataSource,
                             long currentSqlVersion) {
         this.dao = new DAO(dataSource);
         this.webSite = new WebSite(dataSource);
