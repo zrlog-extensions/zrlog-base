@@ -5,4 +5,5 @@
 - data
 - service
 - common
+- admin-token
 
