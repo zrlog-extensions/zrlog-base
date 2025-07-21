@@ -4,6 +4,8 @@ import com.hibegin.common.util.EnvKit;
 import com.hibegin.common.util.LoggerUtil;
 import com.hibegin.http.server.api.HttpRequest;
 import com.hibegin.http.server.config.AbstractServerConfig;
+import com.hibegin.http.server.config.RequestConfig;
+import com.hibegin.http.server.config.ResponseConfig;
 import com.hibegin.http.server.config.ServerConfig;
 import com.zrlog.common.web.ZrLogErrorHandle;
 import com.zrlog.common.web.ZrLogHttpJsonMessageConverter;
@@ -87,7 +89,7 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
         return templateConfigCacheMap;
     }
 
-    private List<String> getStaticResourcePath() {
+    public List<String> getStaticResourcePath() {
         return Arrays.asList("/assets", "/admin/static", "/admin/vendors", "/install/static");
     }
 
@@ -122,4 +124,25 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
         rt.addShutdownHook(new Thread(this::stop));
         return serverConfig;
     }
+
+
+    @Override
+    public RequestConfig getRequestConfig() {
+        RequestConfig requestConfig = new RequestConfig();
+        //最大的提交的body的大小
+        requestConfig.setDisableSession(true);
+        requestConfig.setRouter(getServerConfig().getRouter());
+        requestConfig.setMaxRequestBodySize(1024 * 1024 * 1024);
+        return requestConfig;
+    }
+
+    @Override
+    public ResponseConfig getResponseConfig() {
+        ResponseConfig config = new ResponseConfig();
+        config.setCharSet("utf-8");
+        config.setEnableGzip(true);
+        config.setGzipMimeTypes(Arrays.asList("text/", "application/javascript", "application/json"));
+        return config;
+    }
+
 }
