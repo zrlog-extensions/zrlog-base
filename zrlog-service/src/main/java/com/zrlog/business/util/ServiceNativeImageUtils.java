@@ -1,5 +1,7 @@
 package com.zrlog.business.util;
 
+import com.hibegin.http.server.util.NativeImageUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -22,10 +24,6 @@ public class ServiceNativeImageUtils {
         resourceFiles.add("/zrlog.properties");
         resourceFiles.add("/conf/website-key-public.json");
 
-        for (String resourceFile : resourceFiles) {
-            try (InputStream in = ServiceNativeImageUtils.class.getResourceAsStream(resourceFile)) {
-                //ignore
-            }
-        }
+        NativeImageUtils.doResourceLoadByResourceNames(resourceFiles);
     }
 }
