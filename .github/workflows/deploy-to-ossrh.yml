@@ -44,6 +44,6 @@ jobs:
         GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
 
     - name: Build and Deploy to OSSRH
-      run: ./mvnw clean deploy -P -s $GITHUB_WORKSPACE/settings.xml -Dgpg.passphrase=${{ secrets.GPG_PASSPHRASE }}
+      run: ./mvnw clean deploy -s $GITHUB_WORKSPACE/settings.xml -Dgpg.passphrase=${{ secrets.GPG_PASSPHRASE }}
       env:
         GPG_TTY: $(tty)
