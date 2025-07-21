@@ -18,6 +18,7 @@ import com.hibegin.http.server.util.PathUtil;
 import com.zrlog.common.Constants;
 import com.zrlog.data.cache.CacheServiceImpl;
 import com.zrlog.model.WebSite;
+import com.zrlog.plugin.BaseStaticSitePlugin;
 import com.zrlog.plugin.IPlugin;
 import com.zrlog.util.I18nUtil;
 import com.zrlog.util.ZrLogUtil;
@@ -40,7 +41,7 @@ import java.util.logging.Logger;
 import static com.zrlog.plugin.BaseStaticSitePlugin.STATIC_USER_AGENT;
 import static com.zrlog.plugin.BaseStaticSitePlugin.isStaticPluginRequest;
 
-public interface StaticSitePlugin extends IPlugin {
+public interface StaticSitePlugin extends BaseStaticSitePlugin {
 
     String STATIC_SITE_PLUGIN_HTML_FILE_KEY = "_htmlFile";
 
