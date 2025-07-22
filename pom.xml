@@ -41,28 +41,8 @@
 
     <developers>
         <developer>
-            <name>xiaochun</name>
             <email>support@zrlog.com</email>
-            <url>https://xiaochun.zrlog.com</url>
-            <roles>
-                <role>owner</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>weekdragon</name>
-            <email>790774717@qq.com</email>
-            <url>https://www.weekdragon.cn</url>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>e-lionel</name>
-            <email>lionel0724@163.com</email>
-            <url>https://github.com/e-lionel</url>
-            <roles>
-                <role>reporter</role>
-            </roles>
+            <url>https://blog.zrlog.com</url>
         </developer>
     </developers>
 
