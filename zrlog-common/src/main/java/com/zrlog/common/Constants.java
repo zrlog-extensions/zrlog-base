@@ -95,7 +95,11 @@ public class Constants {
     }
 
     public static String getStringByFromWebSite(String key, String defaultValue) {
-        Object dbSetting = zrLogConfig.getCacheService().getPublicWebSiteInfoFirstByCache(key);
+        CacheService<?> cacheService = zrLogConfig.getCacheService();
+        if (Objects.isNull(cacheService)) {
+            return "";
+        }
+        Object dbSetting = cacheService.getPublicWebSiteInfoFirstByCache(key);
         if (Objects.isNull(dbSetting)) {
             return defaultValue;
         }
