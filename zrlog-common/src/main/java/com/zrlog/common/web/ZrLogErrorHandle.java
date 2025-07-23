@@ -10,6 +10,7 @@ import com.zrlog.common.Constants;
 import com.zrlog.common.exception.AbstractBusinessException;
 import com.zrlog.common.exception.NotFindDbEntryException;
 import com.zrlog.common.rest.response.ApiStandardResponse;
+import com.zrlog.plugin.BaseStaticSitePlugin;
 
 import java.io.InputStream;
 import java.util.Objects;
@@ -37,13 +38,13 @@ public class ZrLogErrorHandle implements HttpErrorHandle {
     @Override
     public void doHandle(HttpRequest request, HttpResponse response, Throwable e) {
         if (Constants.debugLoggerPrintAble()) {
-            LOGGER.log(Level.SEVERE, "handle " + request.getUri() + "conf/error", e);
+            LOGGER.log(Level.SEVERE, "handle " + request.getUri() + " error", e);
         } else {
-            LOGGER.log(Level.WARNING, "handle " + request.getUri() + "conf/error ", e);
+            LOGGER.log(Level.WARNING, "handle " + request.getUri() + " error ", e);
         }
-        /*if (StaticSitePlugin.isStaticPluginRequest(request)) {
+        if (BaseStaticSitePlugin.isStaticPluginRequest(request)) {
             return;
-        }*/
+        }
         if (request.getUri().startsWith("/api")) {
             if (e instanceof AbstractBusinessException) {
                 AbstractBusinessException ee = (AbstractBusinessException) e;
