@@ -23,6 +23,9 @@ public class ZrLogBaseNativeImageUtils {
         resourceFiles.add("/i18n/backend_zh_CN.properties");
         resourceFiles.add("/zrlog.properties");
         resourceFiles.add("/conf/website-key-public.json");
+        resourceFiles.add("/conf/error/403.html");
+        resourceFiles.add("/conf/error/404.html");
+        resourceFiles.add("/conf/error/500.html");
 
         NativeImageUtils.doResourceLoadByResourceNames(resourceFiles);
     }

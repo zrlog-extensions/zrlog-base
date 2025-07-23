@@ -19,7 +19,6 @@ import com.zrlog.common.Constants;
 import com.zrlog.data.cache.CacheServiceImpl;
 import com.zrlog.model.WebSite;
 import com.zrlog.plugin.BaseStaticSitePlugin;
-import com.zrlog.plugin.IPlugin;
 import com.zrlog.util.I18nUtil;
 import com.zrlog.util.ZrLogUtil;
 import org.jsoup.Jsoup;
@@ -38,7 +37,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.zrlog.plugin.BaseStaticSitePlugin.STATIC_USER_AGENT;
 import static com.zrlog.plugin.BaseStaticSitePlugin.isStaticPluginRequest;
 
 public interface StaticSitePlugin extends BaseStaticSitePlugin {
@@ -203,7 +201,7 @@ public interface StaticSitePlugin extends BaseStaticSitePlugin {
     }
 
     default String notFindFile() {
-        return getContextPath() + "/error/404.html";
+        return getContextPath() + "/conf/error/404.html";
     }
 
     private CompletableFuture<Void> doAsyncFetch(String key, AbstractServerConfig serverConfig, ApplicationContext applicationContext, Executor executor) {

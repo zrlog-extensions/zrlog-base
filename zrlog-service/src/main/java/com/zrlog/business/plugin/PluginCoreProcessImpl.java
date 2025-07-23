@@ -33,7 +33,7 @@ public class PluginCoreProcessImpl implements PluginCoreProcess {
 
 
     private File getLogFile(boolean error) {
-        File logFile = new File(PathUtil.getLogPath() + "/plugin-core-" + (error ? "error" : "info") + "." + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".log");
+        File logFile = new File(PathUtil.getLogPath() + "/plugin-core-" + (error ? "conf/error" : "info") + "." + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".log");
         if (logFile.exists()) {
             return logFile;
         }

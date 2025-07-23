@@ -217,7 +217,7 @@ public class I18nUtil {
     public static String getBackendStringFromRes(String key) {
         I18nVO i18nVO = threadLocal.get();
         if (Objects.isNull(i18nVO)) {
-            return "error";
+            return "conf/error";
         }
         Map<String, Object> local = i18nVO.getBackend().get(i18nVO.getLocale());
 
