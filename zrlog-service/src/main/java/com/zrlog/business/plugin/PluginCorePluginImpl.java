@@ -10,6 +10,7 @@ import com.hibegin.common.util.http.handle.HttpResponseJsonHandle;
 import com.hibegin.http.HttpMethod;
 import com.hibegin.http.server.api.HttpRequest;
 import com.hibegin.http.server.api.HttpResponse;
+import com.hibegin.http.server.config.ConfigKit;
 import com.hibegin.http.server.util.PathUtil;
 import com.zrlog.business.rest.response.PluginCoreStatus;
 import com.zrlog.business.rest.response.PluginStatusResponse;
@@ -47,7 +48,7 @@ public class PluginCorePluginImpl extends BaseLockObject implements PluginCorePl
 
     public PluginCorePluginImpl(File dbPropertiesPath) {
         this.dbPropertiesPath = dbPropertiesPath;
-        this.pluginJvmArgs = BlogBuildInfoUtil.getBlogProp().get("pluginJvmArgs") + "";
+        this.pluginJvmArgs = (String) ConfigKit.get("pluginJvmArgs","-Xms8m -Xmx32m -Dfile.encoding=UTF-8");
         this.pluginCoreProcess = new PluginCoreProcessImpl(this::stop);
         this.token = UUID.randomUUID().toString().replace("-", "");
     }

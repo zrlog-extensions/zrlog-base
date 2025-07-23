@@ -106,11 +106,6 @@ public class BlogBuildInfoUtil {
 
     public static Properties getBlogProp() {
         Properties blogProperties = new Properties();
-        try {
-            blogProperties.load(PathUtil.getConfInputStream("/conf/base.properties"));
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "load blogProperties error", e);
-        }
         blogProperties.put("version", BlogBuildInfoUtil.getVersion());
         blogProperties.put("buildId", BlogBuildInfoUtil.getBuildId());
         blogProperties.put("buildTime", new SimpleDateFormat("yyyy-MM-dd").format(BlogBuildInfoUtil.getTime()));
