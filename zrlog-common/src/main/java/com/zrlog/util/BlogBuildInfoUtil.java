@@ -2,6 +2,7 @@ package com.zrlog.util;
 
 
 import com.hibegin.common.util.LoggerUtil;
+import com.hibegin.http.server.util.PathUtil;
 import com.zrlog.common.Constants;
 
 import java.io.IOException;
@@ -106,7 +107,7 @@ public class BlogBuildInfoUtil {
     public static Properties getBlogProp() {
         Properties blogProperties = new Properties();
         try {
-            blogProperties.load(BlogBuildInfoUtil.class.getResourceAsStream("/zrlog.properties"));
+            blogProperties.load(PathUtil.getConfInputStream("/conf/base.properties"));
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "load blogProperties error", e);
         }
