@@ -4,6 +4,7 @@ public class LinkDTO {
 
     private String linkName;
     private String url;
+    private String jumpUrl;
     private String alt;
     private Long sort;
     private Long id;
@@ -46,5 +47,13 @@ public class LinkDTO {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getJumpUrl() {
+        return jumpUrl;
+    }
+
+    public void setJumpUrl(String jumpUrl) {
+        this.jumpUrl = jumpUrl;
     }
 }

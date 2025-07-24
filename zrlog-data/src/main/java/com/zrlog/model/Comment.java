@@ -24,9 +24,9 @@ public class Comment extends BasePageableDAO {
         this.pk = "commentId";
     }
 
-    public PageData<CommentDTO> find(PageRequest page, Class<CommentDTO> clazz) {
+    public PageData<CommentDTO> find(PageRequest page) {
         String sql = "select commentId as id,userComment,header,commTime,userMail,userHome,userIp,userName,hide,logId from " + tableName + " order by commTime desc";
-        return queryPageData(sql, page, new Object[0], clazz);
+        return queryPageData(sql, page, new Object[0], CommentDTO.class);
     }
 
     public Long count() throws SQLException {
