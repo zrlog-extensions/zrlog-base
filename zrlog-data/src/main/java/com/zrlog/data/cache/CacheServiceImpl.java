@@ -1,7 +1,6 @@
 package com.zrlog.data.cache;
 
 import com.google.gson.Gson;
-import com.hibegin.common.BaseLockObject;
 import com.hibegin.common.util.LoggerUtil;
 import com.hibegin.common.util.ObjectUtil;
 import com.hibegin.common.util.StringUtils;
@@ -9,27 +8,33 @@ import com.zrlog.common.CacheService;
 import com.zrlog.common.Constants;
 import com.zrlog.data.cache.vo.BaseDataInitVO;
 import com.zrlog.data.service.BaseDataDbService;
-import com.zrlog.model.*;
+import com.zrlog.data.service.DistributedLock;
+import com.zrlog.model.Tag;
+import com.zrlog.model.Type;
+import com.zrlog.model.WebSite;
 import com.zrlog.util.ThreadUtils;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.Lock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  * 对缓存数据的操作
  */
-public class CacheServiceImpl extends BaseLockObject implements CacheService<BaseDataInitVO> {
+public class CacheServiceImpl implements CacheService<BaseDataInitVO> {
     private static final Logger LOGGER = LoggerUtil.getLogger(CacheServiceImpl.class);
 
     private final AtomicLong version;
     private volatile BaseDataInitVO cacheInit;
     private final String CACHE_KEY = "base_data_init_cache";
     private final long sqlVersion;
+    private final Lock lock = new DistributedLock("zrlog-data-cache");
 
     public CacheServiceImpl() {
         long versionStart = Long.parseLong(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + "00000");
@@ -86,8 +91,15 @@ public class CacheServiceImpl extends BaseLockObject implements CacheService<Bas
         if (!cleanAble && Objects.nonNull(cacheInit)) {
             return cacheInit;
         }
-        lock.lock();
         try {
+            try {
+                boolean locked = lock.tryLock(2, TimeUnit.MINUTES);
+                if (!locked) {
+                    LOGGER.warning("RefreshInitDataCache [" + version.get() + "] get lock missing");
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             if (!Objects.equals(version.get(), expectVersion)) {
                 if (Constants.debugLoggerPrintAble()) {
                     LOGGER.info("Version skip " + version.get() + " -> " + expectVersion);
