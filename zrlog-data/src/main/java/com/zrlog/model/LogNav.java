@@ -3,6 +3,7 @@ package com.zrlog.model;
 import com.hibegin.common.dao.BasePageableDAO;
 import com.hibegin.common.dao.dto.PageData;
 import com.hibegin.common.dao.dto.PageRequest;
+import com.zrlog.data.dto.LogNavDTO;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -22,7 +23,7 @@ public class LogNav extends BasePageableDAO {
         return queryListWithParams("select l.navId as id,l.navName,l.url,l.sort from " + tableName + " l where l.url is not null and l.navName is not null order by sort");
     }
 
-    public PageData<Map<String, Object>> find(PageRequest page) throws SQLException {
-        return queryPageData("select l.navId as id,l.navName,l.url,l.sort from " + tableName + " l where l.url is not null and l.navName is not null order by sort", page, new Object[0]);
+    public PageData<LogNavDTO> find(PageRequest page) {
+        return queryPageData("select l.navId as id,l.navName,l.url,l.sort from " + tableName + " l where l.url is not null and l.navName is not null order by sort", page, new Object[0], LogNavDTO.class);
     }
 }

@@ -4,6 +4,7 @@ import com.hibegin.common.dao.BasePageableDAO;
 import com.hibegin.common.dao.ResultValueConvertUtils;
 import com.hibegin.common.dao.dto.PageData;
 import com.hibegin.common.dao.dto.PageRequest;
+import com.zrlog.data.dto.CommentDTO;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -23,11 +24,9 @@ public class Comment extends BasePageableDAO {
         this.pk = "commentId";
     }
 
-    public PageData<Map<String, Object>> find(PageRequest page) throws SQLException {
+    public PageData<CommentDTO> find(PageRequest page, Class<CommentDTO> clazz) {
         String sql = "select commentId as id,userComment,header,commTime,userMail,userHome,userIp,userName,hide,logId from " + tableName + " order by commTime desc";
-        PageData<Map<String, Object>> data = queryPageData(sql, page, new Object[0]);
-        data.getRows().forEach(e -> e.put("commTime", ResultValueConvertUtils.formatDate(e.get("commTime"), "yyyy-MM-dd")));
-        return data;
+        return queryPageData(sql, page, new Object[0], clazz);
     }
 
     public Long count() throws SQLException {

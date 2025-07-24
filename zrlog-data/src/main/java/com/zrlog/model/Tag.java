@@ -164,7 +164,7 @@ public class Tag extends BasePageableDAO {
         throw new RuntimeException();
     }
 
-    public PageData<Map<String, Object>> find(PageRequest page) throws SQLException {
+    public PageData<Map<String, Object>> find(PageRequest page) {
         return queryPageData("select tagId as id,text,count from " + tableName, page, new Object[0]);
     }
 }
