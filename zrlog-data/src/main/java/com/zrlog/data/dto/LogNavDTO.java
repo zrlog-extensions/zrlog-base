@@ -4,6 +4,7 @@ public class LogNavDTO {
 
     private String navName;
     private String url;
+    private String jumpUrl;
     private Long sort;
     private Long id;
 
@@ -37,5 +38,13 @@ public class LogNavDTO {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getJumpUrl() {
+        return jumpUrl;
+    }
+
+    public void setJumpUrl(String jumpUrl) {
+        this.jumpUrl = jumpUrl;
     }
 }
