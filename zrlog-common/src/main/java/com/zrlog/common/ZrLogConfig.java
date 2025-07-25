@@ -57,7 +57,7 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
         this.updater = updater;
         this.serverConfig = initServerConfig(contextPath, port);
         //init
-        this.installLockFile = PathUtil.getConfFile("/install.lock");
+        this.installLockFile = PathUtil.getConfFile("/" + Objects.requireNonNullElse(System.getenv("INSTALL_LOCK_FILE_NAME"), "install.lock"));
         this.dbPropertiesFile = DbUtils.initDbPropertiesFile(this);
         this.dataSource = DbUtils.configDatabaseWithRetry(30, this);
         this.webSetups.add(new BaseWebSetup(this));
