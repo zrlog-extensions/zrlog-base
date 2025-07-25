@@ -26,7 +26,7 @@ public class DbUtils {
      * 将 env 配置的 DB_PROPERTIES 写入到实际的文件中，便于程序读取
      */
     public static File initDbPropertiesFile(ZrLogConfig zrLogConfig) {
-        File dbFiles = PathUtil.getConfFile("/" + Objects.requireNonNullElse(System.getenv("DB_PROPERTIES_FILE_NAME"), "/db.properties"));
+        File dbFiles = PathUtil.getConfFile("/" + Objects.requireNonNullElse(System.getenv("DB_PROPERTIES_FILE_NAME"), "db.properties"));
         dbFiles.getParentFile().mkdirs();
         try {
             if (!zrLogConfig.isInstalled()) {
