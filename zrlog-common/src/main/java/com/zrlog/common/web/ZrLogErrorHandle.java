@@ -40,7 +40,7 @@ public class ZrLogErrorHandle implements HttpErrorHandle {
         if (Constants.debugLoggerPrintAble()) {
             LOGGER.log(Level.SEVERE, "handle " + request.getUri() + " error", e);
         } else {
-            LOGGER.log(Level.WARNING, "handle " + request.getUri() + " error ", e);
+            LOGGER.log(Level.WARNING, "handle " + request.getUri() + " error " + e.getMessage());
         }
         if (BaseStaticSitePlugin.isStaticPluginRequest(request)) {
             return;
