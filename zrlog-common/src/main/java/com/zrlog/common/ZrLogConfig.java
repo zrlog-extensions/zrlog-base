@@ -51,11 +51,11 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
     }
 
     protected ZrLogConfig(Integer port, Updater updater, String contextPath) {
-        this.serverConfig = initServerConfig(contextPath, port);
         this.plugins = new Plugins();
         this.uptime = System.currentTimeMillis();
         this.webSetups = new ArrayList<>();
         this.updater = updater;
+        this.serverConfig = initServerConfig(contextPath, port);
         //init
         this.installLockFile = PathUtil.getConfFile("/install.lock");
         this.dbPropertiesFile = DbUtils.initDbPropertiesFile(this);
@@ -191,7 +191,6 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
         serverConfig.setRequestExecutor(ThreadUtils.newFixedThreadPool(200));
         serverConfig.setDecodeExecutor(ThreadUtils.newFixedThreadPool(20));
         serverConfig.setRequestCheckerExecutor(new ScheduledThreadPoolExecutor(1, ThreadUtils::unstarted));
-        //serverConfig.addRequestListener(new ZrLogHttpRequestListener());
         getStaticResourcePath().forEach(e -> serverConfig.addStaticResourceMapper(e, e, ZrLogConfig.class::getResourceAsStream));
         Runtime rt = Runtime.getRuntime();
         rt.addShutdownHook(new Thread(this::stop));
@@ -202,9 +201,9 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
     @Override
     public RequestConfig getRequestConfig() {
         RequestConfig requestConfig = new RequestConfig();
-        //最大的提交的body的大小
         requestConfig.setDisableSession(true);
         requestConfig.setRouter(getServerConfig().getRouter());
+        //最大的提交的body的大小
         requestConfig.setMaxRequestBodySize(1024 * 1024 * 1024);
         return requestConfig;
     }
