@@ -5,6 +5,7 @@ import com.hibegin.common.dao.DataSourceWrapper;
 import com.hibegin.common.util.EnvKit;
 import com.hibegin.common.util.LoggerUtil;
 import com.hibegin.common.util.StringUtils;
+import com.hibegin.common.util.http.HttpUtil;
 import com.hibegin.http.server.api.HttpRequest;
 import com.hibegin.http.server.config.AbstractServerConfig;
 import com.hibegin.http.server.config.RequestConfig;
@@ -25,6 +26,7 @@ import java.io.File;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
@@ -137,7 +139,19 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
         return serverConfig;
     }
 
-    public abstract void stop();
+    public void stop() {
+        try {
+            plugins.forEach(IPlugin::stop);
+            plugins.clear();
+            if (Objects.nonNull(dataSource)) {
+                dataSource.close();
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "", e);
+        } finally {
+            HttpUtil.getInstance().closeHttpClient();
+        }
+    }
 
     public Map<String, Map<String, Object>> getTemplateConfigCacheMap() {
         return templateConfigCacheMap;
