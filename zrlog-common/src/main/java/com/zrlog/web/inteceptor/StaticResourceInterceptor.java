@@ -10,6 +10,7 @@ import com.zrlog.plugin.BaseStaticSitePlugin;
 import com.zrlog.util.StaticFileCacheUtils;
 import com.zrlog.util.ZrLogUtil;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.Objects;
 
@@ -25,6 +26,12 @@ public class StaticResourceInterceptor implements HandleAbleInterceptor {
         //打包过后的静态资源文件进行拦截
         if (Constants.zrLogConfig.getStaticResourcePath().stream().anyMatch(e -> request.getUri().startsWith(e + "/"))) {
             ZrLogUtil.putLongTimeCache(response);
+            if (StaticFileCacheUtils.getInstance().isAdminMainJs(request.getUri())) {
+                response.getHeader().put("Content-Type", "application/javascript;charset=" + request.getRequestConfig().getCharSet());
+                response.write(new ByteArrayInputStream(StaticFileCacheUtils.getInstance().geAdminMainJsContent(request.getUri()).getBytes()), 200);
+                return false;
+            }
+
             new MethodInterceptor().doInterceptor(request, response);
             return false;
         }

@@ -20,6 +20,7 @@ import com.zrlog.data.cache.CacheServiceImpl;
 import com.zrlog.model.WebSite;
 import com.zrlog.plugin.BaseStaticSitePlugin;
 import com.zrlog.util.I18nUtil;
+import com.zrlog.util.StaticFileCacheUtils;
 import com.zrlog.util.ZrLogUtil;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -59,6 +60,10 @@ public interface StaticSitePlugin extends BaseStaticSitePlugin {
             LOGGER.warning("Missing resource " + resourceName);
             return;
         }
+        if (StaticFileCacheUtils.getInstance().isAdminMainJs(resourceName)) {
+            saveToCacheFolder(new ByteArrayInputStream(StaticFileCacheUtils.getInstance().geAdminMainJsContent(resourceName).getBytes()), resourceName);
+            return;
+        }
         saveToCacheFolder(inputStream, resourceName);
     }
 
@@ -87,7 +92,6 @@ public interface StaticSitePlugin extends BaseStaticSitePlugin {
         IOUtil.writeBytesToFile(bytes, htmlFile);
         return htmlFile;
     }
-
 
 
     default String getSiteVersion() {

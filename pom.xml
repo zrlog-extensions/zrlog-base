@@ -4,7 +4,7 @@
     <groupId>com.hibegin</groupId>
     <artifactId>zrlog-base</artifactId>
     <packaging>pom</packaging>
-    <version>3.2.25-SNAPSHOT</version>
+    <version>3.2.25</version>
     <modules>
         <module>zrlog-admin-token</module>
         <module>zrlog-service</module>
@@ -21,8 +21,8 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.test.skip>true</maven.test.skip>
-        <sws.version>4.0.85</sws.version>
-        <project.build.outputTimestamp>2025-07-25T03:34:27Z</project.build.outputTimestamp>
+        <sws.version>4.0.86</sws.version>
+        <project.build.outputTimestamp>2025-07-25T14:16:19Z</project.build.outputTimestamp>
         <gpg.passphrase/>
     </properties>
 
@@ -74,17 +74,17 @@
             <dependency>
                 <groupId>com.hibegin</groupId>
                 <artifactId>zrlog-common</artifactId>
-                <version>3.2.25-SNAPSHOT</version>
+                <version>3.2.25</version>
             </dependency>
             <dependency>
                 <groupId>com.hibegin</groupId>
                 <artifactId>zrlog-data</artifactId>
-                <version>3.2.25-SNAPSHOT</version>
+                <version>3.2.25</version>
             </dependency>
             <dependency>
                 <groupId>com.hibegin</groupId>
                 <artifactId>zrlog-service</artifactId>
-                <version>3.2.25-SNAPSHOT</version>
+                <version>3.2.25</version>
             </dependency>
             <dependency>
                 <groupId>com.google.code.gson</groupId>
@@ -94,7 +94,7 @@
             <dependency>
                 <groupId>com.hibegin</groupId>
                 <artifactId>common-dao</artifactId>
-                <version>1.0.15</version>
+                <version>1.0.16</version>
             </dependency>
             <dependency>
                 <groupId>com.mysql</groupId>
