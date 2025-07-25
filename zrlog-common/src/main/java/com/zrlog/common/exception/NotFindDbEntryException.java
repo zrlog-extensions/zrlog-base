@@ -7,7 +7,7 @@ public class NotFindDbEntryException extends AbstractBusinessException {
     private final String msg;
 
     public NotFindDbEntryException() {
-        this.msg = I18nUtil.getBlogStringFromRes("notFound");
+        this.msg = I18nUtil.getBackendStringFromRes("notFound");
     }
 
     @Override

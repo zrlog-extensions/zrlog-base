@@ -64,7 +64,7 @@ public class TemplateInfoHelper {
                 templateVO.setPreviewImages(Collections.singletonList("assets/images/template-default-preview.jpg"));
             }
             if (StringUtils.isEmpty(templateVO.getDigest())) {
-                templateVO.setDigest(I18nUtil.getBlogStringFromRes("noIntroduction"));
+                templateVO.setDigest(I18nUtil.getBackendStringFromRes("noIntroduction"));
             }
             String staticResource = properties.getProperty("staticResource");
             if (Objects.nonNull(staticResource)) {
