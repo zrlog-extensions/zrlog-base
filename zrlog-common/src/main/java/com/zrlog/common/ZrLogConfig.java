@@ -52,13 +52,14 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
 
     protected ZrLogConfig(Integer port, Updater updater, String contextPath) {
         this.serverConfig = initServerConfig(contextPath, port);
+        this.plugins = new Plugins();
+        this.uptime = System.currentTimeMillis();
+        this.webSetups = new ArrayList<>();
+        this.updater = updater;
+        //init
         this.installLockFile = PathUtil.getConfFile("/install.lock");
         this.dbPropertiesFile = DbUtils.initDbPropertiesFile(this);
         this.dataSource = DbUtils.configDatabaseWithRetry(30, this);
-        this.uptime = System.currentTimeMillis();
-        this.plugins = new Plugins();
-        this.updater = updater;
-        this.webSetups = new ArrayList<>();
         this.webSetups.add(new BaseWebSetup(this));
     }
 
