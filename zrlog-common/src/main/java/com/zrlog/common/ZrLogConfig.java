@@ -159,7 +159,7 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
     }
 
     public List<String> getStaticResourcePath() {
-        return Arrays.asList("/assets", "/admin/static", "/admin/vendors", "/install/static");
+        return Arrays.asList("/assets", "/install/static");
     }
 
     public abstract void refreshPluginCacheData(String version, HttpRequest request);

@@ -8,7 +8,6 @@ import com.zrlog.util.ThreadUtils;
 import com.zrlog.util.ZrLogBaseNativeImageUtils;
 import com.zrlog.web.inteceptor.GlobalBaseInterceptor;
 import com.zrlog.web.inteceptor.MyI18nInterceptor;
-import com.zrlog.web.inteceptor.StaticResourceInterceptor;
 
 import java.io.IOException;
 import java.util.List;
@@ -39,7 +38,6 @@ public class BaseWebSetup implements WebSetup {
         List<Class<? extends Interceptor>> interceptors = zrLogConfig.getServerConfig().getInterceptors();
         //all
         interceptors.add(GlobalBaseInterceptor.class);
-        interceptors.add(StaticResourceInterceptor.class);
         interceptors.add(MyI18nInterceptor.class);
     }
 }
