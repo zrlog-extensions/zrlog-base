@@ -29,13 +29,17 @@ public class BaseDataDbService {
         return BeanUtil.convert(log, HotLogBasicInfoEntry.class);
     }
 
+    public static long getWebSiteVersion(Map<String, Object> website) {
+        return new Gson().toJson(website).hashCode();
+    }
+
 
     public BaseDataInitVO queryCacheInit(Executor executor) {
         BaseDataInitVO cacheInit = new BaseDataInitVO();
         //first set website info
         Map<String, Object> refreshWebSite = new WebSite().getPublicWebSite();
         cacheInit.setWebSite(refreshWebSite);
-        cacheInit.setWebSiteVersion((long) new Gson().toJson(refreshWebSite).hashCode());
+        cacheInit.setWebSiteVersion(getWebSiteVersion(refreshWebSite));
         List<CompletableFuture<Void>> futures = new ArrayList<>();
         BaseDataInitVO.Statistics statistics = new BaseDataInitVO.Statistics();
         futures.add(CompletableFuture.runAsync(() -> {
