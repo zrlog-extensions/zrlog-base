@@ -35,6 +35,25 @@ public class AdminTokenService implements TokenService {
     private SecretKeySpec secretKeySpec;
     private final Map<Integer, String> userSecretKeyCacheMap = new ConcurrentHashMap<>();
 
+    /**
+     * 1天
+     */
+    private static final long DEFAULT_SESSION_TIMEOUT = 1000 * 60 * 60 * 24L;
+    private static final String SESSION_TIMEOUT_KEY = "session_timeout";
+
+    public static Long getSessionTimeout() {
+        String sessionTimeoutString = Constants.getStringByFromWebSite(SESSION_TIMEOUT_KEY);
+        if (StringUtils.isEmpty(sessionTimeoutString)) {
+            return DEFAULT_SESSION_TIMEOUT;
+        }
+        //*60， Cookie过期时间单位为分钟
+        long sessionTimeout = (long) (Double.parseDouble(sessionTimeoutString) * 60 * 1000);
+        if (sessionTimeout <= 0) {
+            return DEFAULT_SESSION_TIMEOUT;
+        }
+        return sessionTimeout;
+    }
+
     public AdminTokenService() {
         //字符长度必须要大于16个字符
         iv = new IvParameterSpec("_BLOG_BLOG_BLOG_".getBytes(StandardCharsets.UTF_8));
@@ -117,7 +136,7 @@ public class AdminTokenService implements TokenService {
             String base64Encode = new String(decrypt(sk, Base64.getDecoder().decode(adminTokenEncryptAfter)));
             AdminFullTokenVO adminTokenVO = new Gson().fromJson(base64Encode, AdminFullTokenVO.class);
             adminTokenVO.setSecretKey(sk);
-            if (adminTokenVO.getCreatedDate() + Constants.getSessionTimeout() > System.currentTimeMillis()) {
+            if (adminTokenVO.getCreatedDate() + getSessionTimeout() > System.currentTimeMillis()) {
                 return adminTokenVO;
             }
         } catch (BadPaddingException e) {
@@ -143,16 +162,16 @@ public class AdminTokenService implements TokenService {
         }
         String referer = request.getHeader("Referer");
         if (Objects.isNull(referer)) {
-            response.redirect(Constants.ADMIN_LOGIN_URI_PATH);
+            response.redirect(ADMIN_LOGIN_URI_PATH);
             return;
         }
         URI uri = URI.create(referer);
         if (!CrossUtils.isEnableOrigin(request)) {
-            response.redirect(Constants.ADMIN_LOGIN_URI_PATH);
+            response.redirect(ADMIN_LOGIN_URI_PATH);
             return;
         }
         String ext = Objects.equals(request.getParaToStr("sp"), "true") ? ".html" : "";
-        response.redirect(uri.getScheme() + "://" + uri.getRawAuthority() + WebTools.buildEncodedUrl(request, Constants.ADMIN_LOGIN_URI_PATH + ext));
+        response.redirect(uri.getScheme() + "://" + uri.getRawAuthority() + WebTools.buildEncodedUrl(request, ADMIN_LOGIN_URI_PATH + ext));
 
     }
 
@@ -173,7 +192,7 @@ public class AdminTokenService implements TokenService {
         Cookie cookie = new Cookie();
         cookie.setName(ADMIN_TOKEN_KEY_IN_COOKIE);
         cookie.setValue(finalTokenString);
-        cookie.setExpireDate(new Date(System.currentTimeMillis() + Constants.getSessionTimeout()));
+        cookie.setExpireDate(new Date(System.currentTimeMillis() + getSessionTimeout()));
         if (Objects.equals(protocol, "https")) {
             if (CrossUtils.isEnableOrigin(request) && !EnvKit.isDevMode()) {
                 cookie.setSameSite("None");

@@ -6,6 +6,9 @@ import com.zrlog.common.vo.AdminFullTokenVO;
 
 public interface TokenService {
 
+
+    String ADMIN_LOGIN_URI_PATH = Constants.ADMIN_URI_BASE_PATH + "/login";
+
     AdminFullTokenVO getAdminTokenVO(HttpRequest request);
 
     void removeAdminToken(HttpRequest request, HttpResponse response);

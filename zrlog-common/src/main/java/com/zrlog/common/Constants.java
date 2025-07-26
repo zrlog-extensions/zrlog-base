@@ -14,20 +14,10 @@ import java.util.Objects;
 public class Constants {
 
     public static final String ADMIN_URI_BASE_PATH = "/admin";
-    public static final String ADMIN_LOGIN_URI_PATH = ADMIN_URI_BASE_PATH + "/login";
     public static final String TEMPLATE_BASE_PATH = "/include/templates/";
     public static final String DEFAULT_TEMPLATE_PATH = TEMPLATE_BASE_PATH + "default";
     public static final int DEFAULT_ARTICLE_DIGEST_LENGTH = 200;
-    public static final String FAVICON_ICO_URI_PATH = "/favicon.ico";
-    public static final String FAVICON_PNG_PWA_192_URI_PATH = "/pwa/icon/favicon-192.png";
-    public static final String FAVICON_PNG_PWA_512_URI_PATH = "/pwa/icon/favicon-512.png";
-    public static final String ATTACHED_FOLDER = "/attached/";
     public static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd HH:mm:ssXXX";
-    /**
-     * 1天
-     */
-    private static final long DEFAULT_SESSION_TIMEOUT = 1000 * 60 * 60 * 24L;
-    private static final String SESSION_TIMEOUT_KEY = "session_timeout";
     public static ZrLogConfig zrLogConfig;
     private static volatile long lastAccessTime = System.currentTimeMillis();
 
@@ -117,19 +107,6 @@ public class Constants {
             return ((Number) dbSetting).intValue() == 1;
         }
         return dbSetting instanceof String && ("1".equals(dbSetting) || ("1.0".equals(dbSetting) || "on".equals(dbSetting) || BooleanUtils.isTrue((String) dbSetting)));
-    }
-
-    public static Long getSessionTimeout() {
-        String sessionTimeoutString = Constants.getStringByFromWebSite(SESSION_TIMEOUT_KEY);
-        if (StringUtils.isEmpty(sessionTimeoutString)) {
-            return DEFAULT_SESSION_TIMEOUT;
-        }
-        //*60， Cookie过期时间单位为分钟
-        long sessionTimeout = (long) (Double.parseDouble(sessionTimeoutString) * 60 * 1000);
-        if (sessionTimeout <= 0) {
-            return DEFAULT_SESSION_TIMEOUT;
-        }
-        return sessionTimeout;
     }
 
     public static List<String> articleRouterList() {

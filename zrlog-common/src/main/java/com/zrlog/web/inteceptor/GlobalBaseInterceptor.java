@@ -38,15 +38,8 @@ public class GlobalBaseInterceptor implements Interceptor {
      */
     private boolean isForbiddenUri(HttpRequest request) {
         String target = request.getUri();
-        if (forbiddenUriExtSet.stream().anyMatch(target::endsWith)) {
-            //非法请求, 返回403
-            return true;
-        }
-        if (target.startsWith(Constants.ADMIN_URI_BASE_PATH) && target.endsWith(".html")) {
-            //非法请求, 返回403
-            return !BaseStaticSitePlugin.isStaticPluginRequest(request);
-        }
-        return false;
+        //非法请求, 返回403
+        return forbiddenUriExtSet.stream().anyMatch(target::endsWith);
     }
 
     @Override
