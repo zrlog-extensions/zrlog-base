@@ -47,8 +47,29 @@ public class WebSite extends DAO {
         return getWebSiteByNameIn(websitePublicQueryKeys);
     }
 
+    private Map<String, Object> fillToMap(List<Map<String, Object>> lw, List<String> names) {
+        Map<String, Object> webSites = new LinkedHashMap<>();
+        for (String name : names) {
+            Object value = "";
+            Object remark = "";
+            for (Map<String, Object> map : lw) {
+                if (Objects.equals(map.get("name"), name)) {
+                    value = map.get("value") == null ? "" : map.get("value");
+                    remark = map.get("remark") == null ? "" : map.get("remark");
+                    break;
+                }
+            }
+            webSites.put(name, value);
+            webSites.put(name + "Remark", remark);
+        }
+        Object changyan = webSites.get("changyan_status");
+        if (Objects.isNull(changyan) || ((String) changyan).isEmpty()) {
+            webSites.put("changyan_status", "off");
+        }
+        return webSites;
+    }
+
     public Map<String, Object> getWebSiteByNameIn(List<String> names) {
-        Map<String, Object> webSites = new HashMap<>();
         List<Map<String, Object>> lw;
         StringJoiner sj = new StringJoiner(",");
         Object[] params = new String[names.size()];
@@ -61,14 +82,7 @@ public class WebSite extends DAO {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        for (Map<String, Object> webSite : lw) {
-            webSites.put((String) webSite.get("name"), webSite.get("value"));
-            webSites.put(webSite.get("name") + "Remark", webSite.get("remark"));
-        }
-        if (Objects.isNull(webSites.get("changyan_status"))) {
-            webSites.put("changyan_status", "off");
-        }
-        return webSites;
+        return fillToMap(lw, names);
     }
 
     public boolean updateByKV(String name, Object value) throws SQLException {
@@ -81,7 +95,8 @@ public class WebSite extends DAO {
 
     public String getStringValueByName(String name) {
         try {
-            Object value = queryFirstObj("select value from " + tableName + " where name=?", name);
+            Map<String, Object> webSiteByNameIn = getWebSiteByNameIn(Collections.singletonList(name));
+            Object value = webSiteByNameIn.get(name);
             if (Objects.isNull(value)) {
                 return "";
             }
@@ -96,7 +111,7 @@ public class WebSite extends DAO {
         if (!websitePublicQueryKeys.contains(name)) {
             throw new ArithmeticException(name);
         }
-       return getStringValueByName(name);
+        return getStringValueByName(name);
     }
 
     public static void clearTemplateConfigMap() {

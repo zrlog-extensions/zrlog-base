@@ -12,6 +12,7 @@ import com.zrlog.common.exception.NotFindDbEntryException;
 import com.zrlog.common.rest.response.ApiStandardResponse;
 import com.zrlog.plugin.BaseStaticSitePlugin;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Objects;
 import java.util.logging.Level;
@@ -72,18 +73,22 @@ public class ZrLogErrorHandle implements HttpErrorHandle {
             response.redirect(Constants.ADMIN_URI_BASE_PATH + "/admin/500?message=" + e.getMessage());
             return;
         }
-        if (Constants.debugLoggerPrintAble()) {
-            response.renderHtmlStr("<pre style='color:red'>" + LoggerUtil.recordStackTraceMsg(e) + "</pre>");
-            return;
-        }
-        InputStream inputStream = PathUtil.getConfInputStream("/error/" + httpStatueCode + ".html");
-        if (Objects.isNull(inputStream)) {
-            inputStream = PathUtil.getConfInputStream("/error/500.html");
-        }
-        if (Objects.isNull(inputStream)) {
+        InputStream errorInputStream = getErrorInputStream(e);
+        if (Objects.isNull(errorInputStream)) {
             response.renderCode(500);
             return;
         }
-        response.write(inputStream, httpStatueCode);
+        response.write(errorInputStream, httpStatueCode);
+    }
+
+    private InputStream getErrorInputStream(Throwable e) {
+        if (Constants.debugLoggerPrintAble()) {
+            return new ByteArrayInputStream(("<pre style='color:red'>" + LoggerUtil.recordStackTraceMsg(e) + "</pre>").getBytes());
+        }
+        InputStream inputStream = PathUtil.getConfInputStream("/error/" + httpStatueCode + ".html");
+        if (Objects.nonNull(inputStream)) {
+            return inputStream;
+        }
+        return PathUtil.getConfInputStream("/error/500.html");
     }
 }
