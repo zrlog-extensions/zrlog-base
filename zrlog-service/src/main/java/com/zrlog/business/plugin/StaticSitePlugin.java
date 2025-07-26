@@ -228,7 +228,7 @@ public interface StaticSitePlugin extends BaseStaticSitePlugin {
     }
 
     default String notFindFile() {
-        return getContextPath() + "/conf/error/404.html";
+        return getContextPath() + "/error/404.html";
     }
 
     private CompletableFuture<Void> doAsyncFetch(String key, AbstractServerConfig serverConfig, ApplicationContext applicationContext, Executor executor) {
