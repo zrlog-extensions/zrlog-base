@@ -158,10 +158,6 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
         return templateConfigCacheMap;
     }
 
-    public List<String> getStaticResourcePath() {
-        return Arrays.asList("/assets", "/install/static");
-    }
-
     public abstract void refreshPluginCacheData(String version, HttpRequest request);
 
     /**
@@ -191,7 +187,6 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
         serverConfig.setRequestExecutor(ThreadUtils.newFixedThreadPool(200));
         serverConfig.setDecodeExecutor(ThreadUtils.newFixedThreadPool(20));
         serverConfig.setRequestCheckerExecutor(new ScheduledThreadPoolExecutor(1, ThreadUtils::unstarted));
-        getStaticResourcePath().forEach(e -> serverConfig.addStaticResourceMapper(e, e, ZrLogConfig.class::getResourceAsStream));
         Runtime rt = Runtime.getRuntime();
         rt.addShutdownHook(new Thread(this::stop));
         return serverConfig;
