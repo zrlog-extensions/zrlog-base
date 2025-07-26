@@ -87,13 +87,32 @@ public class Constants {
     public static String getStringByFromWebSite(String key, String defaultValue) {
         CacheService<?> cacheService = zrLogConfig.getCacheService();
         if (Objects.isNull(cacheService)) {
-            return "";
+            return defaultValue;
         }
         Object dbSetting = cacheService.getPublicWebSiteInfoFirstByCache(key);
         if (Objects.isNull(dbSetting)) {
             return defaultValue;
         }
+        if (StringUtils.isEmpty(dbSetting.toString().trim())) {
+            return defaultValue;
+        }
         return dbSetting + "";
+    }
+
+    public static int getIntByFromWebSite(String key, int defaultValue) {
+        CacheService<?> cacheService = zrLogConfig.getCacheService();
+        if (Objects.isNull(cacheService)) {
+            return defaultValue;
+        }
+        Object dbSetting = cacheService.getPublicWebSiteInfoFirstByCache(key);
+        if (Objects.isNull(dbSetting)) {
+            return defaultValue;
+        }
+        String value = dbSetting.toString();
+        if (StringUtils.isEmpty(value)) {
+            return defaultValue;
+        }
+        return (int) Double.parseDouble(value);
     }
 
     public static boolean websiteValueIsTrue(Object dbSetting) {
@@ -118,11 +137,11 @@ public class Constants {
     }
 
     public static long getDefaultRows() {
-        return (long) Double.parseDouble(Constants.getStringByFromWebSite("rows", "10"));
+        return Constants.getIntByFromWebSite("rows", 10);
     }
 
     public static String getAppId() {
-        return String.valueOf(Constants.getStringByFromWebSite("appId"));
+        return Constants.getStringByFromWebSite("appId", "");
     }
 
     public static void init() {
@@ -130,6 +149,6 @@ public class Constants {
     }
 
     public static String getLanguage() {
-        return Constants.getStringByFromWebSite("language");
+        return Constants.getStringByFromWebSite("language", "zh_CN");
     }
 }
