@@ -54,6 +54,29 @@ public interface StaticSitePlugin extends BaseStaticSitePlugin {
 
     Logger LOGGER = LoggerUtil.getLogger(StaticSitePlugin.class);
 
+    default void faviconHandle(String faviconIconBase64, String saveFilePath, Boolean saveToCache) {
+        if (StringUtils.isEmpty(faviconIconBase64)) {
+            copyResourceToCacheFolder(saveFilePath);
+            return;
+        }
+        try {
+            File file = PathUtil.getStaticFile(saveFilePath);
+            file.getParentFile().mkdirs();
+            byte[] binBytes;
+            if (faviconIconBase64.contains(",")) {
+                binBytes = Base64.getDecoder().decode(faviconIconBase64.split(",")[1]);
+            } else {
+                binBytes = Base64.getDecoder().decode(faviconIconBase64);
+            }
+            IOUtil.writeBytesToFile(binBytes, file);
+            if (Objects.equals(saveToCache, true)) {
+                saveToCacheFolder(new ByteArrayInputStream(binBytes), saveFilePath);
+            }
+        } catch (Exception e) {
+            LOGGER.warning("Save favicon error " + e.getMessage());
+        }
+    }
+
     default void copyResourceToCacheFolder(String resourceName) {
         InputStream inputStream = CacheServiceImpl.class.getResourceAsStream(resourceName);
         if (Objects.isNull(inputStream)) {
