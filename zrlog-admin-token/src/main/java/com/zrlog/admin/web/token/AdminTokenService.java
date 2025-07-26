@@ -38,20 +38,16 @@ public class AdminTokenService implements TokenService {
     /**
      * 1天
      */
-    private static final long DEFAULT_SESSION_TIMEOUT = 1000 * 60 * 60 * 24L;
+    private static final int DEFAULT_SESSION_TIMEOUT = 1000 * 60 * 60 * 24;
     private static final String SESSION_TIMEOUT_KEY = "session_timeout";
 
-    public static Long getSessionTimeout() {
-        String sessionTimeoutString = Constants.getStringByFromWebSite(SESSION_TIMEOUT_KEY);
-        if (StringUtils.isEmpty(sessionTimeoutString)) {
-            return DEFAULT_SESSION_TIMEOUT;
-        }
-        //*60， Cookie过期时间单位为分钟
-        long sessionTimeout = (long) (Double.parseDouble(sessionTimeoutString) * 60 * 1000);
+    public static long getSessionTimeout() {
+        int sessionTimeout = Constants.getIntByFromWebSite(SESSION_TIMEOUT_KEY, DEFAULT_SESSION_TIMEOUT);
         if (sessionTimeout <= 0) {
             return DEFAULT_SESSION_TIMEOUT;
         }
-        return sessionTimeout;
+        //*60， Cookie过期时间单位为分钟
+        return sessionTimeout * 60 * 1000L;
     }
 
     public AdminTokenService() {
