@@ -27,7 +27,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import java.io.*;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.time.Duration;
@@ -141,8 +140,12 @@ public interface StaticSitePlugin extends BaseStaticSitePlugin {
             String versionFile = (Objects.nonNull(request) ? request.getScheme() : "https") + "://" + Constants.getHost() + "/" + getVersionFileName();
             String remoteSiteVersion = HttpUtil.getInstance().getSuccessTextByUrl(versionFile);
             return Objects.equals(getSiteVersion(), remoteSiteVersion);
-        } catch (IOException | InterruptedException | URISyntaxException e) {
-            LOGGER.info(e.getMessage());
+        } catch (Exception e) {
+            if (Constants.debugLoggerPrintAble()) {
+                LOGGER.severe("isSynchronized error, " + LoggerUtil.recordStackTraceMsg(e));
+            } else {
+                LOGGER.warning("isSynchronized error " + e.getMessage());
+            }
         }
         return false;
     }
