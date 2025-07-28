@@ -8,14 +8,16 @@ public class PublicInfoVO {
     private final Boolean admin_darkMode;
     private final String admin_color_primary;
     private final String pwaThemeColor;
+    private final String appId;
 
-    public PublicInfoVO(String currentVersion, String websiteTitle, String homeUrl, Boolean adminDarkMode, String adminColorPrimary, String pwaThemeColor) {
+    public PublicInfoVO(String currentVersion, String websiteTitle, String homeUrl, Boolean adminDarkMode, String adminColorPrimary, String pwaThemeColor, String appId) {
         this.currentVersion = currentVersion;
         this.websiteTitle = websiteTitle;
         this.homeUrl = homeUrl;
-        admin_darkMode = adminDarkMode;
-        admin_color_primary = adminColorPrimary;
+        this.admin_darkMode = adminDarkMode;
+        this.admin_color_primary = adminColorPrimary;
         this.pwaThemeColor = pwaThemeColor;
+        this.appId = appId;
     }
 
     public String getCurrentVersion() {
@@ -40,5 +42,9 @@ public class PublicInfoVO {
 
     public String getPwaThemeColor() {
         return pwaThemeColor;
+    }
+
+    public String getAppId() {
+        return appId;
     }
 }

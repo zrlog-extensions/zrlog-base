@@ -1,5 +1,7 @@
 package com.zrlog.common;
 
+import com.zrlog.common.vo.PublicWebSiteInfo;
+
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +18,8 @@ public interface CacheService<T> {
     T refreshInitData();
 
     Object getPublicWebSiteInfoFirstByCache(String key);
+
+    PublicWebSiteInfo getPublicWebSiteInfo();
 
     List<Map<String, Object>> getArticleTypes();
 

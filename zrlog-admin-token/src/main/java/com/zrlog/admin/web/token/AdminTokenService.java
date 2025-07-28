@@ -6,13 +6,13 @@ import com.hibegin.http.server.api.HttpRequest;
 import com.hibegin.http.server.api.HttpResponse;
 import com.hibegin.http.server.web.cookie.Cookie;
 import com.zrlog.admin.web.util.ByteUtils;
-import com.zrlog.util.CrossUtils;
 import com.zrlog.blog.web.util.WebTools;
 import com.zrlog.common.Constants;
 import com.zrlog.common.TokenService;
 import com.zrlog.common.vo.AdminFullTokenVO;
 import com.zrlog.common.vo.AdminTokenVO;
 import com.zrlog.model.User;
+import com.zrlog.util.CrossUtils;
 import com.zrlog.util.ParseUtil;
 
 import javax.crypto.BadPaddingException;
@@ -21,7 +21,10 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Base64;
+import java.util.Date;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
@@ -38,11 +41,9 @@ public class AdminTokenService implements TokenService {
     /**
      * 1天
      */
-    private static final int DEFAULT_SESSION_TIMEOUT = 1000 * 60 * 60 * 24;
-    private static final String SESSION_TIMEOUT_KEY = "session_timeout";
 
     public static long getSessionTimeout() {
-        int sessionTimeout = Constants.getIntByFromWebSite(SESSION_TIMEOUT_KEY, DEFAULT_SESSION_TIMEOUT);
+        long sessionTimeout = ObjectUtil.requireNonNullElse(Constants.zrLogConfig.getCacheService().getPublicWebSiteInfo().getSession_timeout(), DEFAULT_SESSION_TIMEOUT);
         if (sessionTimeout <= 0) {
             return DEFAULT_SESSION_TIMEOUT;
         }

@@ -1,6 +1,7 @@
 package com.zrlog.data.cache.vo;
 
 import com.zrlog.common.vo.IDataInitVO;
+import com.zrlog.common.vo.PublicWebSiteInfo;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public class BaseDataInitVO extends IDataInitVO implements Serializable {
     private List<Map<String, Object>> plugins = new ArrayList<>();
     private Map<String, Long> archives = new HashMap<>();
     private List<Archive> archiveList = new ArrayList<>();
-    private Map<String, Object> webSite = new HashMap<>();
+    private PublicWebSiteInfo webSite = new PublicWebSiteInfo();
     private List<HotLogBasicInfoEntry> hotLogs = new ArrayList<>();
     private List<Map<String, Object>> logNavs = new ArrayList<>();
     private List<HotTypeLogInfo> typeHotLogs;
@@ -75,14 +76,6 @@ public class BaseDataInitVO extends IDataInitVO implements Serializable {
 
     public void setArchiveList(List<Archive> archiveList) {
         this.archiveList = archiveList;
-    }
-
-    public Map<String, Object> getWebSite() {
-        return webSite;
-    }
-
-    public void setWebSite(Map<String, Object> webSite) {
-        this.webSite = webSite;
     }
 
     public List<HotLogBasicInfoEntry> getHotLogs() {
@@ -157,5 +150,13 @@ public class BaseDataInitVO extends IDataInitVO implements Serializable {
 
     public void setWebSiteVersion(Long webSiteVersion) {
         this.webSiteVersion = webSiteVersion;
+    }
+
+    public void setWebSite(PublicWebSiteInfo webSite) {
+        this.webSite = webSite;
+    }
+
+    public PublicWebSiteInfo getWebSite() {
+        return webSite;
     }
 }

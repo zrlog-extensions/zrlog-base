@@ -1,5 +1,6 @@
 package com.zrlog.business.service;
 
+import com.hibegin.common.util.StringUtils;
 import com.hibegin.http.server.api.HttpRequest;
 import com.zrlog.business.rest.response.PublicInfoVO;
 import com.zrlog.common.Constants;
@@ -11,15 +12,19 @@ import java.util.Objects;
 public class CommonService {
 
     public PublicInfoVO getPublicInfo(HttpRequest request) {
-        Boolean darkMode = Constants.getBooleanByFromWebSite("admin_darkMode");
+        boolean darkMode = Objects.equals(Constants.zrLogConfig.getCacheService().getPublicWebSiteInfo().getAdmin_darkMode(), true);
         String themeColor;
-        String adminColor = Constants.getStringByFromWebSite("admin_color_primary", "#1677ff");
+        String adminColor = Constants.zrLogConfig.getCacheService().getPublicWebSiteInfo().getAdmin_color_primary();
+        if (StringUtils.isEmpty(adminColor)) {
+            adminColor = "#1677ff";
+        }
         if (darkMode) {
             themeColor = "#000000";
         } else {
             themeColor = adminColor;
         }
-        return new PublicInfoVO(BlogBuildInfoUtil.getVersion(), Constants.getStringByFromWebSite("title"), ZrLogUtil.getHomeUrlWithHost(request), darkMode, adminColor, themeColor);
+        String appId = Constants.zrLogConfig.getCacheService().getPublicWebSiteInfo().getAppId();
+        return new PublicInfoVO(BlogBuildInfoUtil.getVersion(), Constants.zrLogConfig.getCacheService().getPublicWebSiteInfo().getTitle(), ZrLogUtil.getHomeUrlWithHost(request), darkMode, adminColor, themeColor, appId);
     }
 
 

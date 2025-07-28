@@ -2,7 +2,7 @@ package com.zrlog.common;
 
 import com.hibegin.common.util.BooleanUtils;
 import com.hibegin.common.util.EnvKit;
-import com.hibegin.common.util.StringUtils;
+import com.zrlog.common.vo.PublicWebSiteInfo;
 
 import java.util.Collections;
 import java.util.List;
@@ -16,7 +16,7 @@ public class Constants {
     public static final String ADMIN_URI_BASE_PATH = "/admin";
     public static final String TEMPLATE_BASE_PATH = "/include/templates/";
     public static final String DEFAULT_TEMPLATE_PATH = TEMPLATE_BASE_PATH + "default";
-    public static final int DEFAULT_ARTICLE_DIGEST_LENGTH = 200;
+    public static final long DEFAULT_ARTICLE_DIGEST_LENGTH = 200;
     public static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd HH:mm:ssXXX";
     public static ZrLogConfig zrLogConfig;
     private static volatile long lastAccessTime = System.currentTimeMillis();
@@ -51,10 +51,6 @@ public class Constants {
         return System.getenv().get("ZRLOG_HOME");
     }
 
-    public static String getTemplatePath() {
-        return Constants.getStringByFromWebSite("template", Constants.DEFAULT_TEMPLATE_PATH);
-    }
-
     public static String getZrLogHome() {
         if (Constants.getZrLogHomeByEnv() == null) {
             return System.getProperty("user.dir");
@@ -64,55 +60,30 @@ public class Constants {
     }
 
     public static boolean isStaticHtmlStatus() {
-        return getBooleanByFromWebSite("generator_html_status");
+        CacheService<?> cacheService = zrLogConfig.getCacheService();
+        if (Objects.isNull(cacheService)) {
+            return false;
+        }
+        PublicWebSiteInfo publicWebSiteInfo = cacheService.getPublicWebSiteInfo();
+        if (Objects.isNull(publicWebSiteInfo)) {
+            return false;
+        }
+        return publicWebSiteInfo.getGenerator_html_status();
     }
 
     public static String getArticleUri() {
         return "";
     }
 
-    public static boolean getBooleanByFromWebSite(String key) {
-        Object dbSetting = getStringByFromWebSite(key);
-        return websiteValueIsTrue(dbSetting);
-    }
-
-    public static String getStringByFromWebSite(String key) {
-        return getStringByFromWebSite(key, null);
-    }
-
     public static String getHost() {
-        return getStringByFromWebSite("host", "");
-    }
-
-    public static String getStringByFromWebSite(String key, String defaultValue) {
         CacheService<?> cacheService = zrLogConfig.getCacheService();
         if (Objects.isNull(cacheService)) {
-            return defaultValue;
+            return "";
         }
-        Object dbSetting = cacheService.getPublicWebSiteInfoFirstByCache(key);
-        if (Objects.isNull(dbSetting)) {
-            return defaultValue;
+        if (Objects.isNull(cacheService.getPublicWebSiteInfo())) {
+            return "";
         }
-        if (StringUtils.isEmpty(dbSetting.toString().trim())) {
-            return defaultValue;
-        }
-        return dbSetting + "";
-    }
-
-    public static int getIntByFromWebSite(String key, int defaultValue) {
-        CacheService<?> cacheService = zrLogConfig.getCacheService();
-        if (Objects.isNull(cacheService)) {
-            return defaultValue;
-        }
-        Object dbSetting = cacheService.getPublicWebSiteInfoFirstByCache(key);
-        if (Objects.isNull(dbSetting)) {
-            return defaultValue;
-        }
-        String value = dbSetting.toString();
-        if (StringUtils.isEmpty(value)) {
-            return defaultValue;
-        }
-        return (int) Double.parseDouble(value);
+        return cacheService.getPublicWebSiteInfo().getHost();
     }
 
     public static boolean websiteValueIsTrue(Object dbSetting) {
@@ -132,23 +103,19 @@ public class Constants {
         return Collections.singletonList("/");
     }
 
-    public static boolean isAllowComment() {
-        return !Constants.getBooleanByFromWebSite("disable_comment_status");
-    }
-
-    public static long getDefaultRows() {
-        return Constants.getIntByFromWebSite("rows", 10);
-    }
-
-    public static String getAppId() {
-        return Constants.getStringByFromWebSite("appId", "");
-    }
-
     public static void init() {
         System.getProperties().put("java.util.logging.SimpleFormatter.format", "%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS %4$s %5$s%6$s%n");
     }
 
     public static String getLanguage() {
-        return Constants.getStringByFromWebSite("language", "zh_CN");
+        CacheService<?> cacheService = zrLogConfig.getCacheService();
+        if (Objects.isNull(cacheService)) {
+            return "zh_CN";
+        }
+        PublicWebSiteInfo publicWebSiteInfo = cacheService.getPublicWebSiteInfo();
+        if (Objects.isNull(publicWebSiteInfo)) {
+            return "zh_CN";
+        }
+        return publicWebSiteInfo.getLanguage();
     }
 }

@@ -5,6 +5,7 @@ import com.hibegin.common.dao.ResultValueConvertUtils;
 import com.hibegin.common.dao.dto.PageRequestImpl;
 import com.hibegin.common.util.BeanUtil;
 import com.hibegin.common.util.LoggerUtil;
+import com.zrlog.common.vo.PublicWebSiteInfo;
 import com.zrlog.data.cache.vo.BaseDataInitVO;
 import com.zrlog.data.cache.vo.HotLogBasicInfoEntry;
 import com.zrlog.data.cache.vo.HotTypeLogInfo;
@@ -29,15 +30,14 @@ public class BaseDataDbService {
         return BeanUtil.convert(log, HotLogBasicInfoEntry.class);
     }
 
-    public static long getWebSiteVersion(Map<String, Object> website) {
+    public static long getWebSiteVersion(PublicWebSiteInfo website) {
         return new Gson().toJson(website).hashCode();
     }
-
 
     public BaseDataInitVO queryCacheInit(Executor executor) {
         BaseDataInitVO cacheInit = new BaseDataInitVO();
         //first set website info
-        Map<String, Object> refreshWebSite = new WebSite().getPublicWebSite();
+        PublicWebSiteInfo refreshWebSite = new WebSite().getPublicWebSite();
         cacheInit.setWebSite(refreshWebSite);
         cacheInit.setWebSiteVersion(getWebSiteVersion(refreshWebSite));
         List<CompletableFuture<Void>> futures = new ArrayList<>();
@@ -136,7 +136,7 @@ public class BaseDataDbService {
         }
         cacheInit.getTypeHotLogs().sort(Comparator.comparing(x -> Math.toIntExact(x.getTypeId())));
         //默认开启文章封面
-        cacheInit.getWebSite().putIfAbsent("article_thumbnail_status", "1");
+        //cacheInit.getWebSite().putIfAbsent("article_thumbnail_status", "1");
         return cacheInit;
     }
 }

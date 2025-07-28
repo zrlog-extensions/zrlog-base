@@ -5,10 +5,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.hibegin.common.dao.DAO;
 import com.hibegin.common.dao.DataSourceWrapper;
+import com.hibegin.common.dao.ResultBeanUtils;
 import com.hibegin.common.util.BeanUtil;
 import com.hibegin.common.util.IOUtil;
 import com.hibegin.common.util.StringUtils;
 import com.zrlog.common.Constants;
+import com.zrlog.common.TokenService;
+import com.zrlog.common.vo.PublicWebSiteInfo;
 import com.zrlog.data.dto.FaviconBase64DTO;
 
 import java.sql.SQLException;
@@ -43,28 +46,39 @@ public class WebSite extends DAO {
         this.pk = "siteId";
     }
 
-    public Map<String, Object> getPublicWebSite() {
-        return getWebSiteByNameIn(websitePublicQueryKeys);
+    public PublicWebSiteInfo getPublicWebSite() {
+        PublicWebSiteInfo convert = ResultBeanUtils.convert(getWebSiteByNameIn(websitePublicQueryKeys), PublicWebSiteInfo.class);
+        if (Objects.isNull(convert.getRows())) {
+            convert.setRows(10L);
+        }
+        if (Objects.isNull(convert.getArticle_auto_digest_length())) {
+            convert.setArticle_auto_digest_length(Constants.DEFAULT_ARTICLE_DIGEST_LENGTH);
+        }
+        if (Objects.isNull(convert.getSession_timeout())) {
+            convert.setArticle_auto_digest_length(TokenService.DEFAULT_SESSION_TIMEOUT / 60 / 1000);
+        }
+        convert.setAdmin_darkMode(Objects.equals(convert.getAdmin_darkMode(), true));
+        convert.setChangyan_status(Objects.equals(convert.getChangyan_status(), true));
+        convert.setDisable_comment_status(Objects.equals(convert.getDisable_comment_status(), true));
+        convert.setGenerator_html_status(Objects.equals(convert.getGenerator_html_status(), true));
+        convert.setArticle_thumbnail_status(Objects.equals(convert.getArticle_thumbnail_status(), true));
+        return convert;
     }
 
     private Map<String, Object> fillToMap(List<Map<String, Object>> lw, List<String> names) {
         Map<String, Object> webSites = new LinkedHashMap<>();
         for (String name : names) {
-            Object value = "";
-            Object remark = "";
+            Object value = null;
+            Object remark = null;
             for (Map<String, Object> map : lw) {
                 if (Objects.equals(map.get("name"), name)) {
-                    value = map.get("value") == null ? "" : map.get("value");
-                    remark = map.get("remark") == null ? "" : map.get("remark");
+                    value = map.get("value");
+                    remark = map.get("remark");
                     break;
                 }
             }
             webSites.put(name, value);
             webSites.put(name + "Remark", remark);
-        }
-        Object changyan = webSites.get("changyan_status");
-        if (Objects.isNull(changyan) || ((String) changyan).isEmpty()) {
-            webSites.put("changyan_status", "off");
         }
         return webSites;
     }

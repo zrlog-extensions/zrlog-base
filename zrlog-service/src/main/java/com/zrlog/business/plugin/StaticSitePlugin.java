@@ -12,7 +12,6 @@ import com.hibegin.http.server.config.AbstractServerConfig;
 import com.hibegin.http.server.config.RequestConfig;
 import com.hibegin.http.server.config.ResponseConfig;
 import com.hibegin.http.server.handler.HttpRequestHandlerRunnable;
-import com.hibegin.http.server.impl.SimpleHttpResponse;
 import com.hibegin.http.server.util.HttpRequestBuilder;
 import com.hibegin.http.server.util.PathUtil;
 import com.zrlog.common.Constants;
@@ -20,7 +19,6 @@ import com.zrlog.data.cache.CacheServiceImpl;
 import com.zrlog.model.WebSite;
 import com.zrlog.plugin.BaseStaticSitePlugin;
 import com.zrlog.util.I18nUtil;
-import com.zrlog.util.StaticFileCacheUtils;
 import com.zrlog.util.ZrLogUtil;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -40,9 +38,6 @@ import java.util.logging.Logger;
 import static com.zrlog.plugin.BaseStaticSitePlugin.isStaticPluginRequest;
 
 public interface StaticSitePlugin extends BaseStaticSitePlugin {
-
-    String STATIC_SITE_PLUGIN_HTML_FILE_KEY = "_htmlFile";
-
 
     static String getSuffix(HttpRequest request) {
         if (isStaticPluginRequest(request) || Constants.isStaticHtmlStatus()) {
@@ -82,10 +77,6 @@ public interface StaticSitePlugin extends BaseStaticSitePlugin {
             LOGGER.warning("Missing resource " + resourceName);
             return;
         }
-        if (StaticFileCacheUtils.getInstance().isAdminMainJs(resourceName)) {
-            saveToCacheFolder(new ByteArrayInputStream(StaticFileCacheUtils.getInstance().geAdminMainJsContent(resourceName).getBytes()), resourceName);
-            return;
-        }
         saveToCacheFolder(inputStream, resourceName);
     }
 
@@ -95,26 +86,6 @@ public interface StaticSitePlugin extends BaseStaticSitePlugin {
         }
         return StringUtils.isEmpty(ZrLogUtil.getBlogHostByWebSite());
     }
-
-    /**
-     * 将一个网页转化对应文件，用于静态化文章页
-     */
-    default File saveResponseBodyToHtml(HttpRequest httpRequest, String copy) {
-        if (copy == null) {
-            return null;
-        }
-        byte[] bytes = copy.getBytes(StandardCharsets.UTF_8);
-        File htmlFile = loadCacheFile(httpRequest);
-        if (!htmlFile.exists()) {
-            htmlFile.getParentFile().mkdirs();
-        }
-        if (httpRequest.getUri().startsWith("/admin") && !httpRequest.getUri().contains(".")) {
-            htmlFile = new File(htmlFile + ".html");
-        }
-        IOUtil.writeBytesToFile(bytes, htmlFile);
-        return htmlFile;
-    }
-
 
     default String getSiteVersion() {
         StringBuilder sb = new StringBuilder();
@@ -204,8 +175,8 @@ public interface StaticSitePlugin extends BaseStaticSitePlugin {
         return HttpRequestBuilder.buildRequest(method, uri, ZrLogUtil.getBlogHostByWebSite(), STATIC_USER_AGENT, requestConfig, applicationContext);
     }
 
-    private void doParse(File file) throws IOException {
-        if (file.getName().endsWith(".js") || file.getName().endsWith(".json")) {
+    private void doParseHtml(File file) throws IOException {
+        if (file.getName().endsWith(".js") || file.getName().endsWith(".json") || file.getName().endsWith(".css")) {
             return;
         }
         getParseLock().lock();
@@ -249,8 +220,9 @@ public interface StaticSitePlugin extends BaseStaticSitePlugin {
             }
             String uri = httpRequest.getUri();
             try {
-                new HttpRequestHandlerRunnable(httpRequest, new SimpleHttpResponse(httpRequest, serverConfig.getResponseConfig())).run();
-                File file = (File) httpRequest.getAttr().get(STATIC_SITE_PLUGIN_HTML_FILE_KEY);
+                BodySaveResponse bodySaveResponse = new BodySaveResponse(httpRequest, serverConfig.getResponseConfig());
+                new HttpRequestHandlerRunnable(httpRequest, bodySaveResponse).run();
+                File file = bodySaveResponse.getCacheFile();
                 if (Objects.nonNull(file)) {
                     getCacheFiles().add(file);
                 }
@@ -265,7 +237,7 @@ public interface StaticSitePlugin extends BaseStaticSitePlugin {
                     error = true;
                     return;
                 }
-                doParse(file);
+                doParseHtml(file);
             } catch (Exception ex) {
                 LOGGER.warning("Generator " + uri + " error: " + ex.getMessage());
             } finally {

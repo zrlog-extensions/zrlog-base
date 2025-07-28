@@ -48,7 +48,7 @@ public class PluginCorePluginImpl extends BaseLockObject implements PluginCorePl
 
     public PluginCorePluginImpl(File dbPropertiesPath) {
         this.dbPropertiesPath = dbPropertiesPath;
-        this.pluginJvmArgs = (String) ConfigKit.get("pluginJvmArgs","-Xms8m -Xmx32m -Dfile.encoding=UTF-8");
+        this.pluginJvmArgs = ConfigKit.get("pluginJvmArgs", "-Xms8m -Xmx32m -Dfile.encoding=UTF-8");
         this.pluginCoreProcess = new PluginCoreProcessImpl(this::stop);
         this.token = UUID.randomUUID().toString().replace("-", "");
     }
@@ -61,11 +61,11 @@ public class PluginCorePluginImpl extends BaseLockObject implements PluginCorePl
         map.put("IsLogin", (adminTokenVO != null) + "");
         map.put("Current-Locale", I18nUtil.getCurrentLocale());
         map.put("Blog-Version", BlogBuildInfoUtil.getVersion());
-        map.put("Dark-Mode", Constants.getBooleanByFromWebSite("admin_darkMode") + "");
+        map.put("Dark-Mode", Objects.equals(Constants.zrLogConfig.getCacheService().getPublicWebSiteInfo().getAdmin_darkMode(), true) + "");
         if (EnvKit.isDevMode()) {
             map.put("DEV_MODE", "true");
         }
-        map.put("Admin-Color-Primary", Objects.toString(Constants.getStringByFromWebSite("admin_color_primary"), "#1677ff"));
+        map.put("Admin-Color-Primary", Objects.toString(Constants.zrLogConfig.getCacheService().getPublicWebSiteInfo().getAdmin_color_primary(), "#1677ff"));
         if (Objects.isNull(request)) {
             return map;
         }

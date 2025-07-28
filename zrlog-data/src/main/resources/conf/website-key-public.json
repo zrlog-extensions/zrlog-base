@@ -11,17 +11,13 @@
   "article_thumbnail_status",
   "icp",
   "webCm",
-  "session_timeout",
   "language",
   "admin_color_primary",
   "article_auto_digest_length",
   "admin_darkMode",
-  "admin_static_resource_base_url",
-  "autoUpgradeVersion",
-  "upgradePreview",
   "rows",
   "staticResourceHost",
   "template",
   "robotRuleContent",
-  "admin_article_page_size"
+  "session_timeout"
 ]

@@ -60,18 +60,7 @@ public class ZrLogUtil {
     }
 
     public static String getBlogHostByWebSite() {
-        return Constants.getStringByFromWebSite("host", "");
-    }
-
-    public static String getAdminStaticResourceBaseUrlByWebSite(HttpRequest request) {
-        if (Objects.isNull(Constants.zrLogConfig)) {
-            return "";
-        }
-        String websiteHost = Constants.getStringByFromWebSite("admin_static_resource_base_url");
-        if (Objects.nonNull(websiteHost) && !websiteHost.trim().isEmpty()) {
-            return websiteHost + request.getContextPath();
-        }
-        return request.getContextPath();
+        return Constants.getHost();
     }
 
     public static String getFullUrl(HttpRequest request) {

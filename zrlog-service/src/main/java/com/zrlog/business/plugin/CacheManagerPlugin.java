@@ -1,8 +1,10 @@
 package com.zrlog.business.plugin;
 
 import com.hibegin.common.util.EnvKit;
+import com.hibegin.common.util.StringUtils;
 import com.zrlog.common.Constants;
 import com.zrlog.common.ZrLogConfig;
+import com.zrlog.model.WebSite;
 import com.zrlog.plugin.IPlugin;
 import com.zrlog.util.ThreadUtils;
 
@@ -47,10 +49,10 @@ public class CacheManagerPlugin implements IPlugin {
     }
 
     private int getInitDataMaxCacheTimeout() {
-        Object dbSettingSize = Constants.getStringByFromWebSite("cache_timeout_minutes");
-        if (dbSettingSize != null) {
+        String dbSettingSize = new WebSite().getStringValueByName("cache_timeout_minutes");
+        if (StringUtils.isNotEmpty(dbSettingSize)) {
             try {
-                return (int) (Double.parseDouble(dbSettingSize.toString()) * 60 * 1000);
+                return (int) (Double.parseDouble(dbSettingSize) * 60 * 1000);
             } catch (Exception e) {
                 //ignore
             }
