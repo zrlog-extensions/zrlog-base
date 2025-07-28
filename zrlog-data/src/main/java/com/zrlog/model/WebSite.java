@@ -6,8 +6,8 @@ import com.google.gson.GsonBuilder;
 import com.hibegin.common.dao.DAO;
 import com.hibegin.common.dao.DataSourceWrapper;
 import com.hibegin.common.dao.ResultBeanUtils;
+import com.hibegin.common.dao.ResultValueConvertUtils;
 import com.hibegin.common.util.BeanUtil;
-import com.hibegin.common.util.IOUtil;
 import com.hibegin.common.util.StringUtils;
 import com.zrlog.common.Constants;
 import com.zrlog.common.TokenService;
@@ -23,12 +23,46 @@ import java.util.*;
 public class WebSite extends DAO {
 
     private static final List<String> websitePublicQueryKeys;
+    private static final List<String> websitePublicQueryStrKeys;
     private static final String TEMPLATE_CONFIG_SUFFIX = "_setting";
 
+    //number
+    public static final String generator_html_status = "generator_html_status";
+    public static final String disable_comment_status = "disable_comment_status";
+    public static final String article_thumbnail_status = "article_thumbnail_status";
+    public static final String article_auto_digest_length = "article_auto_digest_length";
+    public static final String admin_darkMode = "admin_darkMode";
+    public static final String rows = "rows";
+    public static final String session_timeout = "session_timeout";
+    public static final String comment_plugin_status = "comment_plugin_status";
+
+    //string
+    public static final String appId = "appId";
+    public static final String changyan_status = "changyan_status";
+    public static final String title = "title";
+    public static final String second_title = "second_title";
+    public static final String keywords = "keywords";
+    public static final String description = "description";
+    public static final String host = "host";
+    public static final String icp = "icp";
+    public static final String webCm = "webCm";
+    public static final String language = "language";
+    public static final String admin_color_primary = "admin_color_primary";
+    public static final String staticResourceHost = "staticResourceHost";
+    public static final String template = "template";
+    public static final String robotRuleContent = "robotRuleContent";
+    public static final String comment_plugin_name = "comment_plugin_name";
 
     static {
-        String[] list = new Gson().fromJson(IOUtil.getStringInputStream(WebSite.class.getResourceAsStream("/conf/website-key-public.json")), String[].class);
-        websitePublicQueryKeys = Arrays.asList(list);
+
+        String[] listNum = new String[]{generator_html_status, disable_comment_status,
+                article_thumbnail_status, article_auto_digest_length, admin_darkMode, rows, session_timeout, comment_plugin_status};
+        websitePublicQueryKeys = new ArrayList<>();
+        //str
+        websitePublicQueryStrKeys = Arrays.asList(appId, changyan_status, title, second_title, keywords, description, host,
+                icp, robotRuleContent, comment_plugin_name, webCm, language, admin_color_primary, staticResourceHost, template);
+        websitePublicQueryKeys.addAll(websitePublicQueryStrKeys);
+        websitePublicQueryKeys.addAll(Arrays.asList(listNum));
     }
 
     public static void main(String[] args) {
@@ -47,22 +81,38 @@ public class WebSite extends DAO {
     }
 
     public PublicWebSiteInfo getPublicWebSite() {
-        PublicWebSiteInfo convert = ResultBeanUtils.convert(getWebSiteByNameIn(websitePublicQueryKeys), PublicWebSiteInfo.class);
-        if (Objects.isNull(convert.getRows())) {
-            convert.setRows(10L);
+        PublicWebSiteInfo info = ResultBeanUtils.convert(getWebSiteByNameIn(websitePublicQueryKeys), PublicWebSiteInfo.class);
+        if (Objects.isNull(info.getRows())) {
+            info.setRows(10L);
         }
-        if (Objects.isNull(convert.getArticle_auto_digest_length())) {
-            convert.setArticle_auto_digest_length(Constants.DEFAULT_ARTICLE_DIGEST_LENGTH);
+        if (Objects.isNull(info.getArticle_auto_digest_length())) {
+            info.setArticle_auto_digest_length(Constants.DEFAULT_ARTICLE_DIGEST_LENGTH);
         }
-        if (Objects.isNull(convert.getSession_timeout())) {
-            convert.setArticle_auto_digest_length(TokenService.DEFAULT_SESSION_TIMEOUT / 60 / 1000);
+        if (Objects.isNull(info.getSession_timeout())) {
+            info.setArticle_auto_digest_length(TokenService.DEFAULT_SESSION_TIMEOUT / 60 / 1000);
         }
-        convert.setAdmin_darkMode(Objects.equals(convert.getAdmin_darkMode(), true));
-        convert.setChangyan_status(Objects.equals(convert.getChangyan_status(), true));
-        convert.setDisable_comment_status(Objects.equals(convert.getDisable_comment_status(), true));
-        convert.setGenerator_html_status(Objects.equals(convert.getGenerator_html_status(), true));
-        convert.setArticle_thumbnail_status(Objects.equals(convert.getArticle_thumbnail_status(), true));
-        return convert;
+        info.setAdmin_darkMode(Objects.equals(info.getAdmin_darkMode(), true));
+        info.setDisable_comment_status(Objects.equals(info.getDisable_comment_status(), true));
+        info.setGenerator_html_status(Objects.equals(info.getGenerator_html_status(), true));
+        info.setArticle_thumbnail_status(Objects.equals(info.getArticle_thumbnail_status(), true));
+        info.setComment_plugin_status(Objects.equals(info.getComment_plugin_status(), true));
+        if (StringUtils.isEmpty(info.getAdmin_color_primary())) {
+            info.setAdmin_color_primary(Constants.DEFAULT_COLOR_PRIMARY_COLOR);
+        }
+        if (StringUtils.isEmpty(info.getLanguage())) {
+            info.setLanguage(Constants.DEFAULT_LANGUAGE);
+        }
+        if (StringUtils.isEmpty(info.getTemplate())) {
+            info.setTemplate(Constants.DEFAULT_TEMPLATE_PATH);
+        }
+        boolean changyanStatus = ResultValueConvertUtils.toBoolean(info.getChangyan_status());
+        if (changyanStatus) {
+            if (StringUtils.isEmpty(info.getComment_plugin_name())) {
+                info.setComment_plugin_name("changyan");
+                info.setComment_plugin_status(true);
+            }
+        }
+        return info;
     }
 
     private Map<String, Object> fillToMap(List<Map<String, Object>> lw, List<String> names) {
@@ -76,6 +126,9 @@ public class WebSite extends DAO {
                     remark = map.get("remark");
                     break;
                 }
+            }
+            if (Objects.isNull(value) && websitePublicQueryStrKeys.contains(name)) {
+                value = "";
             }
             webSites.put(name, value);
             webSites.put(name + "Remark", remark);
@@ -121,13 +174,6 @@ public class WebSite extends DAO {
         return "";
     }
 
-    public String getPublicStringValueByName(String name) {
-        if (!websitePublicQueryKeys.contains(name)) {
-            throw new ArithmeticException(name);
-        }
-        return getStringValueByName(name);
-    }
-
     public static void clearTemplateConfigMap() {
         Constants.zrLogConfig.getTemplateConfigCacheMap().clear();
     }
@@ -148,7 +194,7 @@ public class WebSite extends DAO {
     }
 
     public FaviconBase64DTO faviconBase64DTO() {
-        Map<String, Object> dataMap = getWebSiteByNameIn(Arrays.asList("favicon_ico_base64", "favicon_png_pwa_192_base64", "favicon_png_pwa_512_base64", "generator_html_status"));
+        Map<String, Object> dataMap = getWebSiteByNameIn(Arrays.asList("favicon_ico_base64", "favicon_png_pwa_192_base64", "favicon_png_pwa_512_base64", generator_html_status));
         return BeanUtil.convert(dataMap, FaviconBase64DTO.class);
     }
 }

@@ -17,8 +17,6 @@ public interface CacheService<T> {
 
     T refreshInitData();
 
-    Object getPublicWebSiteInfoFirstByCache(String key);
-
     PublicWebSiteInfo getPublicWebSiteInfo();
 
     List<Map<String, Object>> getArticleTypes();

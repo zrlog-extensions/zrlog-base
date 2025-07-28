@@ -1,7 +1,6 @@
 package com.zrlog.data.cache;
 
 import com.google.gson.Gson;
-import com.hibegin.common.util.BeanUtil;
 import com.hibegin.common.util.LoggerUtil;
 import com.hibegin.common.util.ObjectUtil;
 import com.hibegin.common.util.StringUtils;
@@ -155,17 +154,6 @@ public class CacheServiceImpl implements CacheService<BaseDataInitVO> {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public Object getPublicWebSiteInfoFirstByCache(String key) {
-        if (!Constants.zrLogConfig.isInstalled()) {
-            return null;
-        }
-        if (Objects.nonNull(cacheInit)) {
-            return BeanUtil.convert(cacheInit.getWebSite(), Map.class).get(key);
-        }
-        return new WebSite().getPublicStringValueByName(key);
     }
 
     @Override

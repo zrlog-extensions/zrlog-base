@@ -1,6 +1,5 @@
 package com.zrlog.common;
 
-import com.hibegin.common.util.BooleanUtils;
 import com.hibegin.common.util.EnvKit;
 import com.zrlog.common.vo.PublicWebSiteInfo;
 
@@ -20,6 +19,8 @@ public class Constants {
     public static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd HH:mm:ssXXX";
     public static ZrLogConfig zrLogConfig;
     private static volatile long lastAccessTime = System.currentTimeMillis();
+    public static final String DEFAULT_COLOR_PRIMARY_COLOR = "#1677ff";
+    public static final String DEFAULT_LANGUAGE = "zh_CN";
 
     /**
      * 处理静态化文件,仅仅缓存文章页(变化较小)
@@ -86,19 +87,6 @@ public class Constants {
         return cacheService.getPublicWebSiteInfo().getHost();
     }
 
-    public static boolean websiteValueIsTrue(Object dbSetting) {
-        if (Objects.isNull(dbSetting)) {
-            return false;
-        }
-        if (dbSetting instanceof Boolean) {
-            return (boolean) dbSetting;
-        }
-        if (dbSetting instanceof Number) {
-            return ((Number) dbSetting).intValue() == 1;
-        }
-        return dbSetting instanceof String && ("1".equals(dbSetting) || ("1.0".equals(dbSetting) || "on".equals(dbSetting) || BooleanUtils.isTrue((String) dbSetting)));
-    }
-
     public static List<String> articleRouterList() {
         return Collections.singletonList("/");
     }
@@ -110,11 +98,11 @@ public class Constants {
     public static String getLanguage() {
         CacheService<?> cacheService = zrLogConfig.getCacheService();
         if (Objects.isNull(cacheService)) {
-            return "zh_CN";
+            return DEFAULT_LANGUAGE;
         }
         PublicWebSiteInfo publicWebSiteInfo = cacheService.getPublicWebSiteInfo();
         if (Objects.isNull(publicWebSiteInfo)) {
-            return "zh_CN";
+            return DEFAULT_LANGUAGE;
         }
         return publicWebSiteInfo.getLanguage();
     }
