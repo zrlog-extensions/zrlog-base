@@ -1,7 +1,9 @@
 package com.zrlog.common.vo;
 
 
-public class PublicWebSiteInfo {
+import java.io.Serializable;
+
+public class PublicWebSiteInfo implements Serializable {
 
     private String appId;
     private Boolean changyan_status;
