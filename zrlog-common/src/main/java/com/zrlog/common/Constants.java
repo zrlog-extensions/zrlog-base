@@ -22,16 +22,6 @@ public class Constants {
     public static final String DEFAULT_COLOR_PRIMARY_COLOR = "#1677ff";
     public static final String DEFAULT_LANGUAGE = "zh_CN";
 
-    /**
-     * 处理静态化文件,仅仅缓存文章页(变化较小)
-     */
-    public static boolean catGeneratorHtml(String targetUri) {
-        if (!Constants.isStaticHtmlStatus()) {
-            return false;
-        }
-        return "/".equals(targetUri) || (targetUri.startsWith("/" + Constants.getArticleUri()) && targetUri.endsWith(".html"));
-    }
-
     static {
         init();
     }
