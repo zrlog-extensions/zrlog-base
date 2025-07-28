@@ -16,7 +16,7 @@ public class CommonService {
         String themeColor;
         String adminColor = Constants.zrLogConfig.getCacheService().getPublicWebSiteInfo().getAdmin_color_primary();
         if (StringUtils.isEmpty(adminColor)) {
-            adminColor = "#1677ff";
+            adminColor = Constants.DEFAULT_COLOR_PRIMARY_COLOR;
         }
         if (darkMode) {
             themeColor = "#000000";

@@ -65,7 +65,7 @@ public class PluginCorePluginImpl extends BaseLockObject implements PluginCorePl
         if (EnvKit.isDevMode()) {
             map.put("DEV_MODE", "true");
         }
-        map.put("Admin-Color-Primary", Objects.toString(Constants.zrLogConfig.getCacheService().getPublicWebSiteInfo().getAdmin_color_primary(), "#1677ff"));
+        map.put("Admin-Color-Primary", Objects.toString(Constants.zrLogConfig.getCacheService().getPublicWebSiteInfo().getAdmin_color_primary(), Constants.DEFAULT_COLOR_PRIMARY_COLOR));
         if (Objects.isNull(request)) {
             return map;
         }
