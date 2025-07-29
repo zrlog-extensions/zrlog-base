@@ -7,6 +7,7 @@ import com.zrlog.common.Constants;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 
 public class BodySaveResponse extends SimpleHttpResponse {
 
@@ -28,8 +29,8 @@ public class BodySaveResponse extends SimpleHttpResponse {
     }
 
     @Override
-    protected byte[] toChunkedBytes(byte[] inputBytes) {
-        return inputBytes;
+    protected boolean needChunked(InputStream inputStream, long bodyLength) {
+        return false;
     }
 
     @Override
