@@ -25,7 +25,7 @@ public class TemplateDownloadUtils {
         }
         String templateName = downloadUrl.substring(downloadUrl.lastIndexOf("/") + 1).replace(".zip", "");
         File path = PathUtil.getStaticFile(Constants.TEMPLATE_BASE_PATH + templateName);
-        HttpFileHandle fileHandle = (HttpFileHandle) HttpUtil.getInstance().sendGetRequest(downloadUrl, new HttpFileHandle(PathUtil.getStaticFile(Constants.TEMPLATE_BASE_PATH).toString()), new HashMap<>());
+        HttpFileHandle fileHandle = (HttpFileHandle) HttpUtil.getInstance().sendGetRequest(downloadUrl + "?v=" + System.currentTimeMillis(), new HttpFileHandle(PathUtil.getStaticFile(Constants.TEMPLATE_BASE_PATH).toString()), new HashMap<>());
         if (!fileHandle.getT().exists()) {
             return;
         }
@@ -40,6 +40,6 @@ public class TemplateDownloadUtils {
         if (file.exists() && !forceUpdate) {
             return;
         }
-        installByUrl(BlogBuildInfoUtil.getResourceDownloadUrl() + "/attachment/template/" + file.getName() + ".zip?v=" + System.currentTimeMillis());
+        installByUrl(BlogBuildInfoUtil.getResourceDownloadUrl() + "/attachment/template/" + file.getName() + ".zip");
     }
 }
