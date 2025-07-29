@@ -7,7 +7,6 @@ import com.zrlog.common.Constants;
 
 import java.io.*;
 import java.util.Objects;
-import java.util.concurrent.atomic.LongAdder;
 
 public class BodySaveResponse extends SimpleHttpResponse implements AutoCloseable {
 
@@ -38,8 +37,8 @@ public class BodySaveResponse extends SimpleHttpResponse implements AutoCloseabl
     }
 
     @Override
-    protected byte[] toChunkedBytes(byte[] inputBytes) {
-        return inputBytes;
+    protected boolean needChunked(InputStream inputStream, long bodyLength) {
+        return false;
     }
 
     @Override
