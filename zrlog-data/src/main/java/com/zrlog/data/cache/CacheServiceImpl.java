@@ -1,13 +1,13 @@
 package com.zrlog.data.cache;
 
 import com.google.gson.Gson;
-import com.hibegin.common.util.BeanUtil;
 import com.hibegin.common.util.LoggerUtil;
 import com.hibegin.common.util.ObjectUtil;
 import com.hibegin.common.util.StringUtils;
 import com.zrlog.common.CacheService;
 import com.zrlog.common.Constants;
 import com.zrlog.common.vo.PublicWebSiteInfo;
+import com.zrlog.data.util.WebSiteUtils;
 import com.zrlog.data.cache.vo.BaseDataInitVO;
 import com.zrlog.data.service.BaseDataDbService;
 import com.zrlog.data.service.DistributedLock;
@@ -158,27 +158,31 @@ public class CacheServiceImpl implements CacheService<BaseDataInitVO> {
     }
 
     @Override
-    public Object getPublicWebSiteInfoFirstByCache(String key) {
-        if (!Constants.zrLogConfig.isInstalled()) {
-            return null;
-        }
-        if (Objects.nonNull(cacheInit)) {
-            return BeanUtil.convert(cacheInit.getWebSite(), Map.class).get(key);
-        }
-        return new WebSite().getPublicStringValueByName(key);
-    }
-
-    @Override
     public PublicWebSiteInfo getPublicWebSiteInfo() {
-        PublicWebSiteInfo publicWebSiteInfo = new PublicWebSiteInfo();
         if (Constants.zrLogConfig.isInstalled() && Objects.nonNull(cacheInit)) {
             PublicWebSiteInfo db = cacheInit.getWebSite();
             if (Objects.nonNull(db)) {
-                publicWebSiteInfo = db;
-            } else {
-                publicWebSiteInfo = new WebSite().getPublicWebSite();
+                return db;
             }
+            return new WebSite().getPublicWebSite();
         }
+        PublicWebSiteInfo publicWebSiteInfo = WebSiteUtils.fillDefaultInfo(new PublicWebSiteInfo());
+        //blog
+        publicWebSiteInfo.setAppId("");
+        publicWebSiteInfo.setTitle("");
+        publicWebSiteInfo.setSecond_title("");
+        publicWebSiteInfo.setKeywords("");
+        publicWebSiteInfo.setDescription("");
+        publicWebSiteInfo.setStaticResourceHost("");
+
+        //other
+        publicWebSiteInfo.setWebCm("");
+        publicWebSiteInfo.setIcp("");
+        publicWebSiteInfo.setRobotRuleContent("");
+        //plugin
+        publicWebSiteInfo.setComment_plugin_name("");
+        publicWebSiteInfo.setHost("");
+
         return publicWebSiteInfo;
     }
 

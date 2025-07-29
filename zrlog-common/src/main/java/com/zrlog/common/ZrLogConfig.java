@@ -15,6 +15,7 @@ import com.hibegin.http.server.util.PathUtil;
 import com.zrlog.common.vo.IDataInitVO;
 import com.zrlog.common.web.ZrLogErrorHandle;
 import com.zrlog.common.web.ZrLogHttpJsonMessageConverter;
+import com.zrlog.common.web.ZrLogHttpRequestListener;
 import com.zrlog.plugin.IPlugin;
 import com.zrlog.plugin.Plugins;
 import com.zrlog.util.*;
@@ -44,6 +45,7 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
     protected final ServerConfig serverConfig;
     protected CacheService<?> cacheService;
     protected TokenService tokenService;
+    protected ZrLogHttpRequestListener zrLogHttpRequestListener = new ZrLogHttpRequestListener();
 
 
     static {
@@ -64,6 +66,9 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
     }
 
     public String getProgramUptime() {
+        if (EnvKit.isFaaSMode()) {
+            return ParseUtil.toNamingDurationString(zrLogHttpRequestListener.getTotalHandleTime(), I18nUtil.getCurrentLocale().contains("en"));
+        }
         return ParseUtil.toNamingDurationString(System.currentTimeMillis() - uptime, I18nUtil.getCurrentLocale().contains("en"));
     }
 
@@ -187,6 +192,7 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
         serverConfig.setRequestExecutor(ThreadUtils.newFixedThreadPool(200));
         serverConfig.setDecodeExecutor(ThreadUtils.newFixedThreadPool(20));
         serverConfig.setRequestCheckerExecutor(new ScheduledThreadPoolExecutor(1, ThreadUtils::unstarted));
+        serverConfig.addRequestListener(zrLogHttpRequestListener);
         Runtime rt = Runtime.getRuntime();
         rt.addShutdownHook(new Thread(this::stop));
         return serverConfig;
