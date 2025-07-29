@@ -6,6 +6,7 @@ import com.hibegin.common.util.http.HttpUtil;
 import com.hibegin.common.util.http.handle.HttpFileHandle;
 import com.hibegin.http.server.util.PathUtil;
 import com.zrlog.common.Constants;
+import com.zrlog.util.BlogBuildInfoUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,5 +28,13 @@ public class TemplateDownloadUtils {
         ZipUtil.unZip(fileHandle.getT().toString(), path.toString());
         //delete zip file
         fileHandle.getT().delete();
+    }
+
+    public static void installByTemplateName(String templatePath, boolean forceUpdate) throws IOException, URISyntaxException, InterruptedException {
+        File file = PathUtil.getStaticFile(templatePath);
+        if (file.exists() && !forceUpdate) {
+            return;
+        }
+        installByUrl(BlogBuildInfoUtil.getResourceDownloadUrl() + "/attachment/template/" + file.getName() + ".zip?v=" + System.currentTimeMillis());
     }
 }
