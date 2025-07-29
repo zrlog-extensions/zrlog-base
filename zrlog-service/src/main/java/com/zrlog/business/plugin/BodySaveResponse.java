@@ -15,6 +15,9 @@ public class BodySaveResponse extends SimpleHttpResponse {
     public BodySaveResponse(HttpRequest request, ResponseConfig responseConfig) {
         super(request, responseConfig);
         this.cacheFile = buildCacheFile();
+        if (cacheFile.exists()) {
+            cacheFile.delete();
+        }
         this.cacheFile.getParentFile().mkdirs();
     }
 
