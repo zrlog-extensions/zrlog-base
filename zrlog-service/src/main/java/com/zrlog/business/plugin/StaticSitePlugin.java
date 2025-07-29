@@ -219,8 +219,7 @@ public interface StaticSitePlugin extends BaseStaticSitePlugin {
                 return;
             }
             String uri = httpRequest.getUri();
-            try {
-                BodySaveResponse bodySaveResponse = new BodySaveResponse(httpRequest, serverConfig.getResponseConfig());
+            try (BodySaveResponse bodySaveResponse = new BodySaveResponse(httpRequest, serverConfig.getResponseConfig())) {
                 new HttpRequestHandlerRunnable(httpRequest, bodySaveResponse).run();
                 File file = bodySaveResponse.getCacheFile();
                 if (Objects.nonNull(file)) {

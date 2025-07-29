@@ -5,11 +5,13 @@ import com.hibegin.http.server.config.ResponseConfig;
 import com.hibegin.http.server.impl.SimpleHttpResponse;
 import com.zrlog.common.Constants;
 
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.*;
+import java.util.Objects;
+import java.util.concurrent.atomic.LongAdder;
 
-public class BodySaveResponse extends SimpleHttpResponse {
+public class BodySaveResponse extends SimpleHttpResponse implements AutoCloseable {
 
+    private final OutputStream outputStream;
     private final File cacheFile;
 
     public BodySaveResponse(HttpRequest request, ResponseConfig responseConfig) {
@@ -18,7 +20,12 @@ public class BodySaveResponse extends SimpleHttpResponse {
         if (cacheFile.exists()) {
             cacheFile.delete();
         }
-        this.cacheFile.getParentFile().mkdirs();
+        cacheFile.getParentFile().mkdirs();
+        try {
+            this.outputStream = new FileOutputStream(cacheFile);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private File buildCacheFile() {
@@ -37,12 +44,9 @@ public class BodySaveResponse extends SimpleHttpResponse {
 
     @Override
     protected void send(byte[] bytes, boolean body, boolean close) {
-        super.send(bytes, body, close);
         if (body) {
             try {
-                try (FileOutputStream fileOutputStream = new FileOutputStream(cacheFile, true)) {
-                    fileOutputStream.write(bytes);
-                }
+                outputStream.write(bytes);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -51,5 +55,12 @@ public class BodySaveResponse extends SimpleHttpResponse {
 
     public File getCacheFile() {
         return cacheFile;
+    }
+
+    @Override
+    public void close() throws Exception {
+        if (Objects.nonNull(this.outputStream)) {
+            this.outputStream.close();
+        }
     }
 }
