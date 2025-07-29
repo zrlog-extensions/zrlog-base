@@ -1,5 +1,6 @@
 package com.zrlog.business.util;
 
+import com.hibegin.common.util.LoggerUtil;
 import com.hibegin.common.util.StringUtils;
 import com.hibegin.common.util.ZipUtil;
 import com.hibegin.common.util.http.HttpUtil;
@@ -12,8 +13,11 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 public class TemplateDownloadUtils {
+
+    private static final Logger LOGGER = LoggerUtil.getLogger(TemplateDownloadUtils.class);
 
     public static void installByUrl(String downloadUrl) throws IOException, URISyntaxException, InterruptedException {
         if (StringUtils.isEmpty(downloadUrl)) {
@@ -28,6 +32,7 @@ public class TemplateDownloadUtils {
         ZipUtil.unZip(fileHandle.getT().toString(), path.toString());
         //delete zip file
         fileHandle.getT().delete();
+        LOGGER.info("Download lost template [" + path.getName() + "] success");
     }
 
     public static void installByTemplateName(String templatePath, boolean forceUpdate) throws IOException, URISyntaxException, InterruptedException {
