@@ -16,19 +16,26 @@ public class BodySaveResponse extends SimpleHttpResponse implements AutoCloseabl
     public BodySaveResponse(HttpRequest request, ResponseConfig responseConfig) {
         super(request, responseConfig);
         this.cacheFile = buildCacheFile();
-        if (cacheFile.exists()) {
-            cacheFile.delete();
-        }
-        cacheFile.getParentFile().mkdirs();
-        try {
-            this.outputStream = new FileOutputStream(cacheFile);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+        if (Objects.nonNull(cacheFile)) {
+            if (cacheFile.exists()) {
+                cacheFile.delete();
+            }
+            cacheFile.getParentFile().mkdirs();
+            try {
+                this.outputStream = new FileOutputStream(cacheFile);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            this.outputStream = null;
         }
     }
 
     private File buildCacheFile() {
         StaticSitePlugin staticSitePlugin = Constants.zrLogConfig.getPlugin(StaticSitePlugin.class);
+        if (Objects.isNull(staticSitePlugin)) {
+            return null;
+        }
         File cacheFile = staticSitePlugin.loadCacheFile(request);
         if (request.getUri().startsWith("/admin") && !request.getUri().contains(".")) {
             cacheFile = new File(cacheFile + ".html");
@@ -43,7 +50,7 @@ public class BodySaveResponse extends SimpleHttpResponse implements AutoCloseabl
 
     @Override
     protected void send(byte[] bytes, boolean body, boolean close) {
-        if (body && bytes.length > 0) {
+        if (body && bytes.length > 0 && Objects.nonNull(outputStream)) {
             try {
                 outputStream.write(bytes);
             } catch (Exception e) {
