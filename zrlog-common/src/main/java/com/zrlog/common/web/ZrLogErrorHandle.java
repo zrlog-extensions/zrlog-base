@@ -43,9 +43,6 @@ public class ZrLogErrorHandle implements HttpErrorHandle {
         } else {
             LOGGER.log(Level.WARNING, "handle " + request.getUri() + " error " + e.getMessage());
         }
-        if (BaseStaticSitePlugin.isStaticPluginRequest(request)) {
-            return;
-        }
         if (request.getUri().startsWith("/api")) {
             if (e instanceof AbstractBusinessException) {
                 AbstractBusinessException ee = (AbstractBusinessException) e;
