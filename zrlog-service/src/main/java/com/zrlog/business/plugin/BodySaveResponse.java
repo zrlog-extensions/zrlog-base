@@ -43,7 +43,7 @@ public class BodySaveResponse extends SimpleHttpResponse implements AutoCloseabl
 
     @Override
     protected void send(byte[] bytes, boolean body, boolean close) {
-        if (body) {
+        if (body && bytes.length > 0) {
             try {
                 outputStream.write(bytes);
             } catch (Exception e) {
