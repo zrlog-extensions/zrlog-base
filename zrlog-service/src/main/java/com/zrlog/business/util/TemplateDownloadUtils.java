@@ -25,16 +25,21 @@ public class TemplateDownloadUtils {
         if (StringUtils.isEmpty(downloadUrl)) {
             return;
         }
-        String templateName = downloadUrl.substring(downloadUrl.lastIndexOf("/") + 1).replace(".zip", "");
-        File path = PathUtil.getStaticFile(Constants.TEMPLATE_BASE_PATH + templateName);
         HttpFileHandle fileHandle = (HttpFileHandle) HttpUtil.getInstance().sendGetRequest(downloadUrl + "?t=" + System.currentTimeMillis(), new HttpFileHandle(PathUtil.getStaticFile(Constants.TEMPLATE_BASE_PATH).toString()), new HashMap<>());
         if (!fileHandle.getT().exists()) {
             return;
         }
-        ZipUtil.unZip(fileHandle.getT().toString(), path.toString());
+        String templateName = downloadUrl.substring(downloadUrl.lastIndexOf("/") + 1).replace(".zip", "");
+        LOGGER.info("Download template [" + templateName + "] success");
+        installByZipFile(fileHandle.getT(), Constants.TEMPLATE_BASE_PATH + templateName);
         //delete zip file
         fileHandle.getT().delete();
-        LOGGER.info("Download lost template [" + path.getName() + "] success");
+    }
+
+    private static void installByZipFile(File zipFile, String templatePath) throws IOException {
+        ZipUtil.unZip(zipFile.toString(), PathUtil.getStaticFile(templatePath).toString());
+        LOGGER.info("Install template [" + new File(templatePath).getName() + "] success");
+
     }
 
     private static File getTemplateZipFile(String templatePath) {
@@ -55,11 +60,10 @@ public class TemplateDownloadUtils {
             }
             File zipFile = getTemplateZipFile(templatePath);
             if (zipFile.exists()) {
-                ZipUtil.unZip(zipFile.toString(), file.toString());
+                installByZipFile(zipFile, templatePath);
                 return;
             }
         }
-
         installByUrl(BlogBuildInfoUtil.getResourceDownloadUrl() + "/attachment/template/" + file.getName() + ".zip");
     }
 }
