@@ -155,6 +155,7 @@ public class TemplateVO {
         private String placeholder;
         private String type;
         private Object value;
+        private String contentType;
 
         public String getLabel() {
             return label;
@@ -194,6 +195,14 @@ public class TemplateVO {
 
         public void setValue(Object value) {
             this.value = value;
+        }
+
+        public String getContentType() {
+            return contentType;
+        }
+
+        public void setContentType(String contentType) {
+            this.contentType = contentType;
         }
     }
 
