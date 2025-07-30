@@ -77,7 +77,6 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
         System.setProperty("org.slf4j.simpleLogger.log.com.zaxxer.hikari", "off");
     }
 
-    private final Map<String, Map<String, Object>> templateConfigCacheMap = new ConcurrentHashMap<>();
 
 
     public boolean isTest() {
@@ -157,10 +156,6 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
         } finally {
             HttpUtil.getInstance().closeHttpClient();
         }
-    }
-
-    public Map<String, Map<String, Object>> getTemplateConfigCacheMap() {
-        return templateConfigCacheMap;
     }
 
     public abstract void refreshPluginCacheData(String version, HttpRequest request);

@@ -8,13 +8,13 @@ import com.hibegin.common.dao.DataSourceWrapper;
 import com.hibegin.common.dao.ResultBeanUtils;
 import com.hibegin.common.util.BeanUtil;
 import com.hibegin.common.util.StringUtils;
-import com.zrlog.common.Constants;
 import com.zrlog.common.vo.PublicWebSiteInfo;
-import com.zrlog.data.util.WebSiteUtils;
 import com.zrlog.data.dto.FaviconBase64DTO;
+import com.zrlog.data.util.WebSiteUtils;
 
 import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 存放全局的设置，比如网站标题，关键字，插件，主题的配置信息等，当字典表处理即可，对应数据库的website表
@@ -51,6 +51,9 @@ public class WebSite extends DAO {
     public static final String template = "template";
     public static final String robotRuleContent = "robotRuleContent";
     public static final String comment_plugin_name = "comment_plugin_name";
+
+    private static final Map<String, Map<String, Object>> templateConfigCacheMap = new ConcurrentHashMap<>();
+
 
     static {
 
@@ -143,17 +146,19 @@ public class WebSite extends DAO {
     }
 
     public static void clearTemplateConfigMap() {
-        Constants.zrLogConfig.getTemplateConfigCacheMap().clear();
+        templateConfigCacheMap.clear();
     }
 
     public Map<String, Object> getTemplateConfigMapWithCache(String templateName) {
-        return Constants.zrLogConfig.getTemplateConfigCacheMap().computeIfAbsent(templateName, (k) -> {
-            String dbJsonStr = new WebSite().getStringValueByName(k + TEMPLATE_CONFIG_SUFFIX);
-            if (StringUtils.isNotEmpty(dbJsonStr)) {
-                return new Gson().fromJson(dbJsonStr, Map.class);
-            }
-            return new HashMap<>();
-        });
+        return templateConfigCacheMap.computeIfAbsent(templateName, this::getTemplateConfigMap);
+    }
+
+    public Map<String, Object> getTemplateConfigMap(String templateName) {
+        String dbJsonStr = new WebSite().getStringValueByName(templateName + TEMPLATE_CONFIG_SUFFIX);
+        if (StringUtils.isNotEmpty(dbJsonStr)) {
+            return new Gson().fromJson(dbJsonStr, Map.class);
+        }
+        return new HashMap<>();
     }
 
     public Map<String, Object> updateTemplateConfigMap(String templateName, Map<String, Object> settingMap) throws SQLException {
