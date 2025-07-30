@@ -4,7 +4,7 @@
     <groupId>com.hibegin</groupId>
     <artifactId>zrlog-base</artifactId>
     <packaging>pom</packaging>
-    <version>3.2.51-SNAPSHOT</version>
+    <version>3.2.52</version>
     <modules>
         <module>zrlog-admin-token</module>
         <module>zrlog-service</module>
@@ -22,7 +22,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.test.skip>true</maven.test.skip>
         <sws.version>4.0.94</sws.version>
-        <project.build.outputTimestamp>2025-07-30T02:22:41Z</project.build.outputTimestamp>
+        <project.build.outputTimestamp>2025-07-30T02:31:29Z</project.build.outputTimestamp>
         <gpg.passphrase/>
     </properties>
 
@@ -74,17 +74,17 @@
             <dependency>
                 <groupId>com.hibegin</groupId>
                 <artifactId>zrlog-common</artifactId>
-                <version>3.2.51-SNAPSHOT</version>
+                <version>3.2.52</version>
             </dependency>
             <dependency>
                 <groupId>com.hibegin</groupId>
                 <artifactId>zrlog-data</artifactId>
-                <version>3.2.51-SNAPSHOT</version>
+                <version>3.2.52</version>
             </dependency>
             <dependency>
                 <groupId>com.hibegin</groupId>
                 <artifactId>zrlog-service</artifactId>
-                <version>3.2.51-SNAPSHOT</version>
+                <version>3.2.52</version>
             </dependency>
             <dependency>
                 <groupId>com.google.code.gson</groupId>
