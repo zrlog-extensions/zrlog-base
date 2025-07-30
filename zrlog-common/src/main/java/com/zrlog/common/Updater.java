@@ -13,11 +13,11 @@ public interface Updater {
         return PathUtil.getConfFile("/update-temp");
     }
 
-    default String buildUpgradeFile(String upgradeFile,String upgradeKey) {
+    default String buildUpgradeFile(String upgradeFile, String upgradeKey) throws Exception {
         return null;
     }
 
-    default String backup() {
+    default String backup() throws Exception {
         return "";
     }
 
