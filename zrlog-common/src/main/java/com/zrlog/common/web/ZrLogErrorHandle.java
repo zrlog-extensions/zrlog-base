@@ -10,7 +10,6 @@ import com.zrlog.common.Constants;
 import com.zrlog.common.exception.AbstractBusinessException;
 import com.zrlog.common.exception.NotFindDbEntryException;
 import com.zrlog.common.rest.response.ApiStandardResponse;
-import com.zrlog.plugin.BaseStaticSitePlugin;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

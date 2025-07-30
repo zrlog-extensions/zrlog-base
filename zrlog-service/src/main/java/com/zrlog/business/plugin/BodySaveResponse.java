@@ -7,11 +7,14 @@ import com.zrlog.common.Constants;
 
 import java.io.*;
 import java.util.Objects;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class BodySaveResponse extends SimpleHttpResponse implements AutoCloseable {
 
-    private final OutputStream outputStream;
+    private OutputStream outputStream;
     private final File cacheFile;
+    private final Lock initLock = new ReentrantLock();
 
     public BodySaveResponse(HttpRequest request, ResponseConfig responseConfig) {
         super(request, responseConfig);
@@ -21,13 +24,6 @@ public class BodySaveResponse extends SimpleHttpResponse implements AutoCloseabl
                 cacheFile.delete();
             }
             cacheFile.getParentFile().mkdirs();
-            try {
-                this.outputStream = new FileOutputStream(cacheFile);
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            this.outputStream = null;
         }
     }
 
@@ -37,10 +33,14 @@ public class BodySaveResponse extends SimpleHttpResponse implements AutoCloseabl
             return null;
         }
         File cacheFile = staticSitePlugin.loadCacheFile(request);
-        if (request.getUri().startsWith("/admin") && !request.getUri().contains(".")) {
-            cacheFile = new File(cacheFile + ".html");
+        if (request.getUri().contains(".")) {
+            return cacheFile;
         }
-        return cacheFile;
+        if (!request.getUri().startsWith("/admin")) {
+            return cacheFile;
+        }
+        //如果没有文件后缀的情况下，默认为需要服务端的渲染，添加文件后缀，便于 cdn 服务，通过后缀自动渲染为网页
+        return new File(cacheFile + ".html");
     }
 
     @Override
@@ -50,12 +50,31 @@ public class BodySaveResponse extends SimpleHttpResponse implements AutoCloseabl
 
     @Override
     protected void send(byte[] bytes, boolean body, boolean close) {
-        if (body && bytes.length > 0 && Objects.nonNull(outputStream)) {
-            try {
-                outputStream.write(bytes);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+        if (Objects.isNull(cacheFile)) {
+            return;
+        }
+        if (bytes.length == 0) {
+            return;
+        }
+        if (!body) {
+            return;
+        }
+        initLock.lock();
+        try {
+            if (Objects.isNull(this.outputStream)) {
+                try {
+                    this.outputStream = new FileOutputStream(cacheFile);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
+        } finally {
+            initLock.unlock();
+        }
+        try {
+            this.outputStream.write(bytes);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -65,8 +84,9 @@ public class BodySaveResponse extends SimpleHttpResponse implements AutoCloseabl
 
     @Override
     public void close() throws Exception {
-        if (Objects.nonNull(this.outputStream)) {
-            this.outputStream.close();
+        if (Objects.isNull(outputStream)) {
+            return;
         }
+        this.outputStream.close();
     }
 }
