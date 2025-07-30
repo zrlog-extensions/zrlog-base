@@ -169,8 +169,12 @@ public class ZrLogUtil {
         response.addHeader("Cache-Control", "max-age=31536000, immutable"); // 1 年的秒数
     }
 
-    public static String getLambdaRoot() {
-        return System.getenv("LAMBDA_TASK_ROOT");
+    public static String getFaaSRoot() {
+        if (EnvKit.isLambda()) {
+            return System.getenv("LAMBDA_TASK_ROOT");
+        }
+        //Not implement
+        return "/app";
     }
 
 }

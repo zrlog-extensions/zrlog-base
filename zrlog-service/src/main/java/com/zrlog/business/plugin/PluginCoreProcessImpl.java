@@ -73,10 +73,10 @@ public class PluginCoreProcessImpl implements PluginCoreProcess {
         }
         if (EnvKit.isLambda()) {
             try {
-                String zipFile = ZrLogUtil.getLambdaRoot() + "/conf/plugins.zip";
+                String zipFile = ZrLogUtil.getFaaSRoot() + "/conf/plugins.zip";
                 ZipUtil.unZip(zipFile, PathUtil.getConfPath());
             } catch (IOException e) {
-                LOGGER.warning("Can't unzip " + ZrLogUtil.getLambdaRoot());
+                LOGGER.warning("Can't unzip " + ZrLogUtil.getFaaSRoot());
             } finally {
                 unzipped = true;
             }
