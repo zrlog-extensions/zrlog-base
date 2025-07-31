@@ -48,7 +48,11 @@ public class PluginCorePluginImpl extends BaseLockObject implements PluginCorePl
 
     public PluginCorePluginImpl(File dbPropertiesPath) {
         this.dbPropertiesPath = dbPropertiesPath;
-        this.pluginJvmArgs = ConfigKit.get("pluginJvmArgs", "-Xms8m -Xmx32m -Dfile.encoding=UTF-8");
+        String args = ConfigKit.get("pluginJvmArgs", "-Xms8m -Xmx64m -Dfile.encoding=UTF-8");
+        if (EnvKit.isDevMode()) {
+            args += " -Dsws.run.mode=dev";
+        }
+        this.pluginJvmArgs = args;
         this.pluginCoreProcess = new PluginCoreProcessImpl(this::stop);
         this.token = UUID.randomUUID().toString().replace("-", "");
     }

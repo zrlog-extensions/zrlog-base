@@ -31,9 +31,10 @@ public class MyI18nInterceptor implements HandleAbleInterceptor {
         ignoreExt.add(".mp3");
     }
 
+
     @Override
     public boolean doInterceptor(HttpRequest request, HttpResponse response) {
-        I18nUtil.addToRequest(null, request);
+        I18nUtil.addToRequest(request);
         return true;
     }
 

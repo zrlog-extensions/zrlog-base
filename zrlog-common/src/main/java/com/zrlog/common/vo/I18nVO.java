@@ -9,6 +9,7 @@ public class I18nVO {
     private Map<String, Map<String, Object>> backend = new HashMap<>();
     private Map<String, Map<String, Object>> admin = new HashMap<>();
     private String locale;
+    private String lang;
 
     public Map<String, Map<String, Object>> getBlog() {
         return blog;
@@ -22,8 +23,8 @@ public class I18nVO {
         return locale;
     }
 
-    public void setLocale(String local) {
-        this.locale = local;
+    public void setLocale(String locale) {
+        this.locale = locale;
     }
 
     public Map<String, Map<String, Object>> getBackend() {
@@ -40,5 +41,13 @@ public class I18nVO {
 
     public void setAdmin(Map<String, Map<String, Object>> admin) {
         this.admin = admin;
+    }
+
+    public String getLang() {
+        return lang;
+    }
+
+    public void setLang(String lang) {
+        this.lang = lang;
     }
 }

@@ -10,8 +10,11 @@ import com.zrlog.common.Constants;
 import com.zrlog.common.exception.AbstractBusinessException;
 import com.zrlog.common.exception.NotFindDbEntryException;
 import com.zrlog.common.rest.response.ApiStandardResponse;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 import java.util.logging.Level;
@@ -79,7 +82,14 @@ public class ZrLogErrorHandle implements HttpErrorHandle {
 
     private InputStream getErrorInputStream(Throwable e) {
         if (Constants.debugLoggerPrintAble()) {
-            return new ByteArrayInputStream(("<pre style='color:red'>" + LoggerUtil.recordStackTraceMsg(e) + "</pre>").getBytes());
+            try {
+                String body = "<pre style='color:red;white-space:pre-wrap'>" + LoggerUtil.recordStackTraceMsg(e) + "</pre>";
+                Document document = Jsoup.parse(PathUtil.getConfInputStream("/error/500.html"), "utf-8", "/");
+                document.body().append(body);
+                return new ByteArrayInputStream(document.html().getBytes());
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         }
         InputStream inputStream = PathUtil.getConfInputStream("/error/" + httpStatueCode + ".html");
         if (Objects.nonNull(inputStream)) {

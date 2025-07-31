@@ -3,14 +3,12 @@ package com.zrlog.web.inteceptor;
 import com.hibegin.http.server.api.HttpRequest;
 import com.hibegin.http.server.api.HttpResponse;
 import com.hibegin.http.server.api.Interceptor;
-import com.zrlog.blog.web.util.WebTools;
 import com.zrlog.common.Constants;
 import com.zrlog.plugin.BaseStaticSitePlugin;
 import com.zrlog.util.BlogBuildInfoUtil;
 import com.zrlog.util.ZrLogUtil;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -33,6 +31,7 @@ public class GlobalBaseInterceptor implements Interceptor {
 
     /**
      * 不希望部分技术人走后门，拦截一些不合法的请求
+     *
      * @param request
      * @return
      */
@@ -52,9 +51,6 @@ public class GlobalBaseInterceptor implements Interceptor {
     @Override
     public boolean doInterceptor(HttpRequest request, HttpResponse response) {
         String target = request.getUri();
-        request.getAttr().put("requrl", ZrLogUtil.getFullUrl(request));
-        request.getAttr().put("reqUriPath", Objects.requireNonNullElse(request.getUri(), "/"));
-        request.getAttr().put("reqQueryString", Objects.requireNonNullElse(request.getQueryStr(), ""));
         Constants.setLastAccessTime(System.currentTimeMillis());
         //便于Wappalyzer读取
         response.addHeader("X-ZrLog", BlogBuildInfoUtil.getVersion());
@@ -66,8 +62,6 @@ public class GlobalBaseInterceptor implements Interceptor {
         if (target.startsWith("/api")) {
             response.addHeader("Content-Type", "application/json");
         }
-        request.getAttr().put("basePath", WebTools.getHomeUrl(request));
-        request.getAttr().put("baseWithHostPath", ZrLogUtil.getHomeUrlWithHostNotProtocol(request));
         return true;
     }
 

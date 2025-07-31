@@ -90,11 +90,8 @@ public class I18nUtil {
         }
     }
 
-    public static void addToRequest(String templatePath, HttpRequest request) {
-        if (EnvKit.isDevMode()) {
-            reloadSystemI18N();
-        }
-        if (templatePath != null) {
+    public static I18nVO addToRequestWithTemplatePath(String templatePath, HttpRequest request) {
+        if (StringUtils.isNotEmpty(templatePath)) {
             if (Objects.equals(templatePath, Constants.DEFAULT_TEMPLATE_PATH)) {
                 File enUSPropertiesFile = new File(templatePath + "/language/i18n_en_US.properties");
                 File zhCNPropertiesFile = new File(templatePath + "/language/i18n_zh_CN.properties");
@@ -114,6 +111,13 @@ public class I18nUtil {
                 }
             }
         }
+        return addToRequest(request);
+    }
+
+    public static I18nVO addToRequest(HttpRequest request) {
+        if (EnvKit.isDevMode()) {
+            reloadSystemI18N();
+        }
         String locale = null;
         if (Objects.nonNull(request)) {
             if (request.getUri().contains(Constants.ADMIN_URI_BASE_PATH + "/")
@@ -132,7 +136,7 @@ public class I18nUtil {
             }
         }
         if (locale == null) {
-            locale = "zh_CN";
+            locale = Constants.DEFAULT_LANGUAGE;
         }
 
         I18nVO i18nVO = BeanUtil.convert(i18nVOCache, I18nVO.class);
@@ -149,17 +153,16 @@ public class I18nUtil {
             }
             blogI18n.put("_locale", locale);
             if (Objects.nonNull(request)) {
-                request.getAttr().put("local", locale);
                 String lang = locale;
                 if (locale.contains("_")) {
                     lang = locale.substring(0, locale.indexOf('_'));
                 }
-                request.getAttr().put("lang", lang);
-                request.getAttr().put("_res", blogI18n);
+                i18nVO.setLang(lang);
             }
         }
         i18nVO.setLocale(locale);
         threadLocal.set(i18nVO);
+        return i18nVO;
     }
 
     public static String getAcceptLocal(HttpRequest request) {
