@@ -268,9 +268,9 @@ public interface StaticSitePlugin extends BaseStaticSitePlugin {
             String version = saveCacheVersion();
             long usedTime = (System.currentTimeMillis() - start);
             if (Constants.debugLoggerPrintAble()) {
-                LOGGER.info("Generator [" + version + "] " + "size " + getHandleStatusPageMap().size() + " finished in " + usedTime + "ms");
+                LOGGER.info("Generator [" + getDbCacheKey() + "] [" + version + "] " + "size " + getHandleStatusPageMap().size() + " finished in " + usedTime + "ms");
             } else if (usedTime > Duration.ofSeconds(10).toMillis()) {
-                LOGGER.warning("Generator [" + version + "] slow size " + getHandleStatusPageMap().size() + " finished in " + usedTime + "ms");
+                LOGGER.warning("Generator [" + getDbCacheKey() + "] [" + version + "] slow size " + getHandleStatusPageMap().size() + " finished in " + usedTime + "ms");
             }
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "do fetch error", e.getMessage());
