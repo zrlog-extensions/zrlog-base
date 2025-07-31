@@ -15,7 +15,6 @@ public class BodySaveResponse extends SimpleHttpResponse implements AutoCloseabl
     private OutputStream outputStream;
     private final File cacheFile;
     private final Lock initLock = new ReentrantLock();
-    private int statusCode;
 
     public BodySaveResponse(HttpRequest request, ResponseConfig responseConfig) {
         super(request, responseConfig);
@@ -49,14 +48,6 @@ public class BodySaveResponse extends SimpleHttpResponse implements AutoCloseabl
         return false;
     }
 
-
-    @Override
-    protected byte[] wrapperBaseResponseHeader(int statusCode) {
-        this.statusCode = statusCode;
-        return super.wrapperBaseResponseHeader(statusCode);
-    }
-
-
     @Override
     protected void send(byte[] bytes, boolean body, boolean close) {
         if (Objects.isNull(cacheFile)) {
@@ -88,9 +79,6 @@ public class BodySaveResponse extends SimpleHttpResponse implements AutoCloseabl
     }
 
     public File getCacheFile() {
-        if (statusCode != 200) {
-            return null;
-        }
         return cacheFile;
     }
 

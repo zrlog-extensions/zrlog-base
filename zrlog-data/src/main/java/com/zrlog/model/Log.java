@@ -1,13 +1,19 @@
 package com.zrlog.model;
 
 import com.hibegin.common.dao.BasePageableDAO;
+import com.hibegin.common.dao.ResultBeanUtils;
 import com.hibegin.common.dao.ResultValueConvertUtils;
 import com.hibegin.common.dao.dto.OrderBy;
 import com.hibegin.common.dao.dto.PageData;
 import com.hibegin.common.dao.dto.PageRequest;
 import com.hibegin.common.dao.dto.PageRequestImpl;
+import com.hibegin.common.util.BeanUtil;
 import com.hibegin.common.util.StringUtils;
+import com.zrlog.common.Constants;
+import com.zrlog.data.dto.ArticleBasicDTO;
+import com.zrlog.data.dto.ArticleDetailDTO;
 import com.zrlog.util.ParseUtil;
+import com.zrlog.util.ThreadUtils;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -15,6 +21,8 @@ import java.sql.SQLException;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 
 /**
  * 存放文章数据，对应数据的log表。
@@ -28,21 +36,73 @@ public class Log extends BasePageableDAO implements Serializable {
         this.pk = "logId";
     }
 
-    public Map<String, Object> findByIdOrAlias(Object idOrAlias) throws SQLException {
+    private ArticleDetailDTO getDetail(Object idOrAlias) throws SQLException {
         if (idOrAlias == null) {
             return null;
         }
+        ArticleDetailDTO detail = null;
         if (idOrAlias instanceof Integer || ParseUtil.isNumeric((String) idOrAlias)) {
             String sql =
                     "select l.*,last_update_date as lastUpdateDate,u.userName,(select count(commentId) from " + Comment.TABLE_NAME + " where logId=l.logId) commentSize ,t.alias as typeAlias,t.typeName as typeName  from " + tableName + " l inner join user u,type t where t.typeId=l.typeId and u.userId=l.userId and rubbish=? and privacy=? and l.logId=?";
             Map<String, Object> log = queryFirstWithParams(sql, false, false, idOrAlias);
             if (log != null) {
-                return log;
+                detail = ResultBeanUtils.convert(log, ArticleDetailDTO.class);
+            }
+        } else {
+            String sql =
+                    "select l.*,last_update_date as lastUpdateDate,u.userName,(select count(commentId) from " + Comment.TABLE_NAME + " where logId=l.logId) commentSize ,t.alias as typeAlias,t.typeName as typeName  from " + tableName + " l inner join user u,type t where t.typeId=l.typeId and u.userId=l.userId and rubbish=? and privacy=? and l.alias=?";
+            Map<String, Object> log = queryFirstWithParams(sql, false, false, idOrAlias);
+            if (Objects.nonNull(log)) {
+                detail = ResultBeanUtils.convert(log, ArticleDetailDTO.class);
             }
         }
-        String sql =
-                "select l.*,last_update_date as lastUpdateDate,u.userName,(select count(commentId) from " + Comment.TABLE_NAME + " where logId=l.logId) commentSize ,t.alias as typeAlias,t.typeName as typeName  from " + tableName + " l inner join user u,type t where t.typeId=l.typeId and u.userId=l.userId and rubbish=? and privacy=? and l.alias=?";
-        return queryFirstWithParams(sql, false, false, idOrAlias);
+        if (Objects.isNull(detail)) {
+            return null;
+        }
+        if (Objects.isNull(detail.getId())) {
+            detail.setId(detail.getLogId());
+        }
+        return detail;
+    }
+
+    public ArticleDetailDTO findByIdOrAlias(Object idOrAlias) throws SQLException {
+        ExecutorService executor = ThreadUtils.newFixedThreadPool(3);
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+        ArticleDetailDTO detail = getDetail(idOrAlias);
+        if (Objects.isNull(detail)) {
+            return null;
+        }
+        try {
+            if (ResultValueConvertUtils.toBoolean(detail.getCanComment()) && !Constants.zrLogConfig.getCacheService().getPublicWebSiteInfo().getDisable_comment_status()) {
+                futures.add(CompletableFuture.runAsync(() -> {
+                    try {
+                        detail.setComments(new Comment().findAllByLogId(detail.getId().intValue()));
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                }, executor));
+            } else {
+                detail.setComments(new ArrayList<>());
+            }
+            futures.add(CompletableFuture.runAsync(() -> {
+                try {
+                    detail.setLastLog(findLastLog(Math.toIntExact(detail.getId())));
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }, executor));
+            futures.add(CompletableFuture.runAsync(() -> {
+                try {
+                    detail.setNextLog(findNextLog(Math.toIntExact(detail.getId())));
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }, executor));
+            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+        } finally {
+            executor.shutdown();
+        }
+        return detail;
     }
 
     /**
@@ -65,17 +125,17 @@ public class Log extends BasePageableDAO implements Serializable {
         return queryFirstWithParams(sql, idOrAlias);
     }
 
-    public Map<String, Object> findLastLog(int id) throws SQLException {
+    private ArticleDetailDTO.LastLogDTO findLastLog(int id) throws SQLException {
         String lastLogSql =
                 "select l.alias as alias,l.title as title from " + tableName + " l where rubbish=? and " + "privacy" + "=? and l.logId<? order by logId desc limit 1";
-        return queryFirstWithParams(lastLogSql, false, false, id);
+        return BeanUtil.convert(queryFirstWithParams(lastLogSql, false, false, id), ArticleDetailDTO.LastLogDTO.class);
 
     }
 
-    public Map<String, Object> findNextLog(int id) throws SQLException {
+    private ArticleDetailDTO.NextLogDTO findNextLog(int id) throws SQLException {
         String nextLogSql =
                 "select l.alias as alias,l.title as title from " + tableName + " l where rubbish=? and " + "privacy" + "=? and l.logId>? limit 1";
-        return queryFirstWithParams(nextLogSql, false, false, id);
+        return BeanUtil.convert(queryFirstWithParams(nextLogSql, false, false, id), ArticleDetailDTO.NextLogDTO.class);
     }
 
     public long findMaxId() throws SQLException {
@@ -87,16 +147,16 @@ public class Log extends BasePageableDAO implements Serializable {
 
     }
 
-    public PageData<Map<String, Object>> visitorFind(PageRequest pageRequest, String keywords) {
+    public PageData<ArticleBasicDTO> visitorFind(PageRequest pageRequest, String keywords) {
         if (StringUtils.isEmpty(keywords)) {
             String sql =
                     "select l.*,t.typeName,t.alias as typeAlias,u.userName,(select count(commentId) from " + Comment.TABLE_NAME + " where logId=l.logId) commentSize from " + tableName + " l inner join user u inner join type t where rubbish=? and privacy=? and u.userId=l.userId and t.typeid=l.typeid  order by l.logId desc";
-            return queryPageData(sql, pageRequest, new Object[]{false, false});
+            return queryPageData(sql, pageRequest, new Object[]{false, false}, ArticleBasicDTO.class);
         }
         String sql =
                 "select l.*,t.typeName,t.alias as typeAlias,(select count(commentId) from " + Comment.TABLE_NAME + " "
                         + "where logId=l.logId) commentSize,u.userName from " + tableName + " l inner join user u," + "type" + " t where rubbish=? and privacy=? and u.userId=l.userId and t.typeId=l.typeId and (l" + ".title " + "like ? or l.plain_content like ?) order by l.logId desc";
-        return queryPageData(sql, pageRequest, new Object[]{false, false, "%" + keywords + "%", "%" + keywords + "%"});
+        return queryPageData(sql, pageRequest, new Object[]{false, false, "%" + keywords + "%", "%" + keywords + "%"}, ArticleBasicDTO.class);
     }
 
     /**
@@ -152,11 +212,11 @@ public class Log extends BasePageableDAO implements Serializable {
         return orderSort.toString();
     }
 
-    public PageData<Map<String, Object>> findByTypeAlias(long page, long pageSize, String typeAlias) {
+    public PageData<ArticleBasicDTO> findByTypeAlias(long page, long pageSize, String typeAlias) {
         String sql =
                 "select l.*,t.typeName,t.alias  as typeAlias,(select count(commentId) from " + Comment.TABLE_NAME +
                         " where logId=l.logId ) commentSize,u.userName from " + tableName + " l inner join user u," + "type t where rubbish=? and privacy=? and u.userId=l.userId and t.typeId=l.typeId and t" + ".alias=? order by l.logId desc";
-        return queryPageData(sql, new PageRequestImpl(page, pageSize), new Object[]{false, false, typeAlias});
+        return queryPageData(sql, new PageRequestImpl(page, pageSize), new Object[]{false, false, typeAlias}, ArticleBasicDTO.class);
     }
 
     public Map<String, Long> getArchives() throws SQLException {
@@ -196,14 +256,14 @@ public class Log extends BasePageableDAO implements Serializable {
     }
 
 
-    public PageData<Map<String, Object>> findByTag(long page, long pageSize, String tag) {
+    public PageData<ArticleBasicDTO> findByTag(long page, long pageSize, String tag) {
         String sql =
                 "select l.*,t.typeName,t.alias  as typeAlias,(select count(commentId) from " + Comment.TABLE_NAME +
                         " where logId=l.logId) commentSize,u.userName from " + tableName + " l inner join user u," + "type t where rubbish=? and privacy=? and u.userId=l.userId and t.typeId=l.typeId and (l" + ".keywords like ? or l.keywords like ? or l.keywords like ? or l.keywords= ?) order by l" + ".logId desc";
-        return queryPageData(sql, new PageRequestImpl(page, pageSize), new Object[]{false, false, tag + ",%", "%," + tag + ",%", "%," + tag, tag});
+        return queryPageData(sql, new PageRequestImpl(page, pageSize), new Object[]{false, false, tag + ",%", "%," + tag + ",%", "%," + tag, tag}, ArticleBasicDTO.class);
     }
 
-    public PageData<Map<String, Object>> findByDate(long page, long pageSize, String yyyyMM) {
+    public PageData<ArticleBasicDTO> findByDate(long page, long pageSize, String yyyyMM) {
         if (StringUtils.isEmpty(yyyyMM)) {
             return new PageData<>();
         }
@@ -214,7 +274,7 @@ public class Log extends BasePageableDAO implements Serializable {
         YearMonth parse = YearMonth.parse(yyyyMM, DateTimeFormatter.ofPattern("yyyy_MM"));
         String end = parse.atEndOfMonth().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + " 23:59:59";
         return queryPageData(sql, new PageRequestImpl(page, pageSize)
-                , new Object[]{false, false, start, end});
+                , new Object[]{false, false, start, end}, ArticleBasicDTO.class);
 
     }
 

@@ -9,6 +9,7 @@ import com.zrlog.common.vo.PublicWebSiteInfo;
 import com.zrlog.data.cache.vo.BaseDataInitVO;
 import com.zrlog.data.cache.vo.HotLogBasicInfoEntry;
 import com.zrlog.data.cache.vo.HotTypeLogInfo;
+import com.zrlog.data.dto.ArticleBasicDTO;
 import com.zrlog.model.*;
 
 import java.sql.SQLException;
@@ -22,11 +23,11 @@ public class BaseDataDbService {
 
     private static final Logger LOGGER = LoggerUtil.getLogger(BaseDataDbService.class);
 
-    private HotLogBasicInfoEntry convertToBasicVO(Map<String, Object> log) {
+    private HotLogBasicInfoEntry convertToBasicVO(ArticleBasicDTO log) {
         String format = "yyyy-MM-dd";
-        log.put("releaseTime", ResultValueConvertUtils.formatDate(log.get("releaseTime"), format));
-        log.put("lastUpdateDate", ResultValueConvertUtils.formatDate(log.get("last_update_date"), format));
-        log.put("last_update_date", ResultValueConvertUtils.formatDate(log.get("last_update_date"), format));
+        log.setReleaseTime(ResultValueConvertUtils.formatDate(log.getReleaseTime(), format));
+        log.setLastUpdateDate(ResultValueConvertUtils.formatDate(log.getLastUpdateDate(), format));
+        log.setLast_update_date(ResultValueConvertUtils.formatDate(log.getLast_update_date(), format));
         return BeanUtil.convert(log, HotLogBasicInfoEntry.class);
     }
 

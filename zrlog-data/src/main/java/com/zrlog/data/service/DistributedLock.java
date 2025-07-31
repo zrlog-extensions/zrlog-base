@@ -16,9 +16,11 @@ public class DistributedLock implements Lock {
 
     private static final Logger LOGGER = LoggerUtil.getLogger(DistributedLock.class);
     private final String lockKey;
+    private final String rawLockKey;
 
     public DistributedLock(String lockKey) {
         this.lockKey = "lock." + lockKey;
+        this.rawLockKey = lockKey;
     }
 
     @Override
@@ -59,7 +61,7 @@ public class DistributedLock implements Lock {
         try {
             return new WebSite().set("name", lockKey).set("remark", "DistributedLock").set("value", "locked").save();
         } catch (SQLException e) {
-            LOGGER.warning("tryLock error " + e.getMessage());
+            LOGGER.warning("tryLock " + rawLockKey + " error " + e.getMessage());
             //throw new RuntimeException(e);
             return false;
         }

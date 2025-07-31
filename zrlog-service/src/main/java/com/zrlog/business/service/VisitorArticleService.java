@@ -5,17 +5,18 @@ import com.hibegin.common.dao.dto.PageData;
 import com.hibegin.common.dao.dto.PageRequest;
 import com.hibegin.common.util.BeanUtil;
 import com.hibegin.common.util.StringUtils;
+import com.hibegin.common.util.UrlEncodeUtils;
 import com.hibegin.http.server.api.HttpRequest;
+import com.zrlog.blog.web.util.WebTools;
 import com.zrlog.business.plugin.StaticSitePlugin;
-import com.zrlog.business.rest.response.ArticleResponseEntry;
 import com.zrlog.common.Constants;
+import com.zrlog.data.cache.vo.BaseDataInitVO;
+import com.zrlog.data.dto.ArticleBasicDTO;
 import com.zrlog.model.Log;
 import com.zrlog.util.ParseUtil;
 import com.zrlog.util.ZrLogUtil;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -26,78 +27,69 @@ public class VisitorArticleService {
     /**
      * 高亮用户检索的关键字
      */
-    public static void wrapperSearchKeyword(PageData<Map<String, Object>> data, String keywords) {
+    public static void wrapperSearchKeyword(PageData<ArticleBasicDTO> data, String keywords) {
         if (StringUtils.isEmpty(keywords)) {
             return;
         }
-        List<Map<String, Object>> logs = data.getRows();
+        List<ArticleBasicDTO> logs = data.getRows();
         if (logs == null || logs.isEmpty()) {
             return;
         }
-        for (Map<String, Object> log : logs) {
-            String title = (String) log.get("title");
-            String content = (String) log.get("content");
-            String digest = (String) log.get("digest");
-            log.put("title", ParseUtil.wrapperKeyword(title, keywords));
+        for (ArticleBasicDTO log : logs) {
+            String title = log.getTitle();
+            String content = log.getContent();
+            String digest = log.getDigest();
+            log.setTitle(ParseUtil.wrapperKeyword(title, keywords));
             String tryWrapperDigest = ParseUtil.wrapperKeyword(digest, keywords);
             if (tryWrapperDigest != null && tryWrapperDigest.length() != digest.length()) {
-                log.put("digest", tryWrapperDigest);
+                log.setDigest(tryWrapperDigest);
             } else {
-                log.put("digest", ParseUtil.wrapperKeyword(ParseUtil.removeHtmlElement(content), keywords));
+                log.setDigest(ParseUtil.wrapperKeyword(ParseUtil.removeHtmlElement(content), keywords));
             }
         }
     }
 
-    private static String getAccessUrl(ArticleResponseEntry articleResponseEntry, HttpRequest request) {
-        if (articleResponseEntry.getPrivacy() || articleResponseEntry.getRubbish()) {
-            return "/article-edit?previewMode=true&id=" + articleResponseEntry.getId();
+    public static <T extends ArticleBasicDTO> T handlerArticle(T log, HttpRequest request) {
+        String suffix = StaticSitePlugin.getSuffix(request);
+        String aliasUrl = UrlEncodeUtils.encodeUrl(log.getAlias()) + suffix;
+        log.setAlias(aliasUrl);
+        log.setRubbish(ResultValueConvertUtils.toBoolean(log.getRubbish()));
+        log.setPrivacy(ResultValueConvertUtils.toBoolean(log.getPrivacy()));
+        log.setHot(ResultValueConvertUtils.toBoolean(log.getHot()));
+        log.setCanComment(ResultValueConvertUtils.toBoolean(log.getCanComment()) && Objects.equals(Constants.zrLogConfig.getCacheService().getPublicWebSiteInfo().getDisable_comment_status(), false));
+        log.setUrl(WebTools.buildEncodedUrl(request, Constants.getArticleUri() + log.getAlias()));
+        log.setTypeUrl(WebTools.buildEncodedUrl(request, Constants.getArticleUri() + "sort/" + log.getTypeAlias() + suffix));
+        log.setNoSchemeUrl(ZrLogUtil.getHomeUrlWithHost(request) + Constants.getArticleUri() + UrlEncodeUtils.encodeUrl(log.getAlias()));
+        //
+        log.setRecommended(ResultValueConvertUtils.toBoolean(log.getRecommended()));
+        log.setReleaseTime(ResultValueConvertUtils.formatDate(log.getReleaseTime(), "yyyy-MM-dd"));
+        if (Objects.nonNull(log.getLogId())) {
+            log.setId(log.getLogId());
         }
-        String key = articleResponseEntry.getId() + "";
-        if (StringUtils.isNotEmpty(articleResponseEntry.getAlias())) {
-            key = articleResponseEntry.getAlias();
+        log.setLastUpdateDate(ResultValueConvertUtils.formatDate(log.getLast_update_date(), "yyyy-MM-dd"));
+        log.setLast_update_date(ResultValueConvertUtils.formatDate(log.getLast_update_date(), "yyyy-MM-dd"));
+        BaseDataInitVO baseDataInitVO = BeanUtil.cloneObject((BaseDataInitVO) Constants.zrLogConfig.getCacheService().getInitData());
+
+        if (Objects.isNull(log.getDigest())) {
+            log.setDigest("");
         }
-        return ZrLogUtil.getHomeUrlWithHost(request) + Constants.getArticleUri() + key + StaticSitePlugin.getSuffix(request);
+        if (Objects.isNull(log.getContent())) {
+            log.setContent("");
+        }
+        if (baseDataInitVO.getWebSite().getArticle_thumbnail_status() && StringUtils.isNotEmpty(log.getThumbnail())) {
+            log.setThumbnailAlt(ParseUtil.removeHtmlElement(log.getTitle()));
+        } else {
+            log.setThumbnail(null);
+            log.setThumbnailAlt(null);
+        }
+        return log;
     }
 
-    /**
-     * 将输入的分页过后的对象，转化PageableResponse的对象
-     */
-    public static PageData<ArticleResponseEntry> convertPageable(PageData<Map<String, Object>> object, HttpRequest request) {
-        List<ArticleResponseEntry> dataList = new ArrayList<>();
-        for (Map<String, Object> obj : object.getRows()) {
-            handlerArticle(obj);
-            obj.remove("last_update_date");
-            ArticleResponseEntry convert = BeanUtil.convert(obj, ArticleResponseEntry.class);
-            convert.setUrl(getAccessUrl(convert, request));
-            dataList.add(convert);
-        }
-        PageData<ArticleResponseEntry> pageData = new PageData<>();
-        pageData.setTotalElements(object.getTotalElements());
-        pageData.setRows(dataList);
-        pageData.setPage(object.getPage());
-        pageData.setSize(object.getSize());
-        pageData.setSort(object.getSort());
-        return pageData;
-    }
-
-    public static Map<String, Object> handlerArticle(Map<String, Object> obj) {
-        obj.put("rubbish", ResultValueConvertUtils.toBoolean(obj.get("rubbish")));
-        obj.put("privacy", ResultValueConvertUtils.toBoolean(obj.get("privacy")));
-        obj.put("hot", ResultValueConvertUtils.toBoolean(obj.get("hot")));
-        obj.put("canComment", ResultValueConvertUtils.toBoolean(obj.get("canComment")));
-        obj.put("recommended", ResultValueConvertUtils.toBoolean(obj.get("recommended")));
-        obj.put("releaseTime", ResultValueConvertUtils.formatDate(obj.get("releaseTime"), "yyyy-MM-dd"));
-        if (Objects.nonNull(obj.get("logId"))) {
-            obj.put("id", obj.get("logId"));
-        }
-        obj.put("lastUpdateDate", ResultValueConvertUtils.formatDate(obj.get("lastUpdateDate"), "yyyy-MM-dd"));
-        return obj;
-    }
-
-
-    public PageData<Map<String, Object>> pageByKeywords(PageRequest pageRequest, String keywords) {
-        PageData<Map<String, Object>> data = new Log().visitorFind(pageRequest, keywords);
+    public PageData<ArticleBasicDTO> pageByKeywords(PageRequest pageRequest, String keywords, HttpRequest request) {
+        PageData<ArticleBasicDTO> data = new Log().visitorFind(pageRequest, keywords);
         wrapperSearchKeyword(data, keywords);
+        data.setKey(keywords);
+        data.getRows().forEach(e -> handlerArticle(e, request));
         return data;
     }
 }
