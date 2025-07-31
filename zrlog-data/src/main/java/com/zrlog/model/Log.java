@@ -166,7 +166,7 @@ public class Log extends BasePageableDAO implements Serializable {
     /**
      * 管理员查询文章
      */
-    public PageData<Map<String, Object>> adminFind(PageRequest pageRequest, String keywords, String typeAlias) {
+    public PageData<ArticleBasicDTO> adminFind(PageRequest pageRequest, String keywords, String typeAlias) {
         String searchKeywords = "";
         List<Object> searchParam = new ArrayList<>();
         if (StringUtils.isNotEmpty(keywords)) {
@@ -188,7 +188,7 @@ public class Log extends BasePageableDAO implements Serializable {
                         " and t.typeid=l.typeid and l.typeid is not null order " + "by " + pageSort;
         return queryPageData(
                 sql, pageRequest,
-                searchParam.toArray());
+                searchParam.toArray(), ArticleBasicDTO.class);
     }
 
     private static final Map<String, String> sortKeyMap = new HashMap<>();
