@@ -95,16 +95,15 @@ public class AdminTokenService implements TokenService {
         if (cookies == null) {
             return null;
         }
-        String tokenString = null;
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals(ADMIN_TOKEN_KEY_IN_COOKIE)) {
-                tokenString = cookie.getValue();
+                AdminFullTokenVO adminFullTokenVO = parseAdminTokenByStr(cookie.getValue());
+                if (Objects.nonNull(adminFullTokenVO)) {
+                    return adminFullTokenVO;
+                }
             }
         }
-        if (StringUtils.isEmpty(tokenString)) {
-            return null;
-        }
-        return parseAdminTokenByStr(tokenString);
+        return null;
     }
 
     private AdminFullTokenVO parseAdminTokenByStr(String tokenString) {
