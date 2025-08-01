@@ -18,7 +18,7 @@ public class WebSiteUtils {
             info.setArticle_auto_digest_length(Constants.DEFAULT_ARTICLE_DIGEST_LENGTH);
         }
         if (Objects.isNull(info.getSession_timeout())) {
-            info.setArticle_auto_digest_length(TokenService.DEFAULT_SESSION_TIMEOUT / 60 / 1000);
+            info.setSession_timeout(TokenService.DEFAULT_SESSION_TIMEOUT / 60 / 1000);
         }
         info.setAdmin_darkMode(Objects.equals(info.getAdmin_darkMode(), true));
         info.setDisable_comment_status(Objects.equals(info.getDisable_comment_status(), true));
