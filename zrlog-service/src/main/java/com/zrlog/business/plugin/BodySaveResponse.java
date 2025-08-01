@@ -15,8 +15,10 @@ public class BodySaveResponse extends SimpleHttpResponse implements AutoCloseabl
     private OutputStream outputStream;
     private final File cacheFile;
     private final Lock initLock = new ReentrantLock();
+    private int statusCode;
+    private final boolean requiredStatusCodeSuccess;
 
-    public BodySaveResponse(HttpRequest request, ResponseConfig responseConfig) {
+    public BodySaveResponse(HttpRequest request, ResponseConfig responseConfig, boolean requiredStatusCodeSuccess) {
         super(request, responseConfig);
         this.cacheFile = buildCacheFile();
         if (Objects.nonNull(cacheFile)) {
@@ -25,6 +27,7 @@ public class BodySaveResponse extends SimpleHttpResponse implements AutoCloseabl
             }
             cacheFile.getParentFile().mkdirs();
         }
+        this.requiredStatusCodeSuccess = requiredStatusCodeSuccess;
     }
 
     private File buildCacheFile() {
@@ -48,6 +51,14 @@ public class BodySaveResponse extends SimpleHttpResponse implements AutoCloseabl
         return false;
     }
 
+
+    @Override
+    protected byte[] wrapperBaseResponseHeader(int statusCode) {
+        this.statusCode = statusCode;
+        return super.wrapperBaseResponseHeader(statusCode);
+    }
+
+
     @Override
     protected void send(byte[] bytes, boolean body, boolean close) {
         if (Objects.isNull(cacheFile)) {
@@ -57,6 +68,9 @@ public class BodySaveResponse extends SimpleHttpResponse implements AutoCloseabl
             return;
         }
         if (!body) {
+            return;
+        }
+        if (statusCode != 200 && requiredStatusCodeSuccess) {
             return;
         }
         initLock.lock();
@@ -79,6 +93,9 @@ public class BodySaveResponse extends SimpleHttpResponse implements AutoCloseabl
     }
 
     public File getCacheFile() {
+        if (statusCode != 200) {
+            return null;
+        }
         return cacheFile;
     }
 

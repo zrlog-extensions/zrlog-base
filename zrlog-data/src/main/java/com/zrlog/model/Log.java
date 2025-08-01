@@ -108,7 +108,7 @@ public class Log extends BasePageableDAO implements Serializable {
     /**
      * 这个用于Admin 进行查询不检查
      */
-    public Map<String, Object> adminFindByIdOrAlias(Object idOrAlias) throws SQLException {
+    public ArticleBasicDTO adminFindByIdOrAlias(Object idOrAlias) throws SQLException {
         if (idOrAlias == null) {
             return null;
         }
@@ -117,12 +117,16 @@ public class Log extends BasePageableDAO implements Serializable {
                     "select l.*,last_update_date as lastUpdateDate,u.userName,(select count(commentId) from " + Comment.TABLE_NAME + " where logId=l.logId) commentSize ,t.alias as typeAlias,t.typeName as typeName  from " + tableName + " l inner join user u,type t where t.typeId=l.typeId and u.userId=l.userId and l.logId=?";
             Map<String, Object> log = queryFirstWithParams(sql, idOrAlias);
             if (log != null) {
-                return log;
+                return ResultBeanUtils.convert(log, ArticleBasicDTO.class);
             }
         }
         String sql =
                 "select l.*,last_update_date as lastUpdateDate,u.userName,(select count(commentId) from " + Comment.TABLE_NAME + " where logId=l.logId) commentSize ,t.alias as typeAlias,t.typeName as typeName  from " + tableName + " l inner join user u,type t where t.typeId=l.typeId and u.userId=l.userId and l.alias=?";
-        return queryFirstWithParams(sql, idOrAlias);
+        Map<String, Object> log = queryFirstWithParams(sql, idOrAlias);
+        if (Objects.isNull(log)) {
+            return null;
+        }
+        return ResultBeanUtils.convert(log, ArticleBasicDTO.class);
     }
 
     private ArticleDetailDTO.LastLogDTO findLastLog(int id) throws SQLException {
@@ -162,7 +166,7 @@ public class Log extends BasePageableDAO implements Serializable {
     /**
      * 管理员查询文章
      */
-    public PageData<Map<String, Object>> adminFind(PageRequest pageRequest, String keywords, String typeAlias) {
+    public PageData<ArticleBasicDTO> adminFind(PageRequest pageRequest, String keywords, String typeAlias) {
         String searchKeywords = "";
         List<Object> searchParam = new ArrayList<>();
         if (StringUtils.isNotEmpty(keywords)) {
@@ -184,7 +188,7 @@ public class Log extends BasePageableDAO implements Serializable {
                         " and t.typeid=l.typeid and l.typeid is not null order " + "by " + pageSort;
         return queryPageData(
                 sql, pageRequest,
-                searchParam.toArray());
+                searchParam.toArray(), ArticleBasicDTO.class);
     }
 
     private static final Map<String, String> sortKeyMap = new HashMap<>();
