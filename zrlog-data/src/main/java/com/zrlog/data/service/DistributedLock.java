@@ -1,9 +1,11 @@
 package com.zrlog.data.service;
 
+import com.hibegin.common.dao.ResultValueConvertUtils;
 import com.hibegin.common.util.LoggerUtil;
 import com.zrlog.model.WebSite;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -14,12 +16,14 @@ import java.util.logging.Logger;
  */
 public class DistributedLock implements Lock {
 
+    public static final String LOCK_PREFIX = "distributed_lock_";
+
     private static final Logger LOGGER = LoggerUtil.getLogger(DistributedLock.class);
     private final String lockKey;
     private final String rawLockKey;
 
     public DistributedLock(String lockKey) {
-        this.lockKey = "lock." + lockKey;
+        this.lockKey = LOCK_PREFIX + lockKey;
         this.rawLockKey = lockKey;
     }
 
@@ -59,7 +63,7 @@ public class DistributedLock implements Lock {
     @Override
     public boolean tryLock() {
         try {
-            return new WebSite().set("name", lockKey).set("remark", "DistributedLock").set("value", "locked").save();
+            return new WebSite().set("name", lockKey).set("remark", "Created at " + ResultValueConvertUtils.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss")).set("value", "locked").save();
         } catch (SQLException e) {
             LOGGER.warning("tryLock " + rawLockKey + " error " + e.getMessage());
             //throw new RuntimeException(e);
