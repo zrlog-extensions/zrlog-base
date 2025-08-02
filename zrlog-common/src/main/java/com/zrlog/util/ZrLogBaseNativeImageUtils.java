@@ -37,7 +37,11 @@ public class ZrLogBaseNativeImageUtils {
 
         NativeImageUtils.doResourceLoadByResourceNames(resourceFiles);
         //
-        NativeImageUtils.gsonNativeAgentByClazz(Arrays.asList(LockVO.class, I18nVO.class, TemplateVO.class, MyBasicRowProcessor.class));
+        NativeImageUtils.gsonNativeAgentByClazz(Arrays.asList(LockVO.class, I18nVO.class,
+                TemplateVO.class,
+                TemplateVO.TemplateConfigMap.class,
+                TemplateVO.TemplateConfigVO.class,
+                MyBasicRowProcessor.class));
         //freemarker
         regWithGetMethod(TypeDTO.class,
                 LinkDTO.class, LogNavDTO.class, TagDTO.class, PluginDTO.class,
