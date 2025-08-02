@@ -41,7 +41,8 @@ public class ZrLogBaseNativeImageUtils {
                 TemplateVO.class,
                 TemplateVO.TemplateConfigMap.class,
                 TemplateVO.TemplateConfigVO.class,
-                MyBasicRowProcessor.class));
+                MyBasicRowProcessor.class,
+                MyBasicRowProcessor.createMap().getClass()));
         //freemarker
         regWithGetMethod(TypeDTO.class,
                 LinkDTO.class, LogNavDTO.class, TagDTO.class, PluginDTO.class,
