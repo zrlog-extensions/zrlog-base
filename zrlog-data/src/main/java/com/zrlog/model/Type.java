@@ -3,7 +3,7 @@ package com.zrlog.model;
 import com.hibegin.common.dao.BasePageableDAO;
 import com.hibegin.common.dao.dto.PageData;
 import com.hibegin.common.dao.dto.PageRequest;
-import com.zrlog.data.dto.TypeDTO;
+import com.zrlog.common.cache.dto.TypeDTO;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -19,9 +19,9 @@ public class Type extends BasePageableDAO {
         this.tableName = "type";
     }
 
-    public List<Map<String, Object>> findAll() throws SQLException {
-        return queryListWithParams("select t.typeId as id,t.alias,t.typeName,t.remark,t.arrange_plugin,(select count(logId) from " + Log.TABLE_NAME +
-                " where rubbish=? and privacy=? and typeid=t.typeid) as typeamount from " + tableName + " t", false, false);
+    public List<TypeDTO> findAll() throws SQLException {
+        return doConvertList(queryListWithParams("select t.typeId as id,t.alias,t.typeName,t.remark,t.arrange_plugin,(select count(logId) from " + Log.TABLE_NAME +
+                " where rubbish=? and privacy=? and typeid=t.typeid) as typeamount from " + tableName + " t", false, false),TypeDTO.class);
     }
 
     public PageData<TypeDTO> find(PageRequest page) {

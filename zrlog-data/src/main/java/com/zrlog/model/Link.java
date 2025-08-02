@@ -3,7 +3,7 @@ package com.zrlog.model;
 import com.hibegin.common.dao.BasePageableDAO;
 import com.hibegin.common.dao.dto.PageData;
 import com.hibegin.common.dao.dto.PageRequest;
-import com.zrlog.data.dto.LinkDTO;
+import com.zrlog.common.cache.dto.LinkDTO;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -20,8 +20,8 @@ public class Link extends BasePageableDAO {
         this.pk = "linkId";
     }
 
-    public List<Map<String, Object>> findAll() throws SQLException {
-        return queryListWithParams("select linkName,linkId as id,sort,url,alt from " + tableName + " order by sort");
+    public List<LinkDTO> findAll() throws SQLException {
+        return doConvertList(queryListWithParams("select linkName,linkId as id,sort,url,alt from " + tableName + " order by sort"), LinkDTO.class);
     }
 
     public PageData<LinkDTO> find(PageRequest page) {

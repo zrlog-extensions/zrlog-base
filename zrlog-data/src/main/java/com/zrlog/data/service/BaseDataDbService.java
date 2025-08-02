@@ -5,10 +5,11 @@ import com.hibegin.common.dao.ResultValueConvertUtils;
 import com.hibegin.common.dao.dto.PageRequestImpl;
 import com.hibegin.common.util.BeanUtil;
 import com.hibegin.common.util.LoggerUtil;
+import com.zrlog.common.cache.dto.TypeDTO;
 import com.zrlog.common.vo.PublicWebSiteInfo;
-import com.zrlog.data.cache.vo.BaseDataInitVO;
-import com.zrlog.data.cache.vo.HotLogBasicInfoEntry;
-import com.zrlog.data.cache.vo.HotTypeLogInfo;
+import com.zrlog.common.cache.vo.BaseDataInitVO;
+import com.zrlog.common.cache.vo.HotLogBasicInfoEntry;
+import com.zrlog.common.cache.vo.HotTypeLogInfo;
 import com.zrlog.data.dto.ArticleBasicDTO;
 import com.zrlog.model.*;
 
@@ -58,17 +59,17 @@ public class BaseDataDbService {
             try {
                 cacheInit.setTypes(new Type().findAll());
                 statistics.setTotalTypeSize((long) cacheInit.getTypes().size());
-                List<Map<String, Object>> types = cacheInit.getTypes();
+                List<TypeDTO> types = cacheInit.getTypes();
                 List<HotTypeLogInfo> indexHotLog = new ArrayList<>();
                 cacheInit.setTypeHotLogs(indexHotLog);
                 //设置分类Hot
-                for (Map<String, Object> type : types) {
+                for (TypeDTO type : types) {
                     futures.add(CompletableFuture.runAsync(() -> {
                         HotTypeLogInfo hotTypeLogInfo = new HotTypeLogInfo();
-                        String alias = (String) type.get("alias");
+                        String alias = type.getAlias();
                         hotTypeLogInfo.setTypeAlias(alias);
-                        hotTypeLogInfo.setTypeName((String) type.get("typeName"));
-                        hotTypeLogInfo.setTypeId(((Number) type.get("typeId")).longValue());
+                        hotTypeLogInfo.setTypeName(type.getTypeName());
+                        hotTypeLogInfo.setTypeId(type.getId());
                         hotTypeLogInfo.setLogs(new Log().findByTypeAlias(1, 6, alias).getRows().stream().map(this::convertToBasicVO).collect(Collectors.toList()));
                         indexHotLog.add(hotTypeLogInfo);
                     }, executor));
@@ -116,28 +117,26 @@ public class BaseDataDbService {
             LOGGER.warning("Load data error " + e.getMessage());
         }
         if (cacheInit.getTags() == null || cacheInit.getTags().isEmpty()) {
-            cacheInit.getPlugins().stream().filter(e -> Objects.equals(e.get("pluginName"), "tags")).findFirst().ifPresent(e -> {
+            cacheInit.getPlugins().stream().filter(e -> Objects.equals(e.getPluginName(), "tags")).findFirst().ifPresent(e -> {
                 cacheInit.getPlugins().remove(e);
             });
         }
         if (cacheInit.getArchives() == null || cacheInit.getArchives().isEmpty()) {
-            cacheInit.getPlugins().stream().filter(e -> Objects.equals(e.get("pluginName"), "archives")).findFirst().ifPresent(e -> {
+            cacheInit.getPlugins().stream().filter(e -> Objects.equals(e.getPluginName(), "archives")).findFirst().ifPresent(e -> {
                 cacheInit.getPlugins().remove(e);
             });
         }
         if (cacheInit.getTypes() == null || cacheInit.getTypes().isEmpty()) {
-            cacheInit.getPlugins().stream().filter(e -> Objects.equals(e.get("pluginName"), "types")).findFirst().ifPresent(e -> {
+            cacheInit.getPlugins().stream().filter(e -> Objects.equals(e.getPluginName(), "types")).findFirst().ifPresent(e -> {
                 cacheInit.getPlugins().remove(e);
             });
         }
         if (cacheInit.getLinks() == null || cacheInit.getLinks().isEmpty()) {
-            cacheInit.getPlugins().stream().filter(e -> Objects.equals(e.get("pluginName"), "links")).findFirst().ifPresent(e -> {
+            cacheInit.getPlugins().stream().filter(e -> Objects.equals(e.getPluginName(), "links")).findFirst().ifPresent(e -> {
                 cacheInit.getPlugins().remove(e);
             });
         }
         cacheInit.getTypeHotLogs().sort(Comparator.comparing(x -> Math.toIntExact(x.getTypeId())));
-        //默认开启文章封面
-        //cacheInit.getWebSite().putIfAbsent("article_thumbnail_status", "1");
         return cacheInit;
     }
 }

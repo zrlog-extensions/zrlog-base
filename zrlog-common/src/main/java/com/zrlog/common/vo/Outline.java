@@ -1,11 +1,14 @@
-package com.zrlog.data.dto;
+package com.zrlog.common.vo;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Outline {
 
     private String text;
     private int level;
 
-    private OutlineVO children = new OutlineVO();
+    private List<Outline> children = new ArrayList<>();
 
     public String getText() {
         return text;
@@ -15,11 +18,11 @@ public class Outline {
         this.text = text;
     }
 
-    public OutlineVO getChildren() {
+    public List<Outline> getChildren() {
         return children;
     }
 
-    public void setChildren(OutlineVO children) {
+    public void setChildren(List<Outline> children) {
         this.children = children;
     }
 

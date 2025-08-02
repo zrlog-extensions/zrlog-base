@@ -51,7 +51,7 @@ public class Constants {
     }
 
     public static boolean isStaticHtmlStatus() {
-        CacheService<?> cacheService = zrLogConfig.getCacheService();
+        CacheService cacheService = zrLogConfig.getCacheService();
         if (Objects.isNull(cacheService)) {
             return false;
         }
@@ -67,7 +67,7 @@ public class Constants {
     }
 
     public static String getHost() {
-        CacheService<?> cacheService = zrLogConfig.getCacheService();
+        CacheService cacheService = zrLogConfig.getCacheService();
         if (Objects.isNull(cacheService)) {
             return "";
         }
@@ -86,7 +86,7 @@ public class Constants {
     }
 
     public static String getLanguage() {
-        CacheService<?> cacheService = zrLogConfig.getCacheService();
+        CacheService cacheService = zrLogConfig.getCacheService();
         if (Objects.isNull(cacheService)) {
             return DEFAULT_LANGUAGE;
         }

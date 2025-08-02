@@ -23,8 +23,8 @@ public class BaseWebSetup implements WebSetup {
         this.zrLogConfig = zrLogConfig;
         if (zrLogConfig.getServerConfig().isNativeImageAgent()) {
             try {
-                ZrLogBaseNativeImageUtils.regResource();
-            } catch (IOException e) {
+                ZrLogBaseNativeImageUtils.reg();
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }

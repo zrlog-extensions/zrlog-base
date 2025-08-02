@@ -1,20 +1,22 @@
-package com.zrlog.data.dto;
+package com.zrlog.common.cache.dto;
 
-public class LinkDTO {
+import java.io.Serializable;
 
-    private String linkName;
+public class LogNavDTO implements Serializable {
+
+    private String navName;
     private String url;
     private String jumpUrl;
-    private String alt;
     private Long sort;
     private Long id;
+    private Boolean current;
 
-    public String getLinkName() {
-        return linkName;
+    public String getNavName() {
+        return navName;
     }
 
-    public void setLinkName(String linkName) {
-        this.linkName = linkName;
+    public void setNavName(String navName) {
+        this.navName = navName;
     }
 
     public String getUrl() {
@@ -23,14 +25,6 @@ public class LinkDTO {
 
     public void setUrl(String url) {
         this.url = url;
-    }
-
-    public String getAlt() {
-        return alt;
-    }
-
-    public void setAlt(String alt) {
-        this.alt = alt;
     }
 
     public Long getSort() {
@@ -55,5 +49,13 @@ public class LinkDTO {
 
     public void setJumpUrl(String jumpUrl) {
         this.jumpUrl = jumpUrl;
+    }
+
+    public Boolean getCurrent() {
+        return current;
+    }
+
+    public void setCurrent(Boolean current) {
+        this.current = current;
     }
 }

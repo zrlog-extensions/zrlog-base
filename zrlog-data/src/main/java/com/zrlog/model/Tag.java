@@ -1,10 +1,12 @@
 package com.zrlog.model;
 
 import com.hibegin.common.dao.BasePageableDAO;
+import com.hibegin.common.dao.ResultBeanUtils;
 import com.hibegin.common.dao.dto.PageData;
 import com.hibegin.common.dao.dto.PageRequest;
 import com.hibegin.common.util.LoggerUtil;
 import com.hibegin.common.util.StringUtils;
+import com.zrlog.common.cache.dto.TagDTO;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -22,8 +24,8 @@ public class Tag extends BasePageableDAO {
         this.pk = "tagId";
     }
 
-    public List<Map<String, Object>> findAll() throws SQLException {
-        return queryList("tagId as id,text,count");
+    public List<TagDTO> findAll() throws SQLException {
+        return doConvertList(queryList("tagId as id,text,count"), TagDTO.class);
     }
 
     private Set<String> strToSet(String str) {
@@ -71,7 +73,7 @@ public class Tag extends BasePageableDAO {
         return true;
     }
 
-    public List<Map<String, Object>> refreshTag() throws SQLException {
+    public List<TagDTO> refreshTag() throws SQLException {
         execute("delete from " + tableName);
         Map<String, Integer> countMap = new HashMap<>();
         List<Map<String, Object>> logs = new Log().queryListWithParams("select keywords from " + Log.TABLE_NAME + " where rubbish=? and privacy=? ", false, false);
@@ -83,9 +85,9 @@ public class Tag extends BasePageableDAO {
                 }
             }
         }
-        List<Map<String, Object>> all = new ArrayList<>();
+        List<TagDTO> all = new ArrayList<>();
         for (Map<String, Integer> t : splitList(countMap, 10)) {
-            List<Map<String, Object>> maps = batchInsert(t, all.size());
+            List<TagDTO> maps = batchInsert(t, all.size());
             all.addAll(maps);
         }
         return all;
@@ -107,22 +109,23 @@ public class Tag extends BasePageableDAO {
         return splitList;
     }
 
-    private List<Map<String, Object>> batchInsert(Map<String, Integer> countMap, int idBase) throws SQLException {
+    private List<TagDTO> batchInsert(Map<String, Integer> countMap, int idBase) throws SQLException {
         StringBuilder insertSql = new StringBuilder("insert into " + tableName + " (tagId,text,count) values ");
         List<Object> params = new ArrayList<>();
         int id = idBase;
         StringJoiner valueJoiner = new StringJoiner(",");
-        List<Map<String, Object>> all = new ArrayList<>();
+        List<TagDTO> all = new ArrayList<>();
         for (Map.Entry<String, Integer> tag : countMap.entrySet()) {
             id += 1;
             valueJoiner.add("(?,?,?)");
             params.add(id);
             params.add(tag.getKey());
             params.add(tag.getValue());
-            Map<String, Object> tagDO = new HashMap<>();
-            tagDO.put("text", tag.getKey());
-            tagDO.put("count", tag.getValue());
-            tagDO.put("keycode", tag.getKey().hashCode());
+            TagDTO tagDO = new TagDTO();
+            tagDO.setId((long) id);
+            tagDO.setText(tag.getKey());
+            tagDO.setCount(Long.valueOf(tag.getValue()));
+            tagDO.setKeycode((long) tag.getKey().hashCode());
             all.add(tagDO);
         }
         insertSql.append(valueJoiner);
@@ -148,12 +151,12 @@ public class Tag extends BasePageableDAO {
     private void deleteTag(Set<String> old) {
         for (String del : old) {
             try {
-                Map<String, Object> t = queryFirstWithParams("select * from " + tableName + " where text=?", del);
+                TagDTO t = ResultBeanUtils.convert(queryFirstWithParams("select *,tagId as id from " + tableName + " where text=?", del), TagDTO.class);
                 if (t != null) {
-                    if ((int) t.get("count") > 1) {
-                        new Tag().set("count", (int) t.get("count") - 1).updateById(t.get(pk));
+                    if (t.getCount() > 1) {
+                        new Tag().set("count", t.getCount() - 1).updateById(t.getId());
                     } else {
-                        new Tag().deleteById((int) t.get(pk));
+                        new Tag().deleteById(Math.toIntExact(t.getId()));
                     }
                 }
             } catch (SQLException e) {
@@ -164,7 +167,7 @@ public class Tag extends BasePageableDAO {
         throw new RuntimeException();
     }
 
-    public PageData<Map<String, Object>> find(PageRequest page) {
-        return queryPageData("select tagId as id,text,count from " + tableName, page, new Object[0]);
+    public PageData<TagDTO> find(PageRequest page) {
+        return queryPageData("select tagId as id,text,count from " + tableName, page, new Object[0], TagDTO.class);
     }
 }

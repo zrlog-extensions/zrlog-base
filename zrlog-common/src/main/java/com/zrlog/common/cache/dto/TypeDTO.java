@@ -1,6 +1,8 @@
-package com.zrlog.data.dto;
+package com.zrlog.common.cache.dto;
 
-public class TypeDTO {
+import java.io.Serializable;
+
+public class TypeDTO implements Serializable {
 
     private String alias;
     private String typeName;
@@ -9,6 +11,7 @@ public class TypeDTO {
     private Long amount;
     private Long typeamount;
     private String url;
+    private String arrange_plugin;
 
     public String getAlias() {
         return alias;
@@ -64,5 +67,13 @@ public class TypeDTO {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getArrange_plugin() {
+        return arrange_plugin;
+    }
+
+    public void setArrange_plugin(String arrange_plugin) {
+        this.arrange_plugin = arrange_plugin;
     }
 }

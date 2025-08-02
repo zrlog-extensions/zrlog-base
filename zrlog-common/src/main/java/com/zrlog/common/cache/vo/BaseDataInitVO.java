@@ -1,6 +1,6 @@
-package com.zrlog.data.cache.vo;
+package com.zrlog.common.cache.vo;
 
-import com.zrlog.common.vo.IDataInitVO;
+import com.zrlog.common.cache.dto.*;
 import com.zrlog.common.vo.PublicWebSiteInfo;
 
 import java.io.Serializable;
@@ -12,55 +12,24 @@ import java.util.Map;
 /**
  * 程序初始化的数据（及全局的数据），存放了标签，分类，网站设置等信息。
  */
-public class BaseDataInitVO extends IDataInitVO implements Serializable {
+public class BaseDataInitVO implements Serializable {
 
     public BaseDataInitVO() {
     }
 
+    private Long version;
     private Long webSiteVersion;
-    private List<Map<String, Object>> tags = new ArrayList<>();
-    private List<Map<String, Object>> types = new ArrayList<>();
-    private List<Map<String, Object>> links = new ArrayList<>();
-    private List<Map<String, Object>> plugins = new ArrayList<>();
+    private List<TagDTO> tags = new ArrayList<>();
+    private List<TypeDTO> types = new ArrayList<>();
+    private List<LinkDTO> links = new ArrayList<>();
+    private List<PluginDTO> plugins = new ArrayList<>();
     private Map<String, Long> archives = new HashMap<>();
     private List<Archive> archiveList = new ArrayList<>();
     private PublicWebSiteInfo webSite = new PublicWebSiteInfo();
     private List<HotLogBasicInfoEntry> hotLogs = new ArrayList<>();
-    private List<Map<String, Object>> logNavs = new ArrayList<>();
+    private List<LogNavDTO> logNavs = new ArrayList<>();
     private List<HotTypeLogInfo> typeHotLogs;
     private Statistics statistics = new Statistics();
-
-    public List<Map<String, Object>> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<Map<String, Object>> tags) {
-        this.tags = tags;
-    }
-
-    public List<Map<String, Object>> getTypes() {
-        return types;
-    }
-
-    public void setTypes(List<Map<String, Object>> types) {
-        this.types = types;
-    }
-
-    public List<Map<String, Object>> getLinks() {
-        return links;
-    }
-
-    public void setLinks(List<Map<String, Object>> links) {
-        this.links = links;
-    }
-
-    public List<Map<String, Object>> getPlugins() {
-        return plugins;
-    }
-
-    public void setPlugins(List<Map<String, Object>> plugins) {
-        this.plugins = plugins;
-    }
 
     public Map<String, Long> getArchives() {
         return archives;
@@ -86,11 +55,27 @@ public class BaseDataInitVO extends IDataInitVO implements Serializable {
         this.hotLogs = hotLogs;
     }
 
-    public List<Map<String, Object>> getLogNavs() {
+    public List<TypeDTO> getTypes() {
+        return types;
+    }
+
+    public void setTypes(List<TypeDTO> types) {
+        this.types = types;
+    }
+
+    public List<LinkDTO> getLinks() {
+        return links;
+    }
+
+    public void setLinks(List<LinkDTO> links) {
+        this.links = links;
+    }
+
+    public List<LogNavDTO> getLogNavs() {
         return logNavs;
     }
 
-    public void setLogNavs(List<Map<String, Object>> logNavs) {
+    public void setLogNavs(List<LogNavDTO> logNavs) {
         this.logNavs = logNavs;
     }
 
@@ -158,5 +143,29 @@ public class BaseDataInitVO extends IDataInitVO implements Serializable {
 
     public PublicWebSiteInfo getWebSite() {
         return webSite;
+    }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
+
+    public List<TagDTO> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<TagDTO> tags) {
+        this.tags = tags;
+    }
+
+    public List<PluginDTO> getPlugins() {
+        return plugins;
+    }
+
+    public void setPlugins(List<PluginDTO> plugins) {
+        this.plugins = plugins;
     }
 }

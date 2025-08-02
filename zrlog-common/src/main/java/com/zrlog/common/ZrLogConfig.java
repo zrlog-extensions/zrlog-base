@@ -12,6 +12,7 @@ import com.hibegin.http.server.config.RequestConfig;
 import com.hibegin.http.server.config.ResponseConfig;
 import com.hibegin.http.server.config.ServerConfig;
 import com.hibegin.http.server.util.PathUtil;
+import com.zrlog.common.cache.vo.BaseDataInitVO;
 import com.zrlog.common.vo.IDataInitVO;
 import com.zrlog.common.web.ZrLogErrorHandle;
 import com.zrlog.common.web.ZrLogHttpJsonMessageConverter;
@@ -42,7 +43,7 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
     protected DataSourceWrapper dataSource;
     protected final File dbPropertiesFile;
     protected final ServerConfig serverConfig;
-    protected CacheService<?> cacheService;
+    protected CacheService cacheService;
     protected TokenService tokenService;
     protected ZrLogHttpRequestListener zrLogHttpRequestListener = new ZrLogHttpRequestListener();
 
@@ -121,7 +122,7 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
         return updater;
     }
 
-    public CacheService<?> getCacheService() {
+    public CacheService getCacheService() {
         return cacheService;
     }
 
@@ -226,7 +227,7 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
         this.plugins.addAll(getBasePluginList());
         this.webSetups.forEach(e -> plugins.addAll(e.getPlugins()));
         ThreadUtils.start(() -> {
-            IDataInitVO initVO = (IDataInitVO) this.cacheService.refreshInitData();
+            BaseDataInitVO initVO =  this.cacheService.refreshInitData();
             for (IPlugin plugin : plugins) {
                 if (!plugin.autoStart()) {
                     continue;

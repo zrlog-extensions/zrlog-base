@@ -1,11 +1,13 @@
 package com.zrlog.common;
 
+import com.zrlog.common.cache.dto.TagDTO;
+import com.zrlog.common.cache.dto.TypeDTO;
+import com.zrlog.common.cache.vo.BaseDataInitVO;
 import com.zrlog.common.vo.PublicWebSiteInfo;
 
 import java.util.List;
-import java.util.Map;
 
-public interface CacheService<T> {
+public interface CacheService {
 
     String ZRLOG_SQL_VERSION_KEY = "zrlogSqlVersion";
 
@@ -13,14 +15,14 @@ public interface CacheService<T> {
 
     long getWebSiteVersion();
 
-    T getInitData();
+    BaseDataInitVO getInitData();
 
-    T refreshInitData();
+    BaseDataInitVO refreshInitData();
 
     PublicWebSiteInfo getPublicWebSiteInfo();
 
-    List<Map<String, Object>> getArticleTypes();
+    List<TypeDTO> getArticleTypes();
 
-    List<Map<String, Object>> getTags();
+    List<TagDTO> getTags();
 
 }

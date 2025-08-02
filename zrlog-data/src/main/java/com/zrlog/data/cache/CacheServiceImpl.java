@@ -6,8 +6,10 @@ import com.hibegin.common.util.ObjectUtil;
 import com.hibegin.common.util.StringUtils;
 import com.zrlog.common.CacheService;
 import com.zrlog.common.Constants;
+import com.zrlog.common.cache.dto.TagDTO;
+import com.zrlog.common.cache.dto.TypeDTO;
 import com.zrlog.common.vo.PublicWebSiteInfo;
-import com.zrlog.data.cache.vo.BaseDataInitVO;
+import com.zrlog.common.cache.vo.BaseDataInitVO;
 import com.zrlog.data.service.BaseDataDbService;
 import com.zrlog.data.service.DistributedLock;
 import com.zrlog.data.util.WebSiteUtils;
@@ -29,7 +31,7 @@ import java.util.logging.Logger;
 /**
  * 对缓存数据的操作
  */
-public class CacheServiceImpl implements CacheService<BaseDataInitVO> {
+public class CacheServiceImpl implements CacheService {
     private static final Logger LOGGER = LoggerUtil.getLogger(CacheServiceImpl.class);
 
     private final AtomicLong version;
@@ -134,7 +136,7 @@ public class CacheServiceImpl implements CacheService<BaseDataInitVO> {
     }
 
     @Override
-    public List<Map<String, Object>> getArticleTypes() {
+    public List<TypeDTO> getArticleTypes() {
         if (Objects.nonNull(cacheInit)) {
             return cacheInit.getTypes();
         }
@@ -146,7 +148,7 @@ public class CacheServiceImpl implements CacheService<BaseDataInitVO> {
     }
 
     @Override
-    public List<Map<String, Object>> getTags() {
+    public List<TagDTO> getTags() {
         if (Objects.nonNull(cacheInit)) {
             return cacheInit.getTags();
         }

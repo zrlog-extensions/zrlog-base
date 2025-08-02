@@ -1,5 +1,7 @@
 package com.zrlog.data.dto;
 
+import com.zrlog.common.vo.Outline;
+
 import java.util.List;
 import java.util.Map;
 
@@ -11,13 +13,13 @@ public class ArticleDetailDTO extends ArticleBasicDTO {
     private NextLogDTO nextLog;
     private List<Map<String, Object>> comments;
     private String tocHtml;
-    private OutlineVO toc;
+    private List<Outline> toc;
 
-    public OutlineVO getToc() {
+    public List<Outline> getToc() {
         return toc;
     }
 
-    public void setToc(OutlineVO toc) {
+    public void setToc(List<Outline> toc) {
         this.toc = toc;
     }
 

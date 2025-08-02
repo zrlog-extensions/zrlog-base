@@ -1,6 +1,6 @@
 package com.zrlog.data.util;
 
-import com.zrlog.data.dto.LockDTO;
+import com.zrlog.common.vo.LockVO;
 import com.zrlog.data.service.DistributedLock;
 import com.zrlog.model.WebSite;
 
@@ -20,13 +20,13 @@ public class DistributedLockManager {
         return instance;
     }
 
-    public List<LockDTO> getLocks() throws Exception {
-        List<LockDTO> lockList = new ArrayList<>();
+    public List<LockVO> getLocks() throws Exception {
+        List<LockVO> lockList = new ArrayList<>();
         for (Map<String, Object> stringObjectMap : new WebSite().queryListWithParams("select * from website where name like ?", DistributedLock.LOCK_PREFIX + "%")) {
-            LockDTO lockDTO = new LockDTO();
-            lockDTO.setName(((String) stringObjectMap.get("name")).replaceFirst(DistributedLock.LOCK_PREFIX, ""));
-            lockDTO.setRemark((String) stringObjectMap.get("remark"));
-            lockList.add(lockDTO);
+            LockVO lockVO = new LockVO();
+            lockVO.setName(((String) stringObjectMap.get("name")).replaceFirst(DistributedLock.LOCK_PREFIX, ""));
+            lockVO.setRemark((String) stringObjectMap.get("remark"));
+            lockList.add(lockVO);
         }
         return lockList;
     }

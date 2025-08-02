@@ -1,4 +1,4 @@
-package com.zrlog.data.cache.vo;
+package com.zrlog.common.cache.vo;
 
 import java.io.Serializable;
 

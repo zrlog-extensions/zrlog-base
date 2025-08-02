@@ -1,6 +1,6 @@
-package com.zrlog.data.dto;
+package com.zrlog.common.vo;
 
-public class LockDTO {
+public class LockVO {
 
     private String name;
     private String remark;
