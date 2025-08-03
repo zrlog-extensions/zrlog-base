@@ -116,6 +116,7 @@ public class StaticFileCacheUtils {
 
     /**
      * 让子目录能正确加载依赖的 js 文件
+     *
      * @param uri
      * @return
      */

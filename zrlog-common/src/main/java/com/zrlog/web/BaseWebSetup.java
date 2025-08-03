@@ -9,7 +9,6 @@ import com.zrlog.util.ZrLogBaseNativeImageUtils;
 import com.zrlog.web.inteceptor.GlobalBaseInterceptor;
 import com.zrlog.web.inteceptor.MyI18nInterceptor;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
 

@@ -2,7 +2,7 @@ package com.zrlog.common.vo;
 
 import java.io.Serializable;
 
-public class IDataInitVO  implements Serializable {
+public class IDataInitVO implements Serializable {
 
     private Long version;
 

@@ -6,14 +6,11 @@ import com.hibegin.common.util.EnvKit;
 import com.hibegin.common.util.LoggerUtil;
 import com.hibegin.common.util.StringUtils;
 import com.hibegin.common.util.http.HttpUtil;
-import com.hibegin.http.server.api.HttpRequest;
 import com.hibegin.http.server.config.AbstractServerConfig;
 import com.hibegin.http.server.config.RequestConfig;
 import com.hibegin.http.server.config.ResponseConfig;
 import com.hibegin.http.server.config.ServerConfig;
 import com.hibegin.http.server.util.PathUtil;
-import com.zrlog.common.cache.vo.BaseDataInitVO;
-import com.zrlog.common.vo.IDataInitVO;
 import com.zrlog.common.web.ZrLogErrorHandle;
 import com.zrlog.common.web.ZrLogHttpJsonMessageConverter;
 import com.zrlog.common.web.ZrLogHttpRequestListener;
@@ -76,7 +73,6 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
     private static void disableHikariLogging() {
         System.setProperty("org.slf4j.simpleLogger.log.com.zaxxer.hikari", "off");
     }
-
 
 
     public boolean isTest() {

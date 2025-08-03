@@ -21,7 +21,7 @@ public class Type extends BasePageableDAO {
 
     public List<TypeDTO> findAll() throws SQLException {
         return doConvertList(queryListWithParams("select t.typeId as id,t.alias,t.typeName,t.remark,t.arrange_plugin,(select count(logId) from " + Log.TABLE_NAME +
-                " where rubbish=? and privacy=? and typeid=t.typeid) as typeamount from " + tableName + " t", false, false),TypeDTO.class);
+                " where rubbish=? and privacy=? and typeid=t.typeid) as typeamount from " + tableName + " t", false, false), TypeDTO.class);
     }
 
     public PageData<TypeDTO> find(PageRequest page) {

@@ -7,7 +7,6 @@ import com.zrlog.common.cache.dto.LinkDTO;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 存放程序的友情链接，对应数据库link表

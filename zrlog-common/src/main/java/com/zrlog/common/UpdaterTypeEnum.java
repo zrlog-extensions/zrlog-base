@@ -2,5 +2,5 @@ package com.zrlog.common;
 
 public enum UpdaterTypeEnum {
 
-    ZIP,WAR,NATIVE_IMAGE
+    ZIP, WAR, NATIVE_IMAGE
 }

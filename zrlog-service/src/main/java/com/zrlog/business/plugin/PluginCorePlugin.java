@@ -13,11 +13,11 @@ import java.util.Map;
 
 public interface PluginCorePlugin extends IPlugin {
 
-    void refreshCache(String cacheVersion,HttpRequest request);
+    void refreshCache(String cacheVersion, HttpRequest request);
 
     CloseResponseHandle getContext(String uri, HttpMethod method, HttpRequest request, AdminTokenVO adminTokenVO) throws IOException, URISyntaxException, InterruptedException;
 
-    <T> T requestService(HttpRequest inputRequest, Map<String,String[]> params, AdminTokenVO adminTokenVO, Class<T> clazz) throws IOException, URISyntaxException, InterruptedException;
+    <T> T requestService(HttpRequest inputRequest, Map<String, String[]> params, AdminTokenVO adminTokenVO, Class<T> clazz) throws IOException, URISyntaxException, InterruptedException;
 
     /**
      * 代理中转HTTP请求，目前仅支持，GET，POST 请求方式的中转。
