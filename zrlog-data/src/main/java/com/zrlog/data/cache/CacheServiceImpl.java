@@ -109,24 +109,23 @@ public class CacheServiceImpl implements CacheService {
                     LOGGER.info("Version skip " + version.get() + " -> " + expectVersion);
                 }
                 return cacheInit;
-            } else {
-                long start = System.currentTimeMillis();
-                ExecutorService executor = ThreadUtils.newFixedThreadPool(10);
+            }
+            long start = System.currentTimeMillis();
+            ExecutorService executor = ThreadUtils.newFixedThreadPool(10);
+            try {
+                cacheInit = new BaseDataDbService().queryCacheInit(executor);
+                cacheInit.setVersion(expectVersion);
+                //清除模版的缓存数据
+                WebSite.clearTemplateConfigMap();
                 try {
-                    cacheInit = new BaseDataDbService().queryCacheInit(executor);
-                    cacheInit.setVersion(expectVersion);
-                    //清除模版的缓存数据
-                    WebSite.clearTemplateConfigMap();
-                    try {
-                        new WebSite().updateByKV(CACHE_KEY, new Gson().toJson(cacheInit));
-                    } catch (SQLException e) {
-                        LOGGER.log(Level.SEVERE, "save cache error " + e.getMessage(), e);
-                    }
-                } finally {
-                    executor.shutdown();
-                    if (Constants.debugLoggerPrintAble()) {
-                        LOGGER.info("RefreshInitDataCache [" + version + "] used time " + (System.currentTimeMillis() - start) + "ms");
-                    }
+                    new WebSite().updateByKV(CACHE_KEY, new Gson().toJson(cacheInit));
+                } catch (SQLException e) {
+                    LOGGER.log(Level.SEVERE, "save cache error " + e.getMessage(), e);
+                }
+            } finally {
+                executor.shutdown();
+                if (Constants.debugLoggerPrintAble()) {
+                    LOGGER.info("RefreshInitDataCache [" + version + "] used time " + (System.currentTimeMillis() - start) + "ms");
                 }
             }
         } finally {

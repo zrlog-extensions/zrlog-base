@@ -158,8 +158,6 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
         }
     }
 
-    public abstract void refreshPluginCacheData(String version, HttpRequest request);
-
     /**
      * 通过检查特定目录下面是否存在 install.lock 文件，同时判断环境变量里面是否存在配置，进行判断是否已经完成安装
      */
@@ -227,7 +225,6 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
         this.plugins.addAll(getBasePluginList());
         this.webSetups.forEach(e -> plugins.addAll(e.getPlugins()));
         ThreadUtils.start(() -> {
-            BaseDataInitVO initVO =  this.cacheService.refreshInitData();
             for (IPlugin plugin : plugins) {
                 if (!plugin.autoStart()) {
                     continue;
@@ -241,7 +238,6 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
                     LOGGER.severe("plugin error, " + e.getMessage());
                 }
             }
-            refreshPluginCacheData(initVO.getVersion() + "", null);
         });
     }
 
