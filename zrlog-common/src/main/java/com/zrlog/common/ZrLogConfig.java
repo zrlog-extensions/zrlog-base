@@ -182,6 +182,11 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
         serverConfig.setDecodeExecutor(ThreadUtils.newFixedThreadPool(20));
         serverConfig.setRequestCheckerExecutor(new ScheduledThreadPoolExecutor(1, ThreadUtils::unstarted));
         serverConfig.addRequestListener(zrLogHttpRequestListener);
+        //启动成功，更新一次缓存数据
+        serverConfig.addCreateSuccessHandle(() -> {
+            startPlugins(!EnvKit.isFaaSMode());
+            return null;
+        });
         Runtime rt = Runtime.getRuntime();
         rt.addShutdownHook(new Thread(this::stop));
         return serverConfig;
@@ -210,9 +215,9 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
     public abstract List<IPlugin> getBasePluginList();
 
     /**
-     * 调用了该方法，主要用于配置，启动插件功能，以及相应的ZrLog的插件服务。
+     * 调用了该方法，主要用于启动插件功能，以及相应的 ZrLog 插件服务。
      */
-    public void startPluginsAsync() {
+    public void startPlugins(boolean async) {
         if (!isInstalled()) {
             return;
         }
@@ -220,21 +225,27 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
         this.plugins.clear();
         this.plugins.addAll(getBasePluginList());
         this.webSetups.forEach(e -> plugins.addAll(e.getPlugins()));
-        ThreadUtils.start(() -> {
-            for (IPlugin plugin : plugins) {
-                if (!plugin.autoStart()) {
-                    continue;
-                }
-                if (plugin.isStarted()) {
-                    continue;
-                }
-                try {
-                    plugin.start();
-                } catch (Exception e) {
-                    LOGGER.severe("plugin error, " + e.getMessage());
-                }
+        if (async) {
+            ThreadUtils.start(this::startPlugin);
+        } else {
+            startPlugin();
+        }
+    }
+
+    private void startPlugin() {
+        for (IPlugin plugin : plugins) {
+            if (!plugin.autoStart()) {
+                continue;
             }
-        });
+            if (plugin.isStarted()) {
+                continue;
+            }
+            try {
+                plugin.start();
+            } catch (Exception e) {
+                LOGGER.severe("plugin error, " + e.getMessage());
+            }
+        }
     }
 
 }
