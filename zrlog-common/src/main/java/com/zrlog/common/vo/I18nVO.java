@@ -8,6 +8,7 @@ public class I18nVO {
     private Map<String, Map<String, Object>> blog = new HashMap<>();
     private Map<String, Map<String, Object>> backend = new HashMap<>();
     private Map<String, Map<String, Object>> admin = new HashMap<>();
+    private Map<String, Map<String, Object>> adminBackend = new HashMap<>();
     private String locale;
     private String lang;
 
@@ -49,5 +50,13 @@ public class I18nVO {
 
     public void setLang(String lang) {
         this.lang = lang;
+    }
+
+    public Map<String, Map<String, Object>> getAdminBackend() {
+        return adminBackend;
+    }
+
+    public void setAdminBackend(Map<String, Map<String, Object>> adminBackend) {
+        this.adminBackend = adminBackend;
     }
 }

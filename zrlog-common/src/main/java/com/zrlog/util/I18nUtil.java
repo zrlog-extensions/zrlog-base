@@ -25,6 +25,7 @@ public class I18nUtil {
     private static final I18nVO i18nVOCache = new I18nVO();
     private static final String I18N_BLOG_KEY = "blog";
     private static final String I18N_ADMIN_KEY = "admin";
+    private static final String I18N_ADMIN_BACKEND_KEY = "admin_backend";
     private static final String I18N_BACKEND_KEY = "backend";
     private static final String DEFAULT_LANG = "zh_CN";
 
@@ -35,6 +36,8 @@ public class I18nUtil {
     private static void reloadSystemI18N() {
         loadI18N(I18nUtil.class.getResourceAsStream("/i18n/admin_en_US.properties"), "admin_en_US.properties", I18N_ADMIN_KEY);
         loadI18N(I18nUtil.class.getResourceAsStream("/i18n/admin_zh_CN.properties"), "admin_zh_CN.properties", I18N_ADMIN_KEY);
+        loadI18N(I18nUtil.class.getResourceAsStream("/i18n/admin_backend_zh_CN.properties"), "admin_zh_CN.properties", I18N_ADMIN_BACKEND_KEY);
+        loadI18N(I18nUtil.class.getResourceAsStream("/i18n/admin_backend_zh_CN.properties"), "admin_zh_CN.properties", I18N_ADMIN_BACKEND_KEY);
         loadI18N(I18nUtil.class.getResourceAsStream("/i18n/blog_en_US.properties"), "blog_en_US.properties", I18N_BLOG_KEY);
         loadI18N(I18nUtil.class.getResourceAsStream("/i18n/blog_zh_CN.properties"), "blog_zh_CN.properties", I18N_BLOG_KEY);
         loadI18N(I18nUtil.class.getResourceAsStream("/i18n/backend_en_US.properties"), "backend_en_US.properties", I18N_BACKEND_KEY);
@@ -66,6 +69,9 @@ public class I18nUtil {
                 break;
             case I18N_BACKEND_KEY:
                 resMap = i18nVOCache.getBackend();
+                break;
+            case I18N_ADMIN_BACKEND_KEY:
+                resMap = i18nVOCache.getAdminBackend();
                 break;
             default:
                 throw new NotImplementException();
@@ -140,7 +146,7 @@ public class I18nUtil {
         }
 
         I18nVO i18nVO = BeanUtil.convert(i18nVOCache, I18nVO.class);
-        Map<String, Object> info = getBlog().get(locale);
+        Map<String, Object> info = getBlog();
         if (Objects.nonNull(info)) {
             Map<String, Object> blogI18n = new HashMap<>(info);
             if (StringUtils.isNotEmpty(locale) && !locale.startsWith("zh")) {
@@ -181,7 +187,7 @@ public class I18nUtil {
         return i18nVO.getBackend().get(threadLocal.get().getLocale());
     }
 
-    public static Map<String, Map<String, Object>> getAdmin() {
+    public static Map<String, Object> getAdmin() {
         I18nVO i18nVO = threadLocal.get();
         if (Objects.isNull(i18nVO)) {
             return new HashMap<>();
@@ -190,15 +196,28 @@ public class I18nUtil {
         if (Objects.isNull(admin)) {
             return new HashMap<>();
         }
-        return admin;
+        return admin.get(threadLocal.get().getLocale());
     }
+
+    public static Map<String, Object> getAdminBackend() {
+        I18nVO i18nVO = threadLocal.get();
+        if (Objects.isNull(i18nVO)) {
+            return new HashMap<>();
+        }
+        Map<String, Map<String, Object>> admin = i18nVO.getAdminBackend();
+        if (Objects.isNull(admin)) {
+            return new HashMap<>();
+        }
+        return admin.get(threadLocal.get().getLocale());
+    }
+
 
     public static String getBlogStringFromRes(String key) {
         I18nVO i18nVO = threadLocal.get();
         if (Objects.isNull(i18nVO)) {
             return "";
         }
-        Object obj = i18nVO.getBlog().get(i18nVO.getLocale()).get(key);
+        Object obj = getBlog().get(key);
         if (obj != null) {
             return obj.toString();
         }
@@ -210,7 +229,19 @@ public class I18nUtil {
         if (Objects.isNull(i18nVO)) {
             return "";
         }
-        Map<String, Object> local = getAdmin().get(i18nVO.getLocale());
+        Map<String, Object> local = getAdmin();
+        if (Objects.isNull(local)) {
+            return "";
+        }
+        return Objects.requireNonNullElse(local.get(key), "").toString();
+    }
+
+    public static String getAdminBackendStringFromRes(String key) {
+        I18nVO i18nVO = threadLocal.get();
+        if (Objects.isNull(i18nVO)) {
+            return "";
+        }
+        Map<String, Object> local = getAdminBackend();
         if (Objects.isNull(local)) {
             return "";
         }
@@ -230,7 +261,7 @@ public class I18nUtil {
         return ObjectUtil.requireNonNullElse((String) local.get(key), "");
     }
 
-    public static Map<String, Map<String, Object>> getBlog() {
+    public static Map<String, Object> getBlog() {
         I18nVO i18nVO = threadLocal.get();
         if (Objects.isNull(i18nVO)) {
             return new HashMap<>();
@@ -239,7 +270,7 @@ public class I18nUtil {
         if (Objects.isNull(install)) {
             return new HashMap<>();
         }
-        return install;
+        return install.get(threadLocal.get().getLocale());
     }
 
     public static String getCurrentLocale() {
