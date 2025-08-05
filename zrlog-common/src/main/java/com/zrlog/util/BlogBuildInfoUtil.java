@@ -33,9 +33,10 @@ public class BlogBuildInfoUtil {
             .atZone(ZoneOffset.systemDefault()).toInstant());
     private static String runMode = "RELEASE";
     private static String resourceDownloadUrl = "https://dl.zrlog.com/";
+    public static final String BUILD_PROPERTIES_FILE_PATH = "/build.properties";
 
     static {
-        try (InputStream inputStream = BlogBuildInfoUtil.class.getResourceAsStream("/build.properties")) {
+        try (InputStream inputStream = BlogBuildInfoUtil.class.getResourceAsStream(BUILD_PROPERTIES_FILE_PATH)) {
             Properties properties = new Properties();
             if (Objects.nonNull(inputStream)) {
                 properties.load(inputStream);

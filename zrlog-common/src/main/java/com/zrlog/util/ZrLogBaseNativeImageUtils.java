@@ -34,6 +34,7 @@ public class ZrLogBaseNativeImageUtils {
         resourceFiles.add("/conf/error/403.html");
         resourceFiles.add("/conf/error/404.html");
         resourceFiles.add("/conf/error/500.html");
+        resourceFiles.add(BlogBuildInfoUtil.BUILD_PROPERTIES_FILE_PATH);
 
         NativeImageUtils.doResourceLoadByResourceNames(resourceFiles);
         //
