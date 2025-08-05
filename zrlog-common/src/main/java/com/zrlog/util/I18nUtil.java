@@ -36,8 +36,8 @@ public class I18nUtil {
     private static void reloadSystemI18N() {
         loadI18N(I18nUtil.class.getResourceAsStream("/i18n/admin_en_US.properties"), "admin_en_US.properties", I18N_ADMIN_KEY);
         loadI18N(I18nUtil.class.getResourceAsStream("/i18n/admin_zh_CN.properties"), "admin_zh_CN.properties", I18N_ADMIN_KEY);
-        loadI18N(I18nUtil.class.getResourceAsStream("/i18n/admin_backend_zh_CN.properties"), "admin_zh_CN.properties", I18N_ADMIN_BACKEND_KEY);
-        loadI18N(I18nUtil.class.getResourceAsStream("/i18n/admin_backend_zh_CN.properties"), "admin_zh_CN.properties", I18N_ADMIN_BACKEND_KEY);
+        loadI18N(I18nUtil.class.getResourceAsStream("/i18n/admin_backend_en_US.properties"), "admin_backend_en_US.properties", I18N_ADMIN_BACKEND_KEY);
+        loadI18N(I18nUtil.class.getResourceAsStream("/i18n/admin_backend_zh_CN.properties"), "admin_backend_zh_CN.properties", I18N_ADMIN_BACKEND_KEY);
         loadI18N(I18nUtil.class.getResourceAsStream("/i18n/blog_en_US.properties"), "blog_en_US.properties", I18N_BLOG_KEY);
         loadI18N(I18nUtil.class.getResourceAsStream("/i18n/blog_zh_CN.properties"), "blog_zh_CN.properties", I18N_BLOG_KEY);
         loadI18N(I18nUtil.class.getResourceAsStream("/i18n/backend_en_US.properties"), "backend_en_US.properties", I18N_BACKEND_KEY);
