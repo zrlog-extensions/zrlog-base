@@ -72,7 +72,7 @@ public class ZrLogErrorHandle implements HttpErrorHandle {
             response.redirect(Constants.ADMIN_URI_BASE_PATH + "/admin/500?message=" + e.getMessage());
             return;
         }
-        InputStream errorInputStream = getErrorInputStream(e);
+        InputStream errorInputStream = getErrorInputStream(e, httpStatueCode);
         if (Objects.isNull(errorInputStream)) {
             response.renderCode(500);
             return;
@@ -80,11 +80,15 @@ public class ZrLogErrorHandle implements HttpErrorHandle {
         response.write(errorInputStream, httpStatueCode);
     }
 
-    private InputStream getErrorInputStream(Throwable e) {
+    private InputStream getErrorInputStream(Throwable e, int httpStatueCode) {
         if (Constants.debugLoggerPrintAble()) {
             try {
+                InputStream htmlInputStream = PathUtil.getConfInputStream("/error/" + httpStatueCode + ".html");
+                if (Objects.isNull(htmlInputStream)) {
+                    htmlInputStream = PathUtil.getConfInputStream("/error/" + 500 + ".html");
+                }
                 String body = "<pre style='color:red;white-space:pre-wrap'>" + LoggerUtil.recordStackTraceMsg(e) + "</pre>";
-                Document document = Jsoup.parse(PathUtil.getConfInputStream("/error/500.html"), "utf-8", "/");
+                Document document = Jsoup.parse(htmlInputStream, "utf-8", "/");
                 document.body().append(body);
                 return new ByteArrayInputStream(document.html().getBytes());
             } catch (IOException ex) {
