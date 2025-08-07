@@ -42,11 +42,11 @@ public class AdminTokenService implements TokenService {
     private long sessionTimeout;
     private final Map<Integer, String> userSecretKeyCacheMap = new ConcurrentHashMap<>();
 
-    public AdminTokenService() {
+    public AdminTokenService(long sessionTimeoutInMinutes) {
         //字符长度必须要大于16个字符
         this.iv = new IvParameterSpec("_BLOG_BLOG_BLOG_".getBytes(StandardCharsets.UTF_8));
         //*60000， Cookie过期时间单位为分钟
-        this.sessionTimeout = Constants.zrLogConfig.getCacheService().getPublicWebSiteInfo().getSession_timeout() * 60 * 1000L;
+        this.sessionTimeout = sessionTimeoutInMinutes * 60 * 1000L;
     }
 
     @Override
