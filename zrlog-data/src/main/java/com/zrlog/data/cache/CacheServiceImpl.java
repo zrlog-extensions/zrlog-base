@@ -44,10 +44,10 @@ public class CacheServiceImpl implements CacheService {
         long versionStart = Long.parseLong(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + "00000");
         this.version = new AtomicLong(versionStart);
         Map<String, Object> baseInfo = new WebSite().getWebSiteByNameIn(Arrays.asList(CACHE_KEY, ZRLOG_SQL_VERSION_KEY));
-        String cacheKey = (String) baseInfo.get(CACHE_KEY);
-        if (StringUtils.isNotEmpty(CACHE_KEY)) {
+        String dbCache = (String) baseInfo.get(CACHE_KEY);
+        if (StringUtils.isNotEmpty(dbCache)) {
             try {
-                this.cacheInit = new Gson().fromJson(cacheKey, BaseDataInitVO.class);
+                this.cacheInit = new Gson().fromJson(dbCache, BaseDataInitVO.class);
             } catch (Exception e) {
                 LOGGER.info("Load cache error " + e.getMessage());
             }
