@@ -128,8 +128,13 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
     }
 
     public TokenService getTokenService() {
+        if (tokenService == null) {
+            this.tokenService = initTokenService();
+        }
         return tokenService;
     }
+
+    protected abstract TokenService initTokenService();
 
     public DataSource getDataSource() {
         return dataSource;
