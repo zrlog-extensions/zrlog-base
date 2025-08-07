@@ -22,6 +22,7 @@ import com.zrlog.web.WebSetup;
 
 import javax.sql.DataSource;
 import java.io.File;
+import java.lang.management.ManagementFactory;
 import java.util.*;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.logging.Level;
@@ -35,7 +36,7 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
     protected final File installLockFile;
     protected final Plugins plugins;
     protected final Updater updater;
-    protected final long uptime;
+    protected final long createdDate;
     protected final List<WebSetup> webSetups;
     protected DataSourceWrapper dataSource;
     protected final File dbPropertiesFile;
@@ -50,8 +51,8 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
     }
 
     protected ZrLogConfig(Integer port, Updater updater, String contextPath) {
+        this.createdDate = ManagementFactory.getRuntimeMXBean().getStartTime();
         this.plugins = new Plugins();
-        this.uptime = System.currentTimeMillis();
         this.webSetups = new ArrayList<>();
         this.updater = updater;
         this.serverConfig = initServerConfig(contextPath, port);
@@ -62,11 +63,15 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
         this.webSetups.add(new BaseWebSetup(this));
     }
 
+    public long getCreatedDate() {
+        return createdDate;
+    }
+
     public String getProgramUptime() {
         if (EnvKit.isFaaSMode()) {
             return ParseUtil.toNamingDurationString(zrLogHttpRequestListener.getTotalHandleTime(), I18nUtil.getCurrentLocale().contains("en"));
         }
-        return ParseUtil.toNamingDurationString(System.currentTimeMillis() - uptime, I18nUtil.getCurrentLocale().contains("en"));
+        return ParseUtil.toNamingDurationString(System.currentTimeMillis() - createdDate, I18nUtil.getCurrentLocale().contains("en"));
     }
 
 
@@ -185,6 +190,10 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
         //启动成功，更新一次缓存数据
         serverConfig.addCreateSuccessHandle(() -> {
             startPlugins(!EnvKit.isFaaSMode());
+            return null;
+        });
+        serverConfig.addCreateSuccessHandle(() -> {
+            LOGGER.info("Start " + serverConfig.getApplicationName() + " used time " + (System.currentTimeMillis() - createdDate) + "ms");
             return null;
         });
         Runtime rt = Runtime.getRuntime();

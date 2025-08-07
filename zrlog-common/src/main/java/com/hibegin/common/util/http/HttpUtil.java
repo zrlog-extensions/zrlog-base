@@ -123,7 +123,7 @@ public class HttpUtil {
             if (!headers.isEmpty()) {
                 TreeMap<String, String> stringStringTreeMap = new TreeMap<>(headers);
                 stringStringTreeMap.put("Cookie", "******");
-                LOGGER.info("headers = " + stringStringTreeMap);
+                LOGGER.info("Headers = " + stringStringTreeMap);
             }
         }
         if (Objects.nonNull(headers)) {

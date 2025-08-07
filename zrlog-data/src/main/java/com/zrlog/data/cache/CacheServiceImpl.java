@@ -38,7 +38,7 @@ public class CacheServiceImpl implements CacheService {
     private volatile BaseDataInitVO cacheInit;
     private final String CACHE_KEY = "base_data_init_cache";
     private final long sqlVersion;
-    private final Lock lock = new DistributedLock("zrlog-data-cache");
+    private final Lock lock = new DistributedLock("base-data-init-cache");
 
     public CacheServiceImpl() {
         long versionStart = Long.parseLong(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + "00000");
@@ -49,7 +49,7 @@ public class CacheServiceImpl implements CacheService {
             try {
                 this.cacheInit = new Gson().fromJson(cacheKey, BaseDataInitVO.class);
             } catch (Exception e) {
-                LOGGER.info("load cache error " + e.getMessage());
+                LOGGER.info("Load cache error " + e.getMessage());
             }
         } else {
             this.cacheInit = getInitData();
