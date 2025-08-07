@@ -4,7 +4,7 @@
     <groupId>com.hibegin</groupId>
     <artifactId>zrlog-base</artifactId>
     <packaging>pom</packaging>
-    <version>3.2.89-SNAPSHOT</version>
+    <version>3.2.100-SNAPSHOT</version>
     <modules>
         <module>zrlog-admin-token</module>
         <module>zrlog-service</module>
