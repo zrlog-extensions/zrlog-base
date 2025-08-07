@@ -9,6 +9,21 @@ public interface TokenService {
 
     String ADMIN_LOGIN_URI_PATH = Constants.ADMIN_URI_BASE_PATH + "/login";
 
+    /**
+     * 更新生成和比对 token 的有效时间
+     *
+     * @param sessionTimeoutInMinutes 单位分钟
+     */
+    void updateSessionTimeout(long sessionTimeoutInMinutes);
+
+    /**
+     * 从 HTTP 请求头里面获得登录信息，
+     * 支持从 Header (X-Admin-Token) 和 Cookie 里面读取
+     * 优先读取 Header 里面的
+     *
+     * @param request http 请求
+     * @return 完整的 token 信息
+     */
     AdminFullTokenVO getAdminTokenVO(HttpRequest request);
 
     void removeAdminToken(HttpRequest request, HttpResponse response);

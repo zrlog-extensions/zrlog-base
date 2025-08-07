@@ -45,12 +45,13 @@ public class AdminTokenService implements TokenService {
     public AdminTokenService() {
         //字符长度必须要大于16个字符
         this.iv = new IvParameterSpec("_BLOG_BLOG_BLOG_".getBytes(StandardCharsets.UTF_8));
-        //*60， Cookie过期时间单位为分钟
+        //*60000， Cookie过期时间单位为分钟
         this.sessionTimeout = Constants.zrLogConfig.getCacheService().getPublicWebSiteInfo().getSession_timeout() * 60 * 1000L;
     }
 
-    public void updateSessionTimeout(long sessionTimeout) {
-        this.sessionTimeout = sessionTimeout;
+    @Override
+    public void updateSessionTimeout(long sessionTimeoutInMinutes) {
+        this.sessionTimeout = sessionTimeoutInMinutes * 60 * 1000L;
     }
 
     private byte[] encrypt(String secretKey, byte[] value) throws Exception {
