@@ -1,7 +1,10 @@
 package com.zrlog.admin.web.token;
 
 import com.google.gson.Gson;
-import com.hibegin.common.util.*;
+import com.hibegin.common.util.EnvKit;
+import com.hibegin.common.util.LoggerUtil;
+import com.hibegin.common.util.SecurityUtils;
+import com.hibegin.common.util.StringUtils;
 import com.hibegin.http.server.api.HttpRequest;
 import com.hibegin.http.server.api.HttpResponse;
 import com.hibegin.http.server.web.cookie.Cookie;
@@ -43,10 +46,7 @@ public class AdminTokenService implements TokenService {
      */
 
     public static long getSessionTimeout() {
-        long sessionTimeout = ObjectUtil.requireNonNullElse(Constants.zrLogConfig.getCacheService().getPublicWebSiteInfo().getSession_timeout(), DEFAULT_SESSION_TIMEOUT);
-        if (sessionTimeout <= 0) {
-            return DEFAULT_SESSION_TIMEOUT;
-        }
+        long sessionTimeout = Constants.zrLogConfig.getCacheService().getPublicWebSiteInfo().getSession_timeout();
         //*60， Cookie过期时间单位为分钟
         return sessionTimeout * 60 * 1000L;
     }

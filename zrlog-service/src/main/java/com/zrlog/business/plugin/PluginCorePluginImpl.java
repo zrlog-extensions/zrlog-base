@@ -16,6 +16,7 @@ import com.zrlog.business.rest.response.PluginCoreStatus;
 import com.zrlog.business.rest.response.PluginStatusResponse;
 import com.zrlog.common.Constants;
 import com.zrlog.common.vo.AdminTokenVO;
+import com.zrlog.common.vo.PublicWebSiteInfo;
 import com.zrlog.util.BlogBuildInfoUtil;
 import com.zrlog.util.I18nUtil;
 import com.zrlog.util.ThreadUtils;
@@ -65,11 +66,12 @@ public class PluginCorePluginImpl extends BaseLockObject implements PluginCorePl
         map.put("IsLogin", (adminTokenVO != null) + "");
         map.put("Current-Locale", I18nUtil.getCurrentLocale());
         map.put("Blog-Version", BlogBuildInfoUtil.getVersion());
-        map.put("Dark-Mode", Objects.equals(Constants.zrLogConfig.getCacheService().getPublicWebSiteInfo().getAdmin_darkMode(), true) + "");
+        PublicWebSiteInfo publicWebSiteInfo = Constants.zrLogConfig.getCacheService().getPublicWebSiteInfo();
+        map.put("Dark-Mode", publicWebSiteInfo.getAdmin_darkMode() + "");
         if (EnvKit.isDevMode()) {
             map.put("DEV_MODE", "true");
         }
-        map.put("Admin-Color-Primary", Objects.toString(Constants.zrLogConfig.getCacheService().getPublicWebSiteInfo().getAdmin_color_primary(), Constants.DEFAULT_COLOR_PRIMARY_COLOR));
+        map.put("Admin-Color-Primary", publicWebSiteInfo.getAdmin_color_primary());
         if (Objects.isNull(request)) {
             return map;
         }

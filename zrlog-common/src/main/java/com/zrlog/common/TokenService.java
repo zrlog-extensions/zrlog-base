@@ -6,7 +6,6 @@ import com.zrlog.common.vo.AdminFullTokenVO;
 
 public interface TokenService {
 
-    long DEFAULT_SESSION_TIMEOUT = 1000 * 60 * 60 * 24L;
 
     String ADMIN_LOGIN_URI_PATH = Constants.ADMIN_URI_BASE_PATH + "/login";
 

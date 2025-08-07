@@ -50,14 +50,10 @@ public class CacheManagerPlugin implements IPlugin {
 
     private int getInitDataMaxCacheTimeout() {
         String dbSettingSize = new WebSite().getStringValueByName("cache_timeout_minutes");
-        if (StringUtils.isNotEmpty(dbSettingSize)) {
-            try {
-                return (int) (Double.parseDouble(dbSettingSize) * 60 * 1000);
-            } catch (Exception e) {
-                //ignore
-            }
+        if (StringUtils.isEmpty(dbSettingSize)) {
+            dbSettingSize = "5";
         }
-        return 5 * 60 * 1000;
+        return (int) (Double.parseDouble(dbSettingSize) * 60 * 1000);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.zrlog.util;
 
 import com.hibegin.common.util.StringUtils;
-import com.zrlog.common.Constants;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -125,7 +124,7 @@ public class ParseUtil {
     /**
      * 输入一段纯文本，通过指定关键字提取相关的上下文
      */
-    public static String wrapperKeyword(String content, String keyword) {
+    public static String wrapperKeyword(String content, String keyword, long digestLength) {
         if (content == null) {
             return null;
         }
@@ -161,11 +160,11 @@ public class ParseUtil {
         }
         if (newContent.length() != content.length()) {
             int first = newContent.indexOf("<font") - 5;
-            if (first > -1 && newContent.length() > Constants.DEFAULT_ARTICLE_DIGEST_LENGTH) {
+            if (first > -1 && newContent.length() > digestLength) {
                 String[] fontArr = (newContent.substring(first)).split("</font>");
                 newContent = "";
                 for (String str : fontArr) {
-                    if (!"".equals(newContent) && newContent.length() + str.length() > Constants.DEFAULT_ARTICLE_DIGEST_LENGTH) {
+                    if (!"".equals(newContent) && newContent.length() + str.length() > digestLength) {
                         if (newContent.length() < 100) {
                             newContent += str.substring(0, 100);
                         }

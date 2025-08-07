@@ -51,6 +51,8 @@ public class CacheServiceImpl implements CacheService {
             } catch (Exception e) {
                 LOGGER.info("load cache error " + e.getMessage());
             }
+        } else {
+            this.cacheInit = getInitData();
         }
         String sqlVersion = (String) baseInfo.get(ZRLOG_SQL_VERSION_KEY);
         if (StringUtils.isNotEmpty(sqlVersion)) {

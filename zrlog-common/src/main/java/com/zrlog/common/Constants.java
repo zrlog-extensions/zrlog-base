@@ -15,11 +15,9 @@ public class Constants {
     public static final String ADMIN_URI_BASE_PATH = "/admin";
     public static final String TEMPLATE_BASE_PATH = "/include/templates/";
     public static final String DEFAULT_TEMPLATE_PATH = TEMPLATE_BASE_PATH + "default";
-    public static final long DEFAULT_ARTICLE_DIGEST_LENGTH = 200;
     public static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd HH:mm:ssXXX";
     public static ZrLogConfig zrLogConfig;
     private static volatile long lastAccessTime = System.currentTimeMillis();
-    public static final String DEFAULT_COLOR_PRIMARY_COLOR = "#1677ff";
     public static final String DEFAULT_LANGUAGE = "zh_CN";
 
     static {
@@ -71,9 +69,6 @@ public class Constants {
         if (Objects.isNull(cacheService)) {
             return "";
         }
-        if (Objects.isNull(cacheService.getPublicWebSiteInfo())) {
-            return "";
-        }
         return cacheService.getPublicWebSiteInfo().getHost();
     }
 
@@ -90,10 +85,6 @@ public class Constants {
         if (Objects.isNull(cacheService)) {
             return DEFAULT_LANGUAGE;
         }
-        PublicWebSiteInfo publicWebSiteInfo = cacheService.getPublicWebSiteInfo();
-        if (Objects.isNull(publicWebSiteInfo)) {
-            return DEFAULT_LANGUAGE;
-        }
-        return publicWebSiteInfo.getLanguage();
+        return cacheService.getPublicWebSiteInfo().getLanguage();
     }
 }
