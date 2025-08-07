@@ -39,21 +39,18 @@ public class AdminTokenService implements TokenService {
     private final String TOKEN_SPLIT_CHAR = "#";
     private final IvParameterSpec iv;
     private SecretKeySpec secretKeySpec;
+    private long sessionTimeout;
     private final Map<Integer, String> userSecretKeyCacheMap = new ConcurrentHashMap<>();
-
-    /**
-     * 1天
-     */
-
-    public static long getSessionTimeout() {
-        long sessionTimeout = Constants.zrLogConfig.getCacheService().getPublicWebSiteInfo().getSession_timeout();
-        //*60， Cookie过期时间单位为分钟
-        return sessionTimeout * 60 * 1000L;
-    }
 
     public AdminTokenService() {
         //字符长度必须要大于16个字符
-        iv = new IvParameterSpec("_BLOG_BLOG_BLOG_".getBytes(StandardCharsets.UTF_8));
+        this.iv = new IvParameterSpec("_BLOG_BLOG_BLOG_".getBytes(StandardCharsets.UTF_8));
+        //*60， Cookie过期时间单位为分钟
+        this.sessionTimeout = Constants.zrLogConfig.getCacheService().getPublicWebSiteInfo().getSession_timeout() * 60 * 1000L;
+    }
+
+    public void updateSessionTimeout(long sessionTimeout) {
+        this.sessionTimeout = sessionTimeout;
     }
 
     private byte[] encrypt(String secretKey, byte[] value) throws Exception {
@@ -132,7 +129,7 @@ public class AdminTokenService implements TokenService {
             String base64Encode = new String(decrypt(sk, Base64.getDecoder().decode(adminTokenEncryptAfter)));
             AdminFullTokenVO adminTokenVO = new Gson().fromJson(base64Encode, AdminFullTokenVO.class);
             adminTokenVO.setSecretKey(sk);
-            if (adminTokenVO.getCreatedDate() + getSessionTimeout() > System.currentTimeMillis()) {
+            if (adminTokenVO.getCreatedDate() + sessionTimeout > System.currentTimeMillis()) {
                 return adminTokenVO;
             }
         } catch (BadPaddingException e) {
@@ -188,7 +185,7 @@ public class AdminTokenService implements TokenService {
         Cookie cookie = new Cookie();
         cookie.setName(ADMIN_TOKEN_KEY_IN_COOKIE);
         cookie.setValue(finalTokenString);
-        cookie.setExpireDate(new Date(System.currentTimeMillis() + getSessionTimeout()));
+        cookie.setExpireDate(new Date(System.currentTimeMillis() + sessionTimeout));
         if (Objects.equals(protocol, "https")) {
             if (CrossUtils.isEnableOrigin(request) && !EnvKit.isDevMode()) {
                 cookie.setSameSite("None");
