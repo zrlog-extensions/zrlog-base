@@ -1,19 +1,25 @@
 package com.zrlog.model;
 
-import com.hibegin.common.dao.DAO;
+import com.hibegin.common.dao.BasePageableDAO;
+import com.zrlog.common.cache.dto.UserBasicDTO;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 /**
  * 存放用于管理员的相关信息，对应数据的user表
  */
-public class User extends DAO {
+public class User extends BasePageableDAO {
 
 
     public User() {
         this.tableName = "user";
         this.pk = "userId";
+    }
+
+    public List<UserBasicDTO> findBasicAll() throws SQLException {
+        return doConvertList(new User().queryList("userName", "userId", "header"), UserBasicDTO.class);
     }
 
     public Map<String, Object> getUserByUserName(String userName) throws SQLException {

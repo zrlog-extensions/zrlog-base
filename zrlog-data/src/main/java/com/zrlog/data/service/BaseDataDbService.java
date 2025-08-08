@@ -5,7 +5,9 @@ import com.hibegin.common.dao.ResultValueConvertUtils;
 import com.hibegin.common.dao.dto.PageRequestImpl;
 import com.hibegin.common.util.BeanUtil;
 import com.hibegin.common.util.LoggerUtil;
+import com.zrlog.common.Constants;
 import com.zrlog.common.cache.dto.TypeDTO;
+import com.zrlog.common.cache.vo.Archive;
 import com.zrlog.common.cache.vo.BaseDataInitVO;
 import com.zrlog.common.cache.vo.HotLogBasicInfoEntry;
 import com.zrlog.common.cache.vo.HotTypeLogInfo;
@@ -14,10 +16,7 @@ import com.zrlog.data.dto.ArticleBasicDTO;
 import com.zrlog.model.*;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.logging.Logger;
@@ -37,6 +36,19 @@ public class BaseDataDbService {
 
     public static long getWebSiteVersion(PublicWebSiteInfo website) {
         return new Gson().toJson(website).hashCode();
+    }
+
+    private static List<Archive> getConvertedArchives(Map<String, Long> archiveMap) {
+        List<Archive> archives = new ArrayList<>();
+        for (Map.Entry<String, Long> entry : archiveMap.entrySet()) {
+            Archive archive = new Archive();
+            archive.setCount(entry.getValue());
+            archive.setText(entry.getKey());
+            String tagUri = Constants.getArticleUri() + "record/" + entry.getKey();
+            archive.setUrl(tagUri);
+            archives.add(archive);
+        }
+        return archives;
     }
 
     public BaseDataInitVO queryCacheInit(Executor executor) {
@@ -102,6 +114,14 @@ public class BaseDataDbService {
         futures.add(CompletableFuture.runAsync(() -> {
             try {
                 cacheInit.setArchives(new Log().getArchives());
+                cacheInit.setArchiveList(getConvertedArchives(cacheInit.getArchives()));
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }, executor));
+        futures.add(CompletableFuture.runAsync(() -> {
+            try {
+                cacheInit.setUsers(new User().findBasicAll());
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }

@@ -28,8 +28,9 @@ public class BaseDataInitVO implements Serializable {
     private PublicWebSiteInfo webSite = new PublicWebSiteInfo();
     private List<HotLogBasicInfoEntry> hotLogs = new ArrayList<>();
     private List<LogNavDTO> logNavs = new ArrayList<>();
-    private List<HotTypeLogInfo> typeHotLogs;
+    private List<HotTypeLogInfo> typeHotLogs = new ArrayList<>();
     private Statistics statistics = new Statistics();
+    private List<UserBasicDTO> users = new ArrayList<>();
 
     public Map<String, Long> getArchives() {
         return archives;
@@ -167,5 +168,13 @@ public class BaseDataInitVO implements Serializable {
 
     public void setPlugins(List<PluginDTO> plugins) {
         this.plugins = plugins;
+    }
+
+    public List<UserBasicDTO> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<UserBasicDTO> users) {
+        this.users = users;
     }
 }
