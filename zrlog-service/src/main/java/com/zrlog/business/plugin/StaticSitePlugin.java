@@ -103,12 +103,12 @@ public interface StaticSitePlugin extends BaseStaticSitePlugin {
 
     String getDbCacheKey();
 
-    default boolean isSynchronized(HttpRequest request) {
+    default boolean isSynchronized(String scheme) {
         try {
             if (isDisabled()) {
                 return true;
             }
-            String versionFile = (Objects.nonNull(request) ? request.getScheme() : "https") + "://" + Constants.getHost() + request.getContextPath() + "/" + getVersionFileName();
+            String versionFile = (Objects.nonNull(scheme) ? scheme : "https") + "://" + Constants.getHost() + getContextPath() + "/" + getVersionFileName();
             String remoteSiteVersion = HttpUtil.getInstance().getSuccessTextByUrl(versionFile);
             return Objects.equals(getSiteVersion(), remoteSiteVersion);
         } catch (Exception e) {
@@ -288,7 +288,7 @@ public interface StaticSitePlugin extends BaseStaticSitePlugin {
             pluginCorePlugin.start();
         }
         for (int i = 0; i < timeoutInSeconds; i++) {
-            if (isSynchronized(request)) {
+            if (isSynchronized(request.getScheme())) {
                 try {
                     new WebSite().updateByKV(getDbCacheKey(), getSiteVersion());
                 } catch (SQLException e) {
