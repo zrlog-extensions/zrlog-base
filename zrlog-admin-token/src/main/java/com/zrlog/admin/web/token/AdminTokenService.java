@@ -126,6 +126,7 @@ public class AdminTokenService implements TokenService {
                     LOGGER.info("Missing secretKey cache " + userId);
                 }
             }
+            userSecretKeyCacheMap.put(userId, sk);
             byte[] adminTokenEncryptAfter = ByteUtils.hexString2Bytes(tokenString.substring(tokenString.indexOf(TOKEN_SPLIT_CHAR) + 1));
             String base64Encode = new String(decrypt(sk, Base64.getDecoder().decode(adminTokenEncryptAfter)));
             AdminFullTokenVO adminTokenVO = new Gson().fromJson(base64Encode, AdminFullTokenVO.class);
@@ -181,11 +182,10 @@ public class AdminTokenService implements TokenService {
         String encryptBeforeString = new Gson().toJson(adminTokenVO);
         byte[] base64Bytes = Base64.getEncoder().encode(encrypt(secretKey, encryptBeforeString.getBytes()));
         String encryptAfterString = ByteUtils.bytesToHexString(base64Bytes);
-        String finalTokenString = adminTokenVO.getUserId() + TOKEN_SPLIT_CHAR + encryptAfterString;
-        userSecretKeyCacheMap.put(userId, secretKey);
+        String tokenString = adminTokenVO.getUserId() + TOKEN_SPLIT_CHAR + encryptAfterString;
         Cookie cookie = new Cookie();
         cookie.setName(ADMIN_TOKEN_KEY_IN_COOKIE);
-        cookie.setValue(finalTokenString);
+        cookie.setValue(tokenString);
         cookie.setExpireDate(new Date(System.currentTimeMillis() + sessionTimeout));
         if (Objects.equals(protocol, "https")) {
             if (CrossUtils.isEnableOrigin(request) && !EnvKit.isDevMode()) {
