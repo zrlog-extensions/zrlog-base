@@ -212,7 +212,7 @@ public class PluginCorePluginImpl extends BaseLockObject implements PluginCorePl
         ExecutorService executorService = ThreadUtils.newFixedThreadPool(pluginsByClazz.size());
         try {
             CompletableFuture.allOf(pluginsByClazz.stream().map(staticSitePlugin -> {
-                return CompletableFuture.runAsync(() -> staticSitePlugin.waitCacheSync(request), executorService);
+                return CompletableFuture.runAsync(() -> staticSitePlugin.waitCacheSync(request, 360), executorService);
             }).toArray(CompletableFuture[]::new)).join();
         } finally {
             executorService.shutdown();

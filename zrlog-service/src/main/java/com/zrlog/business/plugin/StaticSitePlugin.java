@@ -15,6 +15,7 @@ import com.hibegin.http.server.handler.HttpRequestHandlerRunnable;
 import com.hibegin.http.server.util.HttpRequestBuilder;
 import com.hibegin.http.server.util.PathUtil;
 import com.zrlog.common.Constants;
+import com.zrlog.common.exception.ArgsException;
 import com.zrlog.data.cache.CacheServiceImpl;
 import com.zrlog.model.WebSite;
 import com.zrlog.plugin.BaseStaticSitePlugin;
@@ -277,13 +278,24 @@ public interface StaticSitePlugin extends BaseStaticSitePlugin {
         }
     }
 
-    default boolean waitCacheSync(HttpRequest request) {
-        for (int i = 0; i < 360; i++) {
+    default boolean waitCacheSync(HttpRequest request, int timeoutInSeconds) {
+        if (timeoutInSeconds <= 0) {
+            throw new ArgsException("timeoutInSeconds must be greater than 0");
+        }
+        //启动插件
+        PluginCorePlugin pluginCorePlugin = Constants.zrLogConfig.getPlugin(PluginCorePlugin.class);
+        if (Objects.nonNull(pluginCorePlugin) && !pluginCorePlugin.isStarted()) {
+            pluginCorePlugin.start();
+        }
+        for (int i = 0; i < timeoutInSeconds; i++) {
             if (isSynchronized(request)) {
                 try {
                     new WebSite().updateByKV(getDbCacheKey(), getSiteVersion());
                 } catch (SQLException e) {
-                    LOGGER.log(Level.SEVERE, "update site version cache error", e);
+                    LOGGER.log(Level.SEVERE, "update site version " + getSiteVersion() + " cache error", e);
+                }
+                if (Constants.debugLoggerPrintAble()) {
+                    LOGGER.info("update site version " + getSiteVersion() + " cache success");
                 }
                 return true;
             }
@@ -293,6 +305,7 @@ public interface StaticSitePlugin extends BaseStaticSitePlugin {
                 throw new RuntimeException(e);
             }
         }
+        LOGGER.warning("update site version " + getSiteVersion() + " cache timeout");
         return false;
     }
 
