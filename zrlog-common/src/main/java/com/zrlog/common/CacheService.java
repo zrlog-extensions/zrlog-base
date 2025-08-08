@@ -2,6 +2,7 @@ package com.zrlog.common;
 
 import com.zrlog.common.cache.dto.TagDTO;
 import com.zrlog.common.cache.dto.TypeDTO;
+import com.zrlog.common.cache.dto.UserBasicDTO;
 import com.zrlog.common.cache.vo.BaseDataInitVO;
 import com.zrlog.common.vo.PublicWebSiteInfo;
 
@@ -24,5 +25,7 @@ public interface CacheService {
     List<TypeDTO> getArticleTypes();
 
     List<TagDTO> getTags();
+
+    UserBasicDTO findByUserId(Long userId);
 
 }

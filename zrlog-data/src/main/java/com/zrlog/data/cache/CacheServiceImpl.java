@@ -1,6 +1,7 @@
 package com.zrlog.data.cache;
 
 import com.google.gson.Gson;
+import com.hibegin.common.dao.ResultBeanUtils;
 import com.hibegin.common.util.LoggerUtil;
 import com.hibegin.common.util.ObjectUtil;
 import com.hibegin.common.util.StringUtils;
@@ -8,6 +9,7 @@ import com.zrlog.common.CacheService;
 import com.zrlog.common.Constants;
 import com.zrlog.common.cache.dto.TagDTO;
 import com.zrlog.common.cache.dto.TypeDTO;
+import com.zrlog.common.cache.dto.UserBasicDTO;
 import com.zrlog.common.cache.vo.BaseDataInitVO;
 import com.zrlog.common.vo.PublicWebSiteInfo;
 import com.zrlog.data.service.BaseDataDbService;
@@ -15,6 +17,7 @@ import com.zrlog.data.service.DistributedLock;
 import com.zrlog.data.util.WebSiteUtils;
 import com.zrlog.model.Tag;
 import com.zrlog.model.Type;
+import com.zrlog.model.User;
 import com.zrlog.model.WebSite;
 import com.zrlog.util.ThreadUtils;
 
@@ -155,6 +158,21 @@ public class CacheServiceImpl implements CacheService {
         }
         try {
             return new Tag().findAll();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public UserBasicDTO findByUserId(Long userId) {
+        if (Objects.nonNull(cacheInit)) {
+            UserBasicDTO userBasicDTO = cacheInit.getUsers().stream().filter(e -> Objects.equals(e.getUserId(), userId)).findFirst().orElse(null);
+            if (Objects.nonNull(userBasicDTO)) {
+                return userBasicDTO;
+            }
+        }
+        try {
+            return ResultBeanUtils.convert(new User().loadById(userId), UserBasicDTO.class);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

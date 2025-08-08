@@ -3,7 +3,6 @@ package com.zrlog.common.cache.dto;
 public class UserBasicDTO {
 
     private String userName;
-    private Long userId;
     private String header;
 
     public String getUserName() {
