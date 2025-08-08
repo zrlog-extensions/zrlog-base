@@ -1,7 +1,6 @@
 package com.zrlog.util;
 
 import com.hibegin.common.util.FileUtils;
-import com.hibegin.common.util.IOUtil;
 import com.hibegin.common.util.LoggerUtil;
 import com.hibegin.common.util.SecurityUtils;
 import com.hibegin.http.server.util.PathUtil;
@@ -108,25 +107,5 @@ public class StaticFileCacheUtils {
             LOGGER.warning("Get " + uri + " stream tag error " + e.getMessage());
         }
         return null;
-    }
-
-    public boolean isAdminMainJs(String uri) {
-        return uri.contains(Constants.ADMIN_URI_BASE_PATH + "/static/js/main.") && uri.endsWith(".js");
-    }
-
-    /**
-     * 让子目录能正确加载依赖的 js 文件
-     *
-     * @param uri
-     * @return
-     */
-    public String geAdminMainJsContent(String uri) {
-        InputStream inputStream = StaticFileCacheUtils.class.getResourceAsStream(uri);
-        if (Objects.isNull(inputStream)) {
-            return "";
-        }
-        String stringInputStream = IOUtil.getStringInputStream(inputStream);
-        String adminPath = "admin/";
-        return stringInputStream.replace("\"/admin/\"", "document.currentScript.baseURI + \"" + adminPath + "\"");
     }
 }
