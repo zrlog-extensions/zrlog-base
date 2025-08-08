@@ -164,7 +164,7 @@ public class CacheServiceImpl implements CacheService {
     }
 
     @Override
-    public UserBasicDTO findByUserId(Long userId) {
+    public UserBasicDTO getUserInfoById(Long userId) {
         if (Objects.nonNull(cacheInit)) {
             UserBasicDTO userBasicDTO = cacheInit.getUsers().stream().filter(e -> Objects.equals(e.getUserId(), userId)).findFirst().orElse(null);
             if (Objects.nonNull(userBasicDTO)) {

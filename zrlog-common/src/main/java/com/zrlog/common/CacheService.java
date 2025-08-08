@@ -26,6 +26,6 @@ public interface CacheService {
 
     List<TagDTO> getTags();
 
-    UserBasicDTO findByUserId(Long userId);
+    UserBasicDTO getUserInfoById(Long userId);
 
 }
