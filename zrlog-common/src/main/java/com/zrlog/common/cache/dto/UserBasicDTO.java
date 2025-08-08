@@ -4,6 +4,7 @@ public class UserBasicDTO {
 
     private String userName;
     private String header;
+    private Long userId;
 
     public String getUserName() {
         return userName;
