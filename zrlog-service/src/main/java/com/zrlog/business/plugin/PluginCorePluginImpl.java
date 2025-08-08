@@ -58,6 +58,11 @@ public class PluginCorePluginImpl extends BaseLockObject implements PluginCorePl
         this.token = UUID.randomUUID().toString().replace("-", "");
     }
 
+    @Override
+    public boolean autoStart() {
+        return !EnvKit.isFaaSMode();
+    }
+
     private static Map<String, String> genHeaderMapByRequest(HttpRequest request, AdminTokenVO adminTokenVO) {
         Map<String, String> map = new HashMap<>();
         if (adminTokenVO != null) {
