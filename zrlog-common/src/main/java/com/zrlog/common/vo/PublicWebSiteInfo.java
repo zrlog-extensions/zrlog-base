@@ -21,6 +21,7 @@ public class PublicWebSiteInfo implements Serializable {
     private String admin_color_primary;
     private Long article_auto_digest_length;
     private Boolean admin_darkMode;
+    private Boolean admin_compactMode;
     private Long rows;
     private String staticResourceHost;
     private String template;
@@ -222,5 +223,13 @@ public class PublicWebSiteInfo implements Serializable {
 
     public void setSystem_notification(String system_notification) {
         this.system_notification = system_notification;
+    }
+
+    public Boolean getAdmin_compactMode() {
+        return admin_compactMode;
+    }
+
+    public void setAdmin_compactMode(Boolean admin_compactMode) {
+        this.admin_compactMode = admin_compactMode;
     }
 }

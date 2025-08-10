@@ -31,6 +31,7 @@ public class WebSite extends DAO {
     public static final String article_thumbnail_status = "article_thumbnail_status";
     public static final String article_auto_digest_length = "article_auto_digest_length";
     public static final String admin_darkMode = "admin_darkMode";
+    public static final String admin_compactMode = "admin_compactMode";
     public static final String rows = "rows";
     public static final String session_timeout = "session_timeout";
     public static final String comment_plugin_status = "comment_plugin_status";

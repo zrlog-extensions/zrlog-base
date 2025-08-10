@@ -28,6 +28,7 @@ public class WebSiteUtils {
         info.setGenerator_html_status(Objects.equals(info.getGenerator_html_status(), true));
         info.setArticle_thumbnail_status(Objects.equals(info.getArticle_thumbnail_status(), true));
         info.setComment_plugin_status(Objects.equals(info.getComment_plugin_status(), true));
+        info.setAdmin_compactMode(Objects.equals(info.getAdmin_compactMode(), true));
         if (StringUtils.isEmpty(info.getAdmin_color_primary())) {
             info.setAdmin_color_primary(DEFAULT_COLOR_PRIMARY_COLOR);
         }
