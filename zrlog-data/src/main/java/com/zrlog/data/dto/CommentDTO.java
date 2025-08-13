@@ -10,7 +10,7 @@ public class CommentDTO {
     private Long id;
     private String userComment;
     private String header;
-    private Object commTime;
+    private String commTime;
     private String userMail;
     private String userHome;
     private String userIp;
@@ -43,10 +43,10 @@ public class CommentDTO {
     }
 
     public String getCommTime() {
-        return ResultValueConvertUtils.formatDate(commTime, "yyyy-MM-dd");
+        return commTime;
     }
 
-    public void setCommTime(Object commTime) {
+    public void setCommTime(String commTime) {
         this.commTime = commTime;
     }
 
