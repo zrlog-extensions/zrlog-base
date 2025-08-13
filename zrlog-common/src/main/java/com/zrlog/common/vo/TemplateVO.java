@@ -156,6 +156,7 @@ public class TemplateVO {
         private String type;
         private Object value;
         private String contentType;
+        private String previewValue;
 
         public String getLabel() {
             return label;
@@ -203,6 +204,14 @@ public class TemplateVO {
 
         public void setContentType(String contentType) {
             this.contentType = contentType;
+        }
+
+        public String getPreviewValue() {
+            return previewValue;
+        }
+
+        public void setPreviewValue(String previewValue) {
+            this.previewValue = previewValue;
         }
     }
 
