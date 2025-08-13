@@ -90,11 +90,7 @@ public interface StaticSitePlugin extends BaseStaticSitePlugin {
     default String getSiteVersion() {
         StringBuilder sb = new StringBuilder();
         for (File file : new TreeSet<>(getCacheFiles())) {
-            try {
-                sb.append(SecurityUtils.md5(new FileInputStream(file)));
-            } catch (FileNotFoundException e) {
-                LOGGER.warning("getCacheHtmlFolderVersion error " + e.getMessage());
-            }
+            sb.append(SecurityUtils.md5ByFile(file));
         }
         return Math.abs(sb.toString().hashCode()) + "";
     }
