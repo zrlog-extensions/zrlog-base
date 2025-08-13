@@ -50,7 +50,11 @@ public class PluginCoreProcessImpl implements PluginCoreProcess {
         infoLogFile = getLogFile(false);
         errorLogFile = getLogFile(true);
         this.onStopRunnable = onStopRunnable;
-        this.pluginsFolder = PathUtil.getConfFile("/plugins/");
+        if (EnvKit.isFaaSMode()) {
+            this.pluginsFolder = new File(ZrLogUtil.getFaaSRoot() + "/conf/plugins/");
+        } else {
+            this.pluginsFolder = PathUtil.getConfFile("/plugins/");
+        }
     }
 
     private String programName(File pluginCoreFile) {
@@ -71,22 +75,26 @@ public class PluginCoreProcessImpl implements PluginCoreProcess {
         if (!EnvKit.isFaaSMode()) {
             return;
         }
-        if (EnvKit.isLambda()) {
-            try {
-                String zipFile = ZrLogUtil.getFaaSRoot() + "/conf/plugins.zip";
+        try {
+            String zipFile = ZrLogUtil.getFaaSRoot() + "/conf/plugins.zip";
+            if (new File(zipFile).exists()) {
                 ZipUtil.unZip(zipFile, PathUtil.getConfPath());
-            } catch (IOException e) {
-                LOGGER.warning("Can't unzip " + ZrLogUtil.getFaaSRoot());
-            } finally {
-                unzipped = true;
             }
-        } else {
-            LOGGER.warning("Not implement ");
+        } catch (IOException e) {
+            LOGGER.warning("Can't unzip " + ZrLogUtil.getFaaSRoot());
+        } finally {
+            unzipped = true;
         }
     }
 
-    private Process startPluginCore(final File pluginCoreFile, final String dbProperties, final String pluginJvmArgs,
-                                    final String runtimePath, final String runTimeVersion, String token, int randomServerPort, int randomWatcherListenPort) throws IOException {
+    private String getPluginWorkerPath(File pluginsFolder) {
+        if (EnvKit.isLambda()) {
+            return PathUtil.getConfFile("/conf/plugins").toString();
+        }
+        return pluginsFolder.getParent();
+    }
+
+    private Process startPluginCore(final File pluginCoreFile, final String dbProperties, final String pluginJvmArgs, final String runtimePath, final String runTimeVersion, String token, int randomServerPort, int randomWatcherListenPort) throws IOException {
         final int randomMasterPort = randomServerPort + 20000;
         if (!pluginCoreFile.exists() || pluginCoreFile.length() <= 0) {
             LOGGER.warning("Missing plugin-core file " + pluginCoreFile.getName());
@@ -120,25 +128,20 @@ public class PluginCoreProcessImpl implements PluginCoreProcess {
             args.add("-");
         }
         //参数位置顺序需要固定
-        args.add("-Duser.dir=" + pluginCoreFile.getParent());
+        args.add("-Duser.dir=" + getPluginWorkerPath(pluginsFolder));
         //args end
         List<String> cmd = new ArrayList<>();
         cmd.add(programName(pluginCoreFile));
         cmd.addAll(args);
-        return new ProcessBuilder(cmd)
-                .redirectOutput(infoLogFile)
-                .redirectError(errorLogFile)
-                .start();
+        return new ProcessBuilder(cmd).redirectOutput(infoLogFile).redirectError(errorLogFile).start();
     }
 
     private String getInstalledPluginFolder() {
         return pluginsFolder + "/installed-plugins";
     }
 
-
     @Override
-    public int pluginServerStart(final String dbProperties, final String pluginJvmArgs,
-                                 final String runtimePath, final String runTimeVersion, String token) {
+    public int pluginServerStart(final String dbProperties, final String pluginJvmArgs, final String runtimePath, final String runTimeVersion, String token) {
         stopped.set(false);
         prepareUnzipPlugins();
         //简单处理，为了能在一个服务器上面启动多个ZrLog程序，使用Random端口的方式，（感兴趣可以算算概率）

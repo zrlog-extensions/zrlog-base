@@ -68,6 +68,7 @@ public class ZrLogErrorHandle implements HttpErrorHandle {
         if (request.getUri().startsWith(Constants.ADMIN_URI_BASE_PATH)) {
             if (e instanceof NotFindResourceException || e instanceof NotFindDbEntryException) {
                 response.redirect(Constants.ADMIN_URI_BASE_PATH + "/404?queryString=" + request.getQueryStr() + "&uriPath=" + request.getUri() + "&message=" + e.getMessage());
+                return;
             }
             response.redirect(Constants.ADMIN_URI_BASE_PATH + "/500?message=" + e.getMessage());
             return;
