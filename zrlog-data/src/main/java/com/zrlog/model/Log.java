@@ -48,7 +48,8 @@ public class Log extends BasePageableDAO implements Serializable {
             if (log != null) {
                 detail = ResultBeanUtils.convert(log, ArticleDetailDTO.class);
             }
-        } else {
+        }
+        if (Objects.isNull(detail)) {
             String sql =
                     "select l.*,last_update_date as lastUpdateDate,u.userName,(select count(commentId) from " + Comment.TABLE_NAME + " where logId=l.logId) commentSize ,t.alias as typeAlias,t.typeName as typeName  from " + tableName + " l inner join user u,type t where t.typeId=l.typeId and u.userId=l.userId and rubbish=? and privacy=? and l.alias=?";
             Map<String, Object> log = queryFirstWithParams(sql, false, false, idOrAlias);
