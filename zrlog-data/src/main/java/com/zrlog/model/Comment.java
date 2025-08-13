@@ -28,7 +28,7 @@ public class Comment extends BasePageableDAO {
         String sql = "select commentId as id,userComment,header,commTime,userMail,userHome,userIp,userName,hide,logId from " + tableName + " order by commTime desc";
         PageData<CommentDTO> commentDTOPageData = queryPageData(sql, page, new Object[0], CommentDTO.class);
         commentDTOPageData.getRows().forEach(e -> {
-            e.setCommTime(ResultValueConvertUtils.formatDate(e, "yyyy-MM-dd HH:mm:ss"));
+            e.setCommTime(ResultValueConvertUtils.formatDate(e.getCommTime(), "yyyy-MM-dd HH:mm:ss"));
         });
         return commentDTOPageData;
     }
