@@ -19,17 +19,13 @@ import com.zrlog.common.vo.AdminTokenVO;
 import com.zrlog.common.vo.PublicWebSiteInfo;
 import com.zrlog.util.BlogBuildInfoUtil;
 import com.zrlog.util.I18nUtil;
-import com.zrlog.util.ThreadUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -152,7 +148,14 @@ public class PluginCorePluginImpl extends BaseLockObject implements PluginCorePl
                 if (ignoreHeaderKeys.stream().anyMatch(x -> Objects.equals(x, header.getKey()))) {
                     continue;
                 }
-                response.addHeader(header.getKey(), header.getValue().get(0));
+                String value = header.getValue().getFirst();
+                //处理 302，contextPath 丢失的问题
+                if (Objects.equals(header.getKey().toLowerCase(), "location") && handle.getT().statusCode() == 302) {
+                    if (value.startsWith("/")) {
+                        value = request.getContextPath() + value;
+                    }
+                }
+                response.addHeader(header.getKey(), value);
             }
             //将插件服务的HTTP的body返回给调用者
             response.write(inputStream, handle.getT().statusCode());
