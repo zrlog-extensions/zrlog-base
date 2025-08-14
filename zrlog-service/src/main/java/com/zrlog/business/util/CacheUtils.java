@@ -8,8 +8,11 @@ import com.zrlog.business.plugin.StaticSitePlugin;
 import com.zrlog.business.plugin.type.StaticSiteType;
 import com.zrlog.common.Constants;
 import com.zrlog.common.cache.vo.BaseDataInitVO;
+import com.zrlog.common.exception.ArgsException;
+import com.zrlog.model.WebSite;
 import com.zrlog.util.ThreadUtils;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -50,7 +53,7 @@ public class CacheUtils {
         return 3600;
     }
 
-    public static void notifyPluginUpdateCache(String cacheVersion, HttpRequest request) {
+    private static void notifyPluginUpdateCache(String cacheVersion, HttpRequest request) {
         //启动插件
         PluginCorePlugin pluginCorePlugin = Constants.zrLogConfig.getPlugin(PluginCorePlugin.class);
         if (Objects.nonNull(pluginCorePlugin) && !pluginCorePlugin.isStarted()) {
@@ -60,6 +63,35 @@ public class CacheUtils {
         if (Objects.nonNull(pluginCorePlugin)) {
             pluginCorePlugin.refreshCache(cacheVersion, request);
         }
+    }
+
+    private static boolean waitStaticSiteCacheSync(HttpRequest request, int timeoutInSeconds, StaticSitePlugin staticSitePlugin) {
+        if (timeoutInSeconds <= 0) {
+            throw new ArgsException("timeoutInSeconds must be greater than 0");
+        }
+        //启动插件
+        String version = staticSitePlugin.getSiteVersion();
+        CacheUtils.notifyPluginUpdateCache(version, request);
+        for (int i = 0; i < timeoutInSeconds; i++) {
+            if (staticSitePlugin.isSynchronized(request.getScheme())) {
+                try {
+                    new WebSite().updateByKV(staticSitePlugin.getDbCacheKey(), version);
+                } catch (SQLException e) {
+                    LOGGER.log(Level.SEVERE, "update site version " + version + " cache error", e);
+                }
+                if (Constants.debugLoggerPrintAble()) {
+                    LOGGER.info("update site version " + version + " cache success");
+                }
+                return true;
+            }
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        LOGGER.warning("update site version " + version + " cache timeout");
+        return false;
     }
 
     public static boolean refreshStaticSiteCache(HttpRequest request, List<StaticSiteType> siteTypes) {
@@ -73,7 +105,8 @@ public class CacheUtils {
             CompletableFuture.allOf(staticSitePlugins.stream().map(staticSitePlugin -> {
                 return CompletableFuture.runAsync(() -> {
                     staticSitePlugin.start();
-                    results.add(staticSitePlugin.waitCacheSync(request, getSyncTimeout()));
+                    notifyPluginUpdateCache(staticSitePlugin.getSiteVersion(), request);
+                    results.add(waitStaticSiteCacheSync(request, getSyncTimeout(), staticSitePlugin));
                 }, executorService);
             }).toArray(CompletableFuture[]::new)).join();
             return results.stream().allMatch(e -> Objects.equals(e, Boolean.TRUE));
