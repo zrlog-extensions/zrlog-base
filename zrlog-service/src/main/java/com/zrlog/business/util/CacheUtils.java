@@ -8,16 +8,13 @@ import com.zrlog.business.plugin.StaticSitePlugin;
 import com.zrlog.business.plugin.type.StaticSiteType;
 import com.zrlog.common.Constants;
 import com.zrlog.common.cache.vo.BaseDataInitVO;
-import com.zrlog.common.exception.ArgsException;
 import com.zrlog.model.WebSite;
 import com.zrlog.util.ThreadUtils;
 
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -65,14 +62,11 @@ public class CacheUtils {
         }
     }
 
-    private static boolean waitStaticSiteCacheSync(HttpRequest request, int timeoutInSeconds, StaticSitePlugin staticSitePlugin) {
-        if (timeoutInSeconds <= 0) {
-            throw new ArgsException("timeoutInSeconds must be greater than 0");
-        }
+    private static void waitStaticSiteCacheSync(HttpRequest request, StaticSitePlugin staticSitePlugin) {
         //启动插件
         String version = staticSitePlugin.getSiteVersion();
         CacheUtils.notifyPluginUpdateCache(version, request);
-        for (int i = 0; i < timeoutInSeconds; i++) {
+        for (; ; ) {
             if (staticSitePlugin.isSynchronized(request.getScheme())) {
                 try {
                     new WebSite().updateByKV(staticSitePlugin.getDbCacheKey(), version);
@@ -82,7 +76,7 @@ public class CacheUtils {
                 if (Constants.debugLoggerPrintAble()) {
                     LOGGER.info("update site version " + version + " cache success");
                 }
-                return true;
+                return;
             }
             try {
                 Thread.sleep(1000);
@@ -90,8 +84,6 @@ public class CacheUtils {
                 throw new RuntimeException(e);
             }
         }
-        LOGGER.warning("update site version " + version + " cache timeout");
-        return false;
     }
 
     public static boolean refreshStaticSiteCache(HttpRequest request, List<StaticSiteType> siteTypes) {
@@ -101,15 +93,16 @@ public class CacheUtils {
         List<StaticSitePlugin> staticSitePlugins = Constants.zrLogConfig.getPluginsByClazz(StaticSitePlugin.class).stream().filter(e -> siteTypes.contains(e.getType())).collect(Collectors.toList());
         ExecutorService executorService = ThreadUtils.newFixedThreadPool(staticSitePlugins.size());
         try {
-            List<Boolean> results = new CopyOnWriteArrayList<>();
             CompletableFuture.allOf(staticSitePlugins.stream().map(staticSitePlugin -> {
                 return CompletableFuture.runAsync(() -> {
                     staticSitePlugin.start();
                     notifyPluginUpdateCache(staticSitePlugin.getSiteVersion(), request);
-                    results.add(waitStaticSiteCacheSync(request, getSyncTimeout(), staticSitePlugin));
+                    waitStaticSiteCacheSync(request, staticSitePlugin);
                 }, executorService);
-            }).toArray(CompletableFuture[]::new)).join();
-            return results.stream().allMatch(e -> Objects.equals(e, Boolean.TRUE));
+            }).toArray(CompletableFuture[]::new)).get(getSyncTimeout(), TimeUnit.SECONDS);
+            return true;
+        } catch (ExecutionException | InterruptedException | TimeoutException e) {
+            throw new RuntimeException(e);
         } finally {
             executorService.shutdown();
         }
