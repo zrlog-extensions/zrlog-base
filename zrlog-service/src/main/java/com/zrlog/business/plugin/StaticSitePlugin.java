@@ -272,14 +272,6 @@ public interface StaticSitePlugin extends BaseStaticSitePlugin {
         }
     }
 
-    default int getSyncTimeout() {
-        if (EnvKit.isFaaSMode()) {
-            //建议配置 FaaS 为最大超时
-            return 12 * 60;
-        }
-        return 3600;
-    }
-
     StaticSiteType getType();
 
     private boolean waitCacheSync(HttpRequest request, int timeoutInSeconds) {
