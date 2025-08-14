@@ -18,7 +18,6 @@ import com.zrlog.data.cache.CacheServiceImpl;
 import com.zrlog.model.WebSite;
 import com.zrlog.plugin.BaseStaticSitePlugin;
 import com.zrlog.util.I18nUtil;
-import com.zrlog.util.ThreadUtils;
 import com.zrlog.util.ZrLogUtil;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -29,13 +28,10 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.locks.Lock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import static com.zrlog.plugin.BaseStaticSitePlugin.isStaticPluginRequest;
 
@@ -285,26 +281,6 @@ public interface StaticSitePlugin extends BaseStaticSitePlugin {
     }
 
     StaticSiteType getType();
-
-    default boolean refreshStaticSiteCache(HttpRequest request, List<StaticSiteType> siteTypes) {
-        if (siteTypes == null || siteTypes.isEmpty()) {
-            return false;
-        }
-        List<StaticSitePlugin> staticSitePlugins = Constants.zrLogConfig.getPluginsByClazz(StaticSitePlugin.class).stream().filter(e -> siteTypes.contains(e.getType())).collect(Collectors.toList());
-        ExecutorService executorService = ThreadUtils.newFixedThreadPool(staticSitePlugins.size());
-        try {
-            List<Boolean> results = new CopyOnWriteArrayList<>();
-            CompletableFuture.allOf(staticSitePlugins.stream().map(staticSitePlugin -> {
-                return CompletableFuture.runAsync(() -> {
-                    staticSitePlugin.start();
-                    results.add(waitCacheSync(request, getSyncTimeout()));
-                }, executorService);
-            }).toArray(CompletableFuture[]::new)).join();
-            return results.stream().allMatch(e -> Objects.equals(e, Boolean.TRUE));
-        } finally {
-            executorService.shutdown();
-        }
-    }
 
     private boolean waitCacheSync(HttpRequest request, int timeoutInSeconds) {
         if (timeoutInSeconds <= 0) {
