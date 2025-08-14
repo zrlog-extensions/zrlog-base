@@ -11,6 +11,7 @@ import com.hibegin.http.server.config.ResponseConfig;
 import com.hibegin.http.server.handler.HttpRequestHandlerRunnable;
 import com.hibegin.http.server.util.HttpRequestBuilder;
 import com.hibegin.http.server.util.PathUtil;
+import com.zrlog.business.plugin.type.StaticSiteType;
 import com.zrlog.common.Constants;
 import com.zrlog.common.exception.ArgsException;
 import com.zrlog.data.cache.CacheServiceImpl;
@@ -34,6 +35,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.locks.Lock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import static com.zrlog.plugin.BaseStaticSitePlugin.isStaticPluginRequest;
 
@@ -282,8 +284,13 @@ public interface StaticSitePlugin extends BaseStaticSitePlugin {
         return 3600;
     }
 
-    default boolean refreshStaticSiteCache(HttpRequest request, List<? extends StaticSitePlugin> staticSitePlugins) {
+    StaticSiteType getType();
 
+    default boolean refreshStaticSiteCache(HttpRequest request, List<StaticSiteType> siteTypes) {
+        if (siteTypes == null || siteTypes.isEmpty()) {
+            return false;
+        }
+        List<StaticSitePlugin> staticSitePlugins = Constants.zrLogConfig.getPluginsByClazz(StaticSitePlugin.class).stream().filter(e -> siteTypes.contains(e.getType())).collect(Collectors.toList());
         ExecutorService executorService = ThreadUtils.newFixedThreadPool(staticSitePlugins.size());
         try {
             List<Boolean> results = new CopyOnWriteArrayList<>();
