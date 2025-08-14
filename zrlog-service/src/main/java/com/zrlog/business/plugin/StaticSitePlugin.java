@@ -1,9 +1,6 @@
 package com.zrlog.business.plugin;
 
-import com.hibegin.common.util.IOUtil;
-import com.hibegin.common.util.LoggerUtil;
-import com.hibegin.common.util.SecurityUtils;
-import com.hibegin.common.util.StringUtils;
+import com.hibegin.common.util.*;
 import com.hibegin.common.util.http.HttpUtil;
 import com.hibegin.http.HttpMethod;
 import com.hibegin.http.server.ApplicationContext;
@@ -277,14 +274,23 @@ public interface StaticSitePlugin extends BaseStaticSitePlugin {
         }
     }
 
-    default boolean refreshStaticSiteCache(HttpRequest request, int syncTimeoutInSeconds, List<? extends StaticSitePlugin> staticSitePlugins) {
+    default int getSyncTimeout() {
+        if (EnvKit.isLambda()) {
+            //建议配置 Lambda 为最大超时
+            return 12 * 60;
+        }
+        return 3600;
+    }
+
+    default boolean refreshStaticSiteCache(HttpRequest request, List<? extends StaticSitePlugin> staticSitePlugins) {
+
         ExecutorService executorService = ThreadUtils.newFixedThreadPool(staticSitePlugins.size());
         try {
             List<Boolean> results = new CopyOnWriteArrayList<>();
             CompletableFuture.allOf(staticSitePlugins.stream().map(staticSitePlugin -> {
                 return CompletableFuture.runAsync(() -> {
                     staticSitePlugin.start();
-                    results.add(waitCacheSync(request, syncTimeoutInSeconds));
+                    results.add(waitCacheSync(request, getSyncTimeout()));
                 }, executorService);
             }).toArray(CompletableFuture[]::new)).join();
             return results.stream().allMatch(e -> Objects.equals(e, Boolean.TRUE));
