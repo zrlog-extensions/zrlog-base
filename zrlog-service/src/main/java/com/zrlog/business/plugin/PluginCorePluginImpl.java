@@ -28,6 +28,7 @@ import java.net.URISyntaxException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -203,17 +204,27 @@ public class PluginCorePluginImpl extends BaseLockObject implements PluginCorePl
     }
 
     @Override
-    public void refreshCache(String cacheVersion, HttpRequest request) {
+    public boolean refreshCache(String cacheVersion, HttpRequest request) {
+        waitToStarted();
         if (Objects.isNull(pluginServerBaseUrl)) {
-            return;
+            return false;
         }
         refreshCacheWithRetry(EnvKit.isFaaSMode() ? Integer.MAX_VALUE : 5, cacheVersion);
-        List<StaticSitePlugin> pluginsByClazz = Constants.zrLogConfig.getPluginsByClazz(StaticSitePlugin.class);
-        ExecutorService executorService = ThreadUtils.newFixedThreadPool(pluginsByClazz.size());
+        return true;
+    }
+
+    @Override
+    public boolean refreshStaticSiteCache(String cacheVersion, HttpRequest request, int syncTimeoutInSeconds, List<? extends StaticSitePlugin> staticSitePlugins) {
+        ExecutorService executorService = ThreadUtils.newFixedThreadPool(staticSitePlugins.size());
         try {
-            CompletableFuture.allOf(pluginsByClazz.stream().map(staticSitePlugin -> {
-                return CompletableFuture.runAsync(() -> staticSitePlugin.waitCacheSync(request, 360), executorService);
+            List<Boolean> results = new CopyOnWriteArrayList<>();
+            CompletableFuture.allOf(staticSitePlugins.stream().map(staticSitePlugin -> {
+                return CompletableFuture.runAsync(() -> {
+                    staticSitePlugin.start();
+                    results.add(staticSitePlugin.waitCacheSync(request, syncTimeoutInSeconds));
+                }, executorService);
             }).toArray(CompletableFuture[]::new)).join();
+            return results.stream().allMatch(e -> Objects.equals(e, Boolean.TRUE));
         } finally {
             executorService.shutdown();
         }

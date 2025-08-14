@@ -279,19 +279,21 @@ public interface StaticSitePlugin extends BaseStaticSitePlugin {
             throw new ArgsException("timeoutInSeconds must be greater than 0");
         }
         //启动插件
+        String version = getSiteVersion();
         PluginCorePlugin pluginCorePlugin = Constants.zrLogConfig.getPlugin(PluginCorePlugin.class);
         if (Objects.nonNull(pluginCorePlugin) && !pluginCorePlugin.isStarted()) {
             pluginCorePlugin.start();
+            pluginCorePlugin.refreshCache(version, request);
         }
         for (int i = 0; i < timeoutInSeconds; i++) {
             if (isSynchronized(request.getScheme())) {
                 try {
-                    new WebSite().updateByKV(getDbCacheKey(), getSiteVersion());
+                    new WebSite().updateByKV(getDbCacheKey(), version);
                 } catch (SQLException e) {
-                    LOGGER.log(Level.SEVERE, "update site version " + getSiteVersion() + " cache error", e);
+                    LOGGER.log(Level.SEVERE, "update site version " + version + " cache error", e);
                 }
                 if (Constants.debugLoggerPrintAble()) {
-                    LOGGER.info("update site version " + getSiteVersion() + " cache success");
+                    LOGGER.info("update site version " + version + " cache success");
                 }
                 return true;
             }
