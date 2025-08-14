@@ -15,6 +15,7 @@ import com.hibegin.http.server.handler.HttpRequestHandlerRunnable;
 import com.hibegin.http.server.util.HttpRequestBuilder;
 import com.hibegin.http.server.util.PathUtil;
 import com.zrlog.business.plugin.type.StaticSiteType;
+import com.zrlog.business.util.CacheUtils;
 import com.zrlog.common.Constants;
 import com.zrlog.common.exception.ArgsException;
 import com.zrlog.data.cache.CacheServiceImpl;
@@ -283,11 +284,7 @@ public interface StaticSitePlugin extends BaseStaticSitePlugin {
         }
         //启动插件
         String version = getSiteVersion();
-        PluginCorePlugin pluginCorePlugin = Constants.zrLogConfig.getPlugin(PluginCorePlugin.class);
-        if (Objects.nonNull(pluginCorePlugin) && !pluginCorePlugin.isStarted()) {
-            pluginCorePlugin.start();
-            pluginCorePlugin.refreshCache(version, request);
-        }
+        CacheUtils.notifyPluginUpdateCache(version, request);
         for (int i = 0; i < timeoutInSeconds; i++) {
             if (isSynchronized(request.getScheme())) {
                 try {

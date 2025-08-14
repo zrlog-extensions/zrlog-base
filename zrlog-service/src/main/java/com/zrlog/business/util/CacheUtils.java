@@ -50,6 +50,18 @@ public class CacheUtils {
         return 3600;
     }
 
+    public static void notifyPluginUpdateCache(String cacheVersion, HttpRequest request) {
+        //启动插件
+        PluginCorePlugin pluginCorePlugin = Constants.zrLogConfig.getPlugin(PluginCorePlugin.class);
+        if (Objects.nonNull(pluginCorePlugin) && !pluginCorePlugin.isStarted()) {
+            pluginCorePlugin.start();
+        }
+        //plugin cache
+        if (Objects.nonNull(pluginCorePlugin)) {
+            pluginCorePlugin.refreshCache(cacheVersion, request);
+        }
+    }
+
     public static boolean refreshStaticSiteCache(HttpRequest request, List<StaticSiteType> siteTypes) {
         if (siteTypes == null || siteTypes.isEmpty()) {
             return false;
@@ -71,15 +83,7 @@ public class CacheUtils {
     }
 
     private static void refreshPluginCacheData(String cacheVersion, HttpRequest request, List<StaticSiteType> staticSiteTypeList) {
-        //启动插件
-        PluginCorePlugin pluginCorePlugin = Constants.zrLogConfig.getPlugin(PluginCorePlugin.class);
-        if (Objects.nonNull(pluginCorePlugin) && !pluginCorePlugin.isStarted()) {
-            pluginCorePlugin.start();
-        }
-        //plugin cache
-        if (Objects.nonNull(pluginCorePlugin)) {
-            pluginCorePlugin.refreshCache(cacheVersion, request);
-        }
+        notifyPluginUpdateCache(cacheVersion, request);
         if (!StaticSitePlugin.isDisabled()) {
             refreshStaticSiteCache(request, staticSiteTypeList);
         }
