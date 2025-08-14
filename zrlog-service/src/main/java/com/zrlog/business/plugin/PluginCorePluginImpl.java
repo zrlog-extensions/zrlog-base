@@ -148,7 +148,7 @@ public class PluginCorePluginImpl extends BaseLockObject implements PluginCorePl
                 if (ignoreHeaderKeys.stream().anyMatch(x -> Objects.equals(x, header.getKey()))) {
                     continue;
                 }
-                String value = header.getValue().getFirst();
+                String value = header.getValue().get(0)
                 //处理 302，contextPath 丢失的问题
                 if (Objects.equals(header.getKey().toLowerCase(), "location") && handle.getT().statusCode() == 302) {
                     if (value.startsWith("/")) {
