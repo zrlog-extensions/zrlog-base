@@ -276,7 +276,7 @@ public interface StaticSitePlugin extends BaseStaticSitePlugin {
 
     default int getSyncTimeout() {
         if (EnvKit.isFaaSMode()) {
-            //建议配置 Lambda 为最大超时
+            //建议配置 FaaS 为最大超时
             return 12 * 60;
         }
         return 3600;
