@@ -28,6 +28,7 @@ import java.net.URISyntaxException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -203,20 +204,13 @@ public class PluginCorePluginImpl extends BaseLockObject implements PluginCorePl
     }
 
     @Override
-    public void refreshCache(String cacheVersion, HttpRequest request) {
+    public boolean refreshCache(String cacheVersion, HttpRequest request) {
+        waitToStarted();
         if (Objects.isNull(pluginServerBaseUrl)) {
-            return;
+            return false;
         }
         refreshCacheWithRetry(EnvKit.isFaaSMode() ? Integer.MAX_VALUE : 5, cacheVersion);
-        List<StaticSitePlugin> pluginsByClazz = Constants.zrLogConfig.getPluginsByClazz(StaticSitePlugin.class);
-        ExecutorService executorService = ThreadUtils.newFixedThreadPool(pluginsByClazz.size());
-        try {
-            CompletableFuture.allOf(pluginsByClazz.stream().map(staticSitePlugin -> {
-                return CompletableFuture.runAsync(() -> staticSitePlugin.waitCacheSync(request, 360), executorService);
-            }).toArray(CompletableFuture[]::new)).join();
-        } finally {
-            executorService.shutdown();
-        }
+        return true;
     }
 
 

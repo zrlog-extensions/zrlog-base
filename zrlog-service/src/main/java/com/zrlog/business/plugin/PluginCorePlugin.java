@@ -9,11 +9,12 @@ import com.zrlog.plugin.IPlugin;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Map;
 
 public interface PluginCorePlugin extends IPlugin {
 
-    void refreshCache(String cacheVersion, HttpRequest request);
+    boolean refreshCache(String cacheVersion, HttpRequest request);
 
     CloseResponseHandle getContext(String uri, HttpMethod method, HttpRequest request, AdminTokenVO adminTokenVO) throws IOException, URISyntaxException, InterruptedException;
 

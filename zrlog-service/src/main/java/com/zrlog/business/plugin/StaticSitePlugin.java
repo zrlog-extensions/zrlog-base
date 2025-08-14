@@ -14,10 +14,9 @@ import com.hibegin.http.server.config.ResponseConfig;
 import com.hibegin.http.server.handler.HttpRequestHandlerRunnable;
 import com.hibegin.http.server.util.HttpRequestBuilder;
 import com.hibegin.http.server.util.PathUtil;
+import com.zrlog.business.plugin.type.StaticSiteType;
 import com.zrlog.common.Constants;
-import com.zrlog.common.exception.ArgsException;
 import com.zrlog.data.cache.CacheServiceImpl;
-import com.zrlog.model.WebSite;
 import com.zrlog.plugin.BaseStaticSitePlugin;
 import com.zrlog.util.I18nUtil;
 import com.zrlog.util.ZrLogUtil;
@@ -26,7 +25,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import java.io.*;
-import java.sql.SQLException;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -274,36 +272,7 @@ public interface StaticSitePlugin extends BaseStaticSitePlugin {
         }
     }
 
-    default boolean waitCacheSync(HttpRequest request, int timeoutInSeconds) {
-        if (timeoutInSeconds <= 0) {
-            throw new ArgsException("timeoutInSeconds must be greater than 0");
-        }
-        //启动插件
-        PluginCorePlugin pluginCorePlugin = Constants.zrLogConfig.getPlugin(PluginCorePlugin.class);
-        if (Objects.nonNull(pluginCorePlugin) && !pluginCorePlugin.isStarted()) {
-            pluginCorePlugin.start();
-        }
-        for (int i = 0; i < timeoutInSeconds; i++) {
-            if (isSynchronized(request.getScheme())) {
-                try {
-                    new WebSite().updateByKV(getDbCacheKey(), getSiteVersion());
-                } catch (SQLException e) {
-                    LOGGER.log(Level.SEVERE, "update site version " + getSiteVersion() + " cache error", e);
-                }
-                if (Constants.debugLoggerPrintAble()) {
-                    LOGGER.info("update site version " + getSiteVersion() + " cache success");
-                }
-                return true;
-            }
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        LOGGER.warning("update site version " + getSiteVersion() + " cache timeout");
-        return false;
-    }
+    StaticSiteType getType();
 
     private String saveCacheVersion() {
         String siteVersion = getSiteVersion();
