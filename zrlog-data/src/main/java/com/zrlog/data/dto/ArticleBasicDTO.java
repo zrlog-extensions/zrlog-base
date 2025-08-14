@@ -33,6 +33,7 @@ public class ArticleBasicDTO {
     private String thumbnail;
     private String thumbnailAlt;
     private String noSchemeUrl;
+    private String commentUrl;
 
     public Long getLogId() {
         return logId;
@@ -280,5 +281,13 @@ public class ArticleBasicDTO {
 
     public void setNoSchemeUrl(String noSchemeUrl) {
         this.noSchemeUrl = noSchemeUrl;
+    }
+
+    public String getCommentUrl() {
+        return commentUrl;
+    }
+
+    public void setCommentUrl(String commentUrl) {
+        this.commentUrl = commentUrl;
     }
 }
