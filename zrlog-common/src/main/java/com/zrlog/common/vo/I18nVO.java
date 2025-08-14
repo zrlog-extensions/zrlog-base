@@ -1,14 +1,14 @@
 package com.zrlog.common.vo;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class I18nVO {
 
-    private Map<String, Map<String, Object>> blog = new HashMap<>();
-    private Map<String, Map<String, Object>> backend = new HashMap<>();
-    private Map<String, Map<String, Object>> admin = new HashMap<>();
-    private Map<String, Map<String, Object>> adminBackend = new HashMap<>();
+    private Map<String, Map<String, Object>> blog = new ConcurrentHashMap<>();
+    private Map<String, Map<String, Object>> backend = new ConcurrentHashMap<>();
+    private Map<String, Map<String, Object>> admin = new ConcurrentHashMap<>();
+    private Map<String, Map<String, Object>> adminBackend = new ConcurrentHashMap<>();
     private String locale;
     private String lang;
 
