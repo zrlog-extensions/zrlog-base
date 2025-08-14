@@ -1,6 +1,9 @@
 package com.zrlog.business.plugin;
 
-import com.hibegin.common.util.*;
+import com.hibegin.common.util.IOUtil;
+import com.hibegin.common.util.LoggerUtil;
+import com.hibegin.common.util.SecurityUtils;
+import com.hibegin.common.util.StringUtils;
 import com.hibegin.common.util.http.HttpUtil;
 import com.hibegin.http.HttpMethod;
 import com.hibegin.http.server.ApplicationContext;
@@ -274,7 +277,7 @@ public interface StaticSitePlugin extends BaseStaticSitePlugin {
 
     StaticSiteType getType();
 
-    private boolean waitCacheSync(HttpRequest request, int timeoutInSeconds) {
+    default boolean waitCacheSync(HttpRequest request, int timeoutInSeconds) {
         if (timeoutInSeconds <= 0) {
             throw new ArgsException("timeoutInSeconds must be greater than 0");
         }
