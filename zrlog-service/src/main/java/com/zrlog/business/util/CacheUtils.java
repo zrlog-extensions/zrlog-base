@@ -31,10 +31,10 @@ public class CacheUtils {
             BaseDataInitVO initVO = Constants.zrLogConfig.getCacheService().refreshInitData();
             if (async) {
                 ThreadUtils.start(() -> {
-                    CacheUtils.refreshPluginCacheData(initVO.getVersion() + "", request, staticSiteTypeList);
+                    refreshPluginCacheData(initVO.getVersion() + "", request, staticSiteTypeList);
                 });
             } else {
-                CacheUtils.refreshPluginCacheData(initVO.getVersion() + "", request, staticSiteTypeList);
+                refreshPluginCacheData(initVO.getVersion() + "", request, staticSiteTypeList);
             }
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Refresh cache error ", e);
