@@ -284,7 +284,7 @@ public interface StaticSitePlugin extends BaseStaticSitePlugin {
             CompletableFuture.allOf(staticSitePlugins.stream().map(staticSitePlugin -> {
                 return CompletableFuture.runAsync(() -> {
                     staticSitePlugin.start();
-                    results.add(staticSitePlugin.waitCacheSync(request, syncTimeoutInSeconds));
+                    results.add(waitCacheSync(request, syncTimeoutInSeconds));
                 }, executorService);
             }).toArray(CompletableFuture[]::new)).join();
             return results.stream().allMatch(e -> Objects.equals(e, Boolean.TRUE));
@@ -293,7 +293,7 @@ public interface StaticSitePlugin extends BaseStaticSitePlugin {
         }
     }
 
-    default boolean waitCacheSync(HttpRequest request, int timeoutInSeconds) {
+    private boolean waitCacheSync(HttpRequest request, int timeoutInSeconds) {
         if (timeoutInSeconds <= 0) {
             throw new ArgsException("timeoutInSeconds must be greater than 0");
         }
