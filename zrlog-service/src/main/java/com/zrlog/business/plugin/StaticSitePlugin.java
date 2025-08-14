@@ -20,6 +20,7 @@ import com.zrlog.data.cache.CacheServiceImpl;
 import com.zrlog.model.WebSite;
 import com.zrlog.plugin.BaseStaticSitePlugin;
 import com.zrlog.util.I18nUtil;
+import com.zrlog.util.ThreadUtils;
 import com.zrlog.util.ZrLogUtil;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -30,7 +31,9 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.locks.Lock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -271,6 +274,22 @@ public interface StaticSitePlugin extends BaseStaticSitePlugin {
             }
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "do fetch error", e.getMessage());
+        }
+    }
+
+    default boolean refreshStaticSiteCache(HttpRequest request, int syncTimeoutInSeconds, List<? extends StaticSitePlugin> staticSitePlugins) {
+        ExecutorService executorService = ThreadUtils.newFixedThreadPool(staticSitePlugins.size());
+        try {
+            List<Boolean> results = new CopyOnWriteArrayList<>();
+            CompletableFuture.allOf(staticSitePlugins.stream().map(staticSitePlugin -> {
+                return CompletableFuture.runAsync(() -> {
+                    staticSitePlugin.start();
+                    results.add(staticSitePlugin.waitCacheSync(request, syncTimeoutInSeconds));
+                }, executorService);
+            }).toArray(CompletableFuture[]::new)).join();
+            return results.stream().allMatch(e -> Objects.equals(e, Boolean.TRUE));
+        } finally {
+            executorService.shutdown();
         }
     }
 

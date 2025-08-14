@@ -16,8 +16,6 @@ public interface PluginCorePlugin extends IPlugin {
 
     boolean refreshCache(String cacheVersion, HttpRequest request);
 
-    boolean refreshStaticSiteCache(String cacheVersion, HttpRequest request, int timeoutInSeconds, List<? extends StaticSitePlugin> staticSitePlugins);
-
     CloseResponseHandle getContext(String uri, HttpMethod method, HttpRequest request, AdminTokenVO adminTokenVO) throws IOException, URISyntaxException, InterruptedException;
 
     <T> T requestService(HttpRequest inputRequest, Map<String, String[]> params, AdminTokenVO adminTokenVO, Class<T> clazz) throws IOException, URISyntaxException, InterruptedException;

@@ -213,23 +213,6 @@ public class PluginCorePluginImpl extends BaseLockObject implements PluginCorePl
         return true;
     }
 
-    @Override
-    public boolean refreshStaticSiteCache(String cacheVersion, HttpRequest request, int syncTimeoutInSeconds, List<? extends StaticSitePlugin> staticSitePlugins) {
-        ExecutorService executorService = ThreadUtils.newFixedThreadPool(staticSitePlugins.size());
-        try {
-            List<Boolean> results = new CopyOnWriteArrayList<>();
-            CompletableFuture.allOf(staticSitePlugins.stream().map(staticSitePlugin -> {
-                return CompletableFuture.runAsync(() -> {
-                    staticSitePlugin.start();
-                    results.add(staticSitePlugin.waitCacheSync(request, syncTimeoutInSeconds));
-                }, executorService);
-            }).toArray(CompletableFuture[]::new)).join();
-            return results.stream().allMatch(e -> Objects.equals(e, Boolean.TRUE));
-        } finally {
-            executorService.shutdown();
-        }
-    }
-
 
     private void refreshCacheWithRetry(int retryCount, String cacheVersion) {
         try {
