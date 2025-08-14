@@ -20,21 +20,21 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
- * 插件工具，便于处理插件缓存
+ * 缓存工具，便于处理程序缓存和插件缓存
  */
-public class PluginCacheUtils {
+public class CacheUtils {
 
-    private static final Logger LOGGER = LoggerUtil.getLogger(PluginCacheUtils.class);
+    private static final Logger LOGGER = LoggerUtil.getLogger(CacheUtils.class);
 
     public static void updateCache(boolean async, HttpRequest request, List<StaticSiteType> staticSiteTypeList) {
         try {
             BaseDataInitVO initVO = Constants.zrLogConfig.getCacheService().refreshInitData();
             if (async) {
                 ThreadUtils.start(() -> {
-                    PluginCacheUtils.refreshPluginCacheData(initVO.getVersion() + "", request, staticSiteTypeList);
+                    CacheUtils.refreshPluginCacheData(initVO.getVersion() + "", request, staticSiteTypeList);
                 });
             } else {
-                PluginCacheUtils.refreshPluginCacheData(initVO.getVersion() + "", request, staticSiteTypeList);
+                CacheUtils.refreshPluginCacheData(initVO.getVersion() + "", request, staticSiteTypeList);
             }
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Refresh cache error ", e);
