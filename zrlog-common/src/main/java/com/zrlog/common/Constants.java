@@ -82,6 +82,9 @@ public class Constants {
     }
 
     public static String getLanguage() {
+        if (Objects.isNull(zrLogConfig)) {
+            return DEFAULT_LANGUAGE;
+        }
         CacheService cacheService = zrLogConfig.getCacheService();
         if (Objects.isNull(cacheService)) {
             return DEFAULT_LANGUAGE;
