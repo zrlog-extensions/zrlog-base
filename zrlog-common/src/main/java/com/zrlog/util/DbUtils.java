@@ -55,14 +55,14 @@ public class DbUtils {
         if (StringUtils.isEmpty(jdbcUrl)) {
             return;
         }
-        if (jdbcUrl.contains("utf8mb4")) {
+        if (jdbcUrl.contains("utf8")) {
             return;
         }
         try (FileOutputStream fileOutputStream = new FileOutputStream(dbFile)) {
             properties.put("driverClass", "com.mysql.cj.jdbc.Driver");
             jdbcUrl = jdbcUrl.split("\\?")[0];
             properties.put("jdbcUrl", jdbcUrl + "?" + Constants.MYSQL_JDBC_PARAMS);
-            properties.store(fileOutputStream, "Support mysql8 utf8mb4");
+            properties.store(fileOutputStream, "Support mysql8");
             if (Constants.debugLoggerPrintAble()) {
                 LOGGER.info("Update mysql " + dbFile.getName() + " success");
             }
