@@ -120,8 +120,6 @@ public class CacheServiceImpl implements CacheService {
             try {
                 cacheInit = new BaseDataDbService().queryCacheInit(executor);
                 cacheInit.setVersion(expectVersion);
-                //清除模版的缓存数据
-                WebSite.clearTemplateConfigMap();
                 try {
                     new WebSite().updateByKV(CACHE_KEY, new Gson().toJson(cacheInit));
                 } catch (SQLException e) {
@@ -176,6 +174,20 @@ public class CacheServiceImpl implements CacheService {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public Map<String, Object> getTemplateConfigMapWithCache(String template) {
+        if (Objects.nonNull(cacheInit)) {
+            Map<String, Map<String, Object>> templateConfigCacheMap = cacheInit.getTemplateConfigCacheMap();
+            if (Objects.nonNull(templateConfigCacheMap)) {
+                Map<String, Object> configMap = templateConfigCacheMap.get(template);
+                if (Objects.nonNull(configMap)) {
+                    return configMap;
+                }
+            }
+        }
+        return new WebSite().getTemplateConfigMap(template);
     }
 
     @Override

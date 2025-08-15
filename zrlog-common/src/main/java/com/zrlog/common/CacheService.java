@@ -7,6 +7,7 @@ import com.zrlog.common.cache.vo.BaseDataInitVO;
 import com.zrlog.common.vo.PublicWebSiteInfo;
 
 import java.util.List;
+import java.util.Map;
 
 public interface CacheService {
 
@@ -27,5 +28,7 @@ public interface CacheService {
     List<TagDTO> getTags();
 
     UserBasicDTO getUserInfoById(Long userId);
+
+    Map<String, Object> getTemplateConfigMapWithCache(String template);
 
 }

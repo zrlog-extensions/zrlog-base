@@ -54,9 +54,6 @@ public class WebSite extends DAO {
     public static final String comment_plugin_name = "comment_plugin_name";
     public static final String system_notification = "system_notification";
 
-    private static final Map<String, Map<String, Object>> templateConfigCacheMap = new ConcurrentHashMap<>();
-
-
     static {
 
         String[] listNum = new String[]{generator_html_status, disable_comment_status,
@@ -148,20 +145,13 @@ public class WebSite extends DAO {
         return "";
     }
 
-    public static void clearTemplateConfigMap() {
-        templateConfigCacheMap.clear();
-    }
-
-    public Map<String, Object> getTemplateConfigMapWithCache(String templateName) {
-        return templateConfigCacheMap.computeIfAbsent(templateName, this::getTemplateConfigMap);
-    }
 
     public Map<String, Object> getTemplateConfigMap(String templateName) {
         String dbJsonStr = new WebSite().getStringValueByName(templateName + TEMPLATE_CONFIG_SUFFIX);
         if (StringUtils.isNotEmpty(dbJsonStr)) {
             return new Gson().fromJson(dbJsonStr, Map.class);
         }
-        return new HashMap<>();
+        return new ConcurrentHashMap<>();
     }
 
     public Map<String, Object> updateTemplateConfigMap(String templateName, Map<String, Object> settingMap) throws SQLException {

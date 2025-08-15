@@ -5,6 +5,7 @@ import com.hibegin.common.dao.ResultValueConvertUtils;
 import com.hibegin.common.dao.dto.PageRequestImpl;
 import com.hibegin.common.util.BeanUtil;
 import com.hibegin.common.util.LoggerUtil;
+import com.hibegin.common.util.StringUtils;
 import com.zrlog.common.Constants;
 import com.zrlog.common.cache.dto.TypeDTO;
 import com.zrlog.common.cache.vo.Archive;
@@ -134,6 +135,12 @@ public class BaseDataDbService {
             }
             statistics.setTotalTagSize((long) cacheInit.getTags().size());
         }, executor));
+        futures.add(CompletableFuture.runAsync(() -> {
+            String template = refreshWebSite.getTemplate();
+            if (StringUtils.isNotEmpty(template)) {
+                cacheInit.getTemplateConfigCacheMap().put(template, new WebSite().getTemplateConfigMap(template));
+            }
+        }));
         try {
             CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
         } catch (Exception e) {

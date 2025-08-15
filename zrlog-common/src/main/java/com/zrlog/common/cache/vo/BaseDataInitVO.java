@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 程序初始化的数据（及全局的数据），存放了标签，分类，网站设置等信息。
@@ -31,6 +32,7 @@ public class BaseDataInitVO implements Serializable {
     private List<HotTypeLogInfo> typeHotLogs = new ArrayList<>();
     private Statistics statistics = new Statistics();
     private List<UserBasicDTO> users = new ArrayList<>();
+    private Map<String, Map<String, Object>> templateConfigCacheMap = new ConcurrentHashMap<>();
 
     public Map<String, Long> getArchives() {
         return archives;
@@ -176,5 +178,13 @@ public class BaseDataInitVO implements Serializable {
 
     public void setUsers(List<UserBasicDTO> users) {
         this.users = users;
+    }
+
+    public Map<String, Map<String, Object>> getTemplateConfigCacheMap() {
+        return templateConfigCacheMap;
+    }
+
+    public void setTemplateConfigCacheMap(Map<String, Map<String, Object>> templateConfigCacheMap) {
+        this.templateConfigCacheMap = templateConfigCacheMap;
     }
 }
