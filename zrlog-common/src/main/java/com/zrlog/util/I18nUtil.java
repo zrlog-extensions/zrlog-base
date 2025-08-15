@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -182,41 +183,39 @@ public class I18nUtil {
     public static Map<String, Object> getBackend() {
         I18nVO i18nVO = threadLocal.get();
         if (Objects.isNull(i18nVO)) {
-            return new HashMap<>();
+            return new ConcurrentHashMap<>(i18nVOCache.getBackend().get(getCurrentLocale()));
         }
-        return i18nVO.getBackend().get(threadLocal.get().getLocale());
+        return i18nVO.getBackend().get(getCurrentLocale());
     }
 
     public static Map<String, Object> getAdmin() {
         I18nVO i18nVO = threadLocal.get();
         if (Objects.isNull(i18nVO)) {
-            return new HashMap<>();
+            return new ConcurrentHashMap<>(i18nVOCache.getAdmin().get(getCurrentLocale()));
         }
         Map<String, Map<String, Object>> admin = i18nVO.getAdmin();
-        if (Objects.isNull(admin)) {
-            return new HashMap<>();
-        }
-        return admin.get(threadLocal.get().getLocale());
+        return admin.get(getCurrentLocale());
     }
 
     public static Map<String, Object> getAdminBackend() {
         I18nVO i18nVO = threadLocal.get();
         if (Objects.isNull(i18nVO)) {
-            return new HashMap<>();
+            return new ConcurrentHashMap<>(i18nVOCache.getAdminBackend().get(getCurrentLocale()));
         }
         Map<String, Map<String, Object>> admin = i18nVO.getAdminBackend();
-        if (Objects.isNull(admin)) {
-            return new HashMap<>();
-        }
-        return admin.get(threadLocal.get().getLocale());
+        return admin.get(getCurrentLocale());
     }
 
-
-    public static String getBlogStringFromRes(String key) {
+    public static Map<String, Object> getBlog() {
         I18nVO i18nVO = threadLocal.get();
         if (Objects.isNull(i18nVO)) {
-            return "";
+            return new ConcurrentHashMap<>(i18nVOCache.getBlog().get(getCurrentLocale()));
         }
+        Map<String, Map<String, Object>> blog = i18nVO.getBlog();
+        return blog.get(getCurrentLocale());
+    }
+
+    public static String getBlogStringFromRes(String key) {
         Object obj = getBlog().get(key);
         if (obj != null) {
             return obj.toString();
@@ -225,10 +224,6 @@ public class I18nUtil {
     }
 
     public static String getAdminStringFromRes(String key) {
-        I18nVO i18nVO = threadLocal.get();
-        if (Objects.isNull(i18nVO)) {
-            return "";
-        }
         Map<String, Object> local = getAdmin();
         if (Objects.isNull(local)) {
             return "";
@@ -237,10 +232,6 @@ public class I18nUtil {
     }
 
     public static String getAdminBackendStringFromRes(String key) {
-        I18nVO i18nVO = threadLocal.get();
-        if (Objects.isNull(i18nVO)) {
-            return "";
-        }
         Map<String, Object> local = getAdminBackend();
         if (Objects.isNull(local)) {
             return "";
@@ -249,29 +240,13 @@ public class I18nUtil {
     }
 
     public static String getBackendStringFromRes(String key) {
-        I18nVO i18nVO = threadLocal.get();
-        if (Objects.isNull(i18nVO)) {
-            return "";
-        }
-        Map<String, Object> local = i18nVO.getBackend().get(i18nVO.getLocale());
-
+        Map<String, Object> local = getBackend();
         if (Objects.isNull(local)) {
             return "";
         }
         return ObjectUtil.requireNonNullElse((String) local.get(key), "");
     }
 
-    public static Map<String, Object> getBlog() {
-        I18nVO i18nVO = threadLocal.get();
-        if (Objects.isNull(i18nVO)) {
-            return new HashMap<>();
-        }
-        Map<String, Map<String, Object>> install = i18nVO.getBlog();
-        if (Objects.isNull(install)) {
-            return new HashMap<>();
-        }
-        return install.get(threadLocal.get().getLocale());
-    }
 
     public static String getCurrentLocale() {
         I18nVO i18nVO = threadLocal.get();
