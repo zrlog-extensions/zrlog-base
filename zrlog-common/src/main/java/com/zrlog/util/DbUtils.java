@@ -27,44 +27,44 @@ public class DbUtils {
      * 将 env 配置的 DB_PROPERTIES 写入到实际的文件中，便于程序读取
      */
     public static File initDbPropertiesFile(ZrLogConfig zrLogConfig) {
-        File dbFiles = PathUtil.getConfFile("/" + Objects.requireNonNullElse(System.getenv("DB_PROPERTIES_FILE_NAME"), "db.properties"));
-        dbFiles.getParentFile().mkdirs();
+        File dbFile = PathUtil.getConfFile("/" + Objects.requireNonNullElse(System.getenv("DB_PROPERTIES_FILE_NAME"), "db.properties"));
+        dbFile.getParentFile().mkdirs();
         try {
             if (!zrLogConfig.isInstalled()) {
-                return dbFiles;
+                return dbFile;
             }
             if (StringUtils.isNotEmpty(ZrLogUtil.getDbInfoByEnv())) {
-                IOUtil.writeBytesToFile(new String(ZrLogUtil.getDbInfoByEnv().getBytes()).replaceAll(" ", "\n").getBytes(), dbFiles);
+                IOUtil.writeBytesToFile(new String(ZrLogUtil.getDbInfoByEnv().getBytes()).replaceAll(" ", "\n").getBytes(), dbFile);
             }
-            Properties properties = getDbProp(dbFiles);
+            Properties properties = getDbProp(dbFile);
             String driverClass = properties.getProperty("driverClass");
             if (StringUtils.isEmpty(driverClass)) {
-                return dbFiles;
+                return dbFile;
             }
             if (driverClass.contains("mysql")) {
-                handleMySQLDbProperties(dbFiles, properties);
+                handleMySQLDbProperties(dbFile, properties);
             }
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "initDbPropertiesFile error " + e.getMessage());
         }
-        return dbFiles;
+        return dbFile;
     }
 
-    private static void handleMySQLDbProperties(File dbFiles, Properties properties) throws IOException {
-        try (FileOutputStream fileOutputStream = new FileOutputStream(dbFiles)) {
+    private static void handleMySQLDbProperties(File dbFile, Properties properties) throws IOException {
+        String jdbcUrl = ((String) properties.get("jdbcUrl"));
+        if (StringUtils.isEmpty(jdbcUrl)) {
+            return;
+        }
+        if (jdbcUrl.contains("utf8mb4")) {
+            return;
+        }
+        try (FileOutputStream fileOutputStream = new FileOutputStream(dbFile)) {
             properties.put("driverClass", "com.mysql.cj.jdbc.Driver");
-            String oldJdbcUrl = ((String) properties.get("jdbcUrl"));
-            if (StringUtils.isNotEmpty(oldJdbcUrl)) {
-                if (!oldJdbcUrl.contains("utf8mb4")) {
-                    oldJdbcUrl = oldJdbcUrl.split("\\?")[0];
-                    properties.put("jdbcUrl", oldJdbcUrl + "?" + Constants.MYSQL_JDBC_PARAMS);
-                    properties.store(fileOutputStream, "Support mysql8 utf8mb4");
-                    LOGGER.info("Upgrade properties success");
-                } else {
-                    properties.store(fileOutputStream, "Support mysql8");
-                }
-            } else {
-                properties.store(fileOutputStream, "Support mysql8");
+            jdbcUrl = jdbcUrl.split("\\?")[0];
+            properties.put("jdbcUrl", jdbcUrl + "?" + Constants.MYSQL_JDBC_PARAMS);
+            properties.store(fileOutputStream, "Support mysql8 utf8mb4");
+            if (Constants.debugLoggerPrintAble()) {
+                LOGGER.info("Update mysql " + dbFile.getName() + " success");
             }
         }
     }
