@@ -58,10 +58,14 @@ public class DbUtils {
                 if (!oldJdbcUrl.contains("utf8mb4")) {
                     oldJdbcUrl = oldJdbcUrl.split("\\?")[0];
                     properties.put("jdbcUrl", oldJdbcUrl + "?" + Constants.MYSQL_JDBC_PARAMS);
+                    properties.store(fileOutputStream, "Support mysql8 utf8mb4");
                     LOGGER.info("Upgrade properties success");
+                } else {
+                    properties.store(fileOutputStream, "Support mysql8");
                 }
+            } else {
+                properties.store(fileOutputStream, "Support mysql8");
             }
-            properties.store(fileOutputStream, "Support mysql8");
         }
     }
 
