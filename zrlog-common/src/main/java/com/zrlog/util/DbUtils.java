@@ -6,6 +6,7 @@ import com.hibegin.common.util.IOUtil;
 import com.hibegin.common.util.LoggerUtil;
 import com.hibegin.common.util.StringUtils;
 import com.hibegin.http.server.util.PathUtil;
+import com.zrlog.common.Constants;
 import com.zrlog.common.ZrLogConfig;
 
 import java.io.File;
@@ -40,19 +41,28 @@ public class DbUtils {
             if (StringUtils.isEmpty(driverClass)) {
                 return dbFiles;
             }
-            if ("com.mysql.cj.jdbc.Driver".equals(properties.get("driverClass"))) {
-                return dbFiles;
-            }
-            try (FileOutputStream fileOutputStream = new FileOutputStream(dbFiles)) {
-                properties.put("driverClass", "com.mysql.cj.jdbc.Driver");
-                properties.put("jdbcUrl", properties.get("jdbcUrl") + "&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=GMT");
-                properties.store(fileOutputStream, "Support mysql8");
-                LOGGER.info("Upgrade properties success");
+            if (driverClass.contains("mysql")) {
+                handleMySQLDbProperties(dbFiles, properties);
             }
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "initDbPropertiesFile error " + e.getMessage());
         }
         return dbFiles;
+    }
+
+    private static void handleMySQLDbProperties(File dbFiles, Properties properties) throws IOException {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(dbFiles)) {
+            properties.put("driverClass", "com.mysql.cj.jdbc.Driver");
+            String oldJdbcUrl = ((String) properties.get("jdbcUrl"));
+            if (StringUtils.isNotEmpty(oldJdbcUrl)) {
+                if (!oldJdbcUrl.contains("utf8mb4")) {
+                    oldJdbcUrl = oldJdbcUrl.split("\\?")[0];
+                    properties.put("jdbcUrl", oldJdbcUrl + "?" + Constants.MYSQL_JDBC_PARAMS);
+                    LOGGER.info("Upgrade properties success");
+                }
+            }
+            properties.store(fileOutputStream, "Support mysql8");
+        }
     }
 
 

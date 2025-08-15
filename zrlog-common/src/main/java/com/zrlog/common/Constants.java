@@ -19,6 +19,7 @@ public class Constants {
     public static ZrLogConfig zrLogConfig;
     private static volatile long lastAccessTime = System.currentTimeMillis();
     public static final String DEFAULT_LANGUAGE = "zh_CN";
+    public static final String MYSQL_JDBC_PARAMS = "characterEncoding=utf8mb4&allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=GMT";
 
     static {
         init();
