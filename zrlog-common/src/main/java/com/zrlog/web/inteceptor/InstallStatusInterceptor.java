@@ -17,6 +17,9 @@ public class InstallStatusInterceptor implements HandleAbleInterceptor {
         if (uri.startsWith("/api")) {
             return false;
         }
+        if (uri.equals("/favicon.ico")) {
+            return false;
+        }
         return !Objects.equals(uri, "/install") && !uri.startsWith("/install/");
     }
 
