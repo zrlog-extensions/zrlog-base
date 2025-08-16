@@ -81,7 +81,6 @@ public class I18nUtil {
 
             if (Objects.nonNull(inputStream)) {
                 properties.load(inputStream);
-                return;
             }
 
             for (Map.Entry<Object, Object> entry : properties.entrySet()) {
