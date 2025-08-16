@@ -22,6 +22,7 @@ public class ZrLogUtil {
 
     //private static final Logger LOGGER = LoggerUtil.getLogger(ZrLogUtil.class);
 
+    public static final String DB_PROPERTIES_KEY_IN_ENV = "DB_PROPERTIES";
 
     private ZrLogUtil() {
     }
@@ -95,7 +96,7 @@ public class ZrLogUtil {
     }
 
     public static String getDbInfoByEnv() {
-        return System.getenv("DB_PROPERTIES");
+        return System.getenv(DB_PROPERTIES_KEY_IN_ENV);
     }
 
     public static boolean isInternalHostName(String name) {

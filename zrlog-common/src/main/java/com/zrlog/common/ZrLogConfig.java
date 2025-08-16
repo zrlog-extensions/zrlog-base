@@ -262,4 +262,16 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
         }
     }
 
+    public boolean isContainerMode() {
+        //return true;
+        return ZrLogUtil.isDockerMode() || EnvKit.isFaaSMode();
+    }
+
+    public boolean isMissingConfig() {
+        if (!isContainerMode()) {
+            return false;
+        }
+        return StringUtils.isEmpty(ZrLogUtil.getDbInfoByEnv());
+    }
+
 }
