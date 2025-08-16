@@ -54,9 +54,6 @@ public class I18nUtil {
     }
 
     private static void loadI18N(InputStream inputStream, String name, String resourceName) {
-        if (Objects.isNull(inputStream)) {
-            return;
-        }
         if (!name.endsWith(".properties")) {
             return;
         }
@@ -82,17 +79,23 @@ public class I18nUtil {
             Map<String, Object> map = resMap.computeIfAbsent(key, k -> new HashMap<>());
             Properties properties = new Properties();
 
-            properties.load(inputStream);
+            if (Objects.nonNull(inputStream)) {
+                properties.load(inputStream);
+                return;
+            }
+
             for (Map.Entry<Object, Object> entry : properties.entrySet()) {
                 map.put(entry.getKey().toString(), entry.getValue());
             }
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "load properties error", e);
         } finally {
-            try {
-                inputStream.close();
-            } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, "", e);
+            if (Objects.nonNull(inputStream)) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    LOGGER.log(Level.SEVERE, "", e);
+                }
             }
         }
     }

@@ -7,6 +7,7 @@ import com.zrlog.common.ZrLogConfig;
 import com.zrlog.util.ThreadUtils;
 import com.zrlog.util.ZrLogBaseNativeImageUtils;
 import com.zrlog.web.inteceptor.GlobalBaseInterceptor;
+import com.zrlog.web.inteceptor.InstallStatusInterceptor;
 import com.zrlog.web.inteceptor.MyI18nInterceptor;
 
 import java.util.List;
@@ -38,5 +39,6 @@ public class BaseWebSetup implements WebSetup {
         //all
         interceptors.add(GlobalBaseInterceptor.class);
         interceptors.add(MyI18nInterceptor.class);
+        interceptors.add(InstallStatusInterceptor.class);
     }
 }
