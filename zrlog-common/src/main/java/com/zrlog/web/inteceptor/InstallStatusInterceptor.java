@@ -8,12 +8,15 @@ import com.zrlog.common.Constants;
 import java.util.Objects;
 
 /**
- * 全局拦截对程序状态的处理，访问非安装页时都统一跳转到 /install 下
+ * 全局拦截对程序状态的处理，访问非安装的页面时，统一跳转到 /install 下
  */
 public class InstallStatusInterceptor implements HandleAbleInterceptor {
     @Override
     public boolean isHandleAble(HttpRequest request) {
         String uri = request.getUri();
+        if (uri.startsWith("/api")) {
+            return false;
+        }
         return !Objects.equals(uri, "/install") && !uri.startsWith("/install/");
     }
 
