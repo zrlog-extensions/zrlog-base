@@ -76,7 +76,7 @@ public class I18nUtil {
         }
         try {
             String key = name.replace(".properties", "").replace("i18n_", "").replace(resourceName + "_", "");
-            Map<String, Object> map = resMap.computeIfAbsent(key, k -> new HashMap<>());
+            Map<String, Object> map = resMap.computeIfAbsent(key, k -> new ConcurrentHashMap<>());
             Properties properties = new Properties();
 
             if (Objects.nonNull(inputStream)) {
