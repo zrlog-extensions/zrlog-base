@@ -144,24 +144,18 @@ public class HtmlTemplateProcessor {
     }
 
     private String tryReplace(String href) {
-        if (href.startsWith(baseUrl) || href.startsWith(staticResourceBaseUrl)) {
-            String uriPath = href;
-            //优先判断静态资源的情况
-            if (href.startsWith(staticResourceBaseUrl)) {
-                uriPath = href.substring(staticResourceBaseUrl.length());
-            } else if (href.startsWith(baseUrl)) {
-                uriPath = href.substring(baseUrl.length());
-            }
-            if (uriPath.contains("?")) {
-                uriPath = uriPath.substring(0, uriPath.lastIndexOf("?"));
-            }
-            String flag = StaticFileCacheUtils.getInstance().getFileFlagFirstByCache(uriPath);
-            if (flag != null) {
-                if (href.contains("?")) {
-                    href = href + "&t=" + flag;
-                } else {
-                    href = href + "?t=" + flag;
-                }
+        String uriPath = href;
+        if (href.startsWith(staticResourceBaseUrl)) {
+            uriPath = href.substring(staticResourceBaseUrl.length());
+        } else if (href.startsWith(baseUrl)) {
+            uriPath = href.substring(baseUrl.length());
+        }
+        String flag = StaticFileCacheUtils.getInstance().getFileFlagFirstByCache(uriPath.split("\\?")[0]);
+        if (flag != null) {
+            if (href.contains("?")) {
+                href = href + "&t=" + flag;
+            } else {
+                href = href + "?t=" + flag;
             }
         }
         return href;
