@@ -53,7 +53,7 @@ public class HtmlTemplateProcessor {
         this.request = request;
         this.adminTokenVO = adminTokenVO;
         this.startTime = request.getCreateTime();
-        this.staticResourceBaseUrl = staticResourceBaseUrl;
+        this.staticResourceBaseUrl = staticResourceBaseUrl + request.getContextPath();
     }
 
     private void handlePluginTag(Document document, Map<String, String> replaceMap) {
