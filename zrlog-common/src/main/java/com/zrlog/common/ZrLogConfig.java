@@ -190,6 +190,8 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
         serverConfig.addErrorHandle(500, new ZrLogErrorHandle(500));
         serverConfig.setRequestExecutor(ThreadUtils.newFixedThreadPool(200));
         serverConfig.setDecodeExecutor(ThreadUtils.newFixedThreadPool(20));
+        //optimize cpu usage
+        serverConfig.setSelectNowSleepTime(200);
         serverConfig.setRequestCheckerExecutor(new ScheduledThreadPoolExecutor(1, ThreadUtils::unstarted));
         serverConfig.addRequestListener(zrLogHttpRequestListener);
         //启动成功，更新一次缓存数据
