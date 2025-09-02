@@ -44,14 +44,14 @@ public class PluginCorePluginImpl extends BaseLockObject implements PluginCorePl
     private final String token;
     private volatile String pluginServerBaseUrl;
 
-    public PluginCorePluginImpl(File dbPropertiesPath) {
+    public PluginCorePluginImpl(File dbPropertiesPath,String contextPath) {
         this.dbPropertiesPath = dbPropertiesPath;
         String args = ConfigKit.get("pluginJvmArgs", "-Xms8m -Xmx64m -Dfile.encoding=UTF-8");
         if (EnvKit.isDevMode()) {
             args += " -Dsws.run.mode=dev";
         }
         this.pluginJvmArgs = args;
-        this.pluginCoreProcess = new PluginCoreProcessImpl(this::stop);
+        this.pluginCoreProcess = new PluginCoreProcessImpl(this::stop,contextPath);
         this.token = UUID.randomUUID().toString().replace("-", "");
     }
 

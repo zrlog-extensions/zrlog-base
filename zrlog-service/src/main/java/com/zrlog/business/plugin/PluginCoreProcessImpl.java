@@ -30,6 +30,7 @@ public class PluginCoreProcessImpl implements PluginCoreProcess {
     //插件服务存放的物理路径
     private final File pluginsFolder;
     private boolean unzipped = false;
+    private final String contextPath;
 
 
     private File getLogFile(boolean error) {
@@ -46,7 +47,8 @@ public class PluginCoreProcessImpl implements PluginCoreProcess {
         return logFile;
     }
 
-    public PluginCoreProcessImpl(Runnable onStopRunnable) {
+    public PluginCoreProcessImpl(Runnable onStopRunnable, String contextPath) {
+        this.contextPath = contextPath;
         infoLogFile = getLogFile(false);
         errorLogFile = getLogFile(true);
         this.onStopRunnable = onStopRunnable;
@@ -126,6 +128,12 @@ public class PluginCoreProcessImpl implements PluginCoreProcess {
             args.add(NativeUtils.getRealFileArch());
         } else {
             args.add("-");
+        }
+        if (Objects.isNull(contextPath) || contextPath.isEmpty() || contextPath.equals("/")) {
+            //not config
+            args.add("#");
+        } else {
+            args.add(contextPath);
         }
         //参数位置顺序需要固定
         args.add("-Duser.dir=" + getPluginWorkerPath(pluginsFolder));
