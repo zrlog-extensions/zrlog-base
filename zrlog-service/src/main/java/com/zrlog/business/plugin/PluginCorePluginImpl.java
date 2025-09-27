@@ -44,14 +44,14 @@ public class PluginCorePluginImpl extends BaseLockObject implements PluginCorePl
     private final String token;
     private volatile String pluginServerBaseUrl;
 
-    public PluginCorePluginImpl(File dbPropertiesPath,String contextPath) {
+    public PluginCorePluginImpl(File dbPropertiesPath, String contextPath) {
         this.dbPropertiesPath = dbPropertiesPath;
         String args = ConfigKit.get("pluginJvmArgs", "-Xms8m -Xmx64m -Dfile.encoding=UTF-8");
         if (EnvKit.isDevMode()) {
             args += " -Dsws.run.mode=dev";
         }
         this.pluginJvmArgs = args;
-        this.pluginCoreProcess = new PluginCoreProcessImpl(this::stop,contextPath);
+        this.pluginCoreProcess = new PluginCoreProcessImpl(this::stop, contextPath);
         this.token = UUID.randomUUID().toString().replace("-", "");
     }
 
@@ -113,17 +113,13 @@ public class PluginCorePluginImpl extends BaseLockObject implements PluginCorePl
     public CloseResponseHandle getContext(String uri, HttpMethod method, HttpRequest request, AdminTokenVO adminTokenVO) throws IOException, URISyntaxException, InterruptedException {
         waitToStarted();
         CloseResponseHandle handle = new CloseResponseHandle();
+        String appendQueryStr = StringUtils.isEmpty(request.getQueryStr()) ? "?" + request.getQueryStr() : "";
+        String forwardUrl = pluginServerBaseUrl + uri + appendQueryStr;
         //GET请求不关心request.getInputStream() 的数据
         if (method.equals(request.getMethod()) && method == HttpMethod.GET) {
-            HttpUtil.getInstance().sendGetRequest(pluginServerBaseUrl + uri, request.getParamMap(), handle, genHeaderMapByRequest(request, adminTokenVO));
+            HttpUtil.getInstance().sendGetRequest(forwardUrl, new HashMap<>(), handle, genHeaderMapByRequest(request, adminTokenVO));
         } else {
-            //如果是表单数据提交不关心请求头，反之将所有请求头都发到插件服务
-            if ("application/x-www-form-urlencoded".equals(request.getHeader("Content-Type"))) {
-                HttpUtil.getInstance().sendPostRequest(pluginServerBaseUrl + uri, request.getParamMap(), handle, genHeaderMapByRequest(request, adminTokenVO));
-            } else {
-                String appendQueryStr = StringUtils.isEmpty(request.getQueryStr()) ? "?" + request.getQueryStr() : "";
-                HttpUtil.getInstance().sendPostRequest(pluginServerBaseUrl + uri + appendQueryStr, IOUtil.getByteByInputStream(request.getInputStream()), handle, genHeaderMapByRequest(request, adminTokenVO)).getT();
-            }
+            HttpUtil.getInstance().sendPostRequest(forwardUrl, IOUtil.getByteByInputStream(request.getInputStream()), handle, genHeaderMapByRequest(request, adminTokenVO));
         }
         return handle;
     }
