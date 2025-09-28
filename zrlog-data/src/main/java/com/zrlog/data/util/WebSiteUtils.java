@@ -27,7 +27,6 @@ public class WebSiteUtils {
         info.setDisable_comment_status(Objects.equals(info.getDisable_comment_status(), true));
         info.setGenerator_html_status(Objects.equals(info.getGenerator_html_status(), true));
         info.setArticle_thumbnail_status(Objects.equals(info.getArticle_thumbnail_status(), true));
-        info.setComment_plugin_status(Objects.equals(info.getComment_plugin_status(), true));
         info.setAdmin_compactMode(Objects.equals(info.getAdmin_compactMode(), true));
         if (StringUtils.isEmpty(info.getAdmin_color_primary())) {
             info.setAdmin_color_primary(DEFAULT_COLOR_PRIMARY_COLOR);
@@ -42,7 +41,6 @@ public class WebSiteUtils {
         if (changyanStatus) {
             if (StringUtils.isEmpty(info.getComment_plugin_name())) {
                 info.setComment_plugin_name("changyan");
-                info.setComment_plugin_status(true);
             }
         }
         return info;
