@@ -1,20 +1,13 @@
 package com.zrlog.data.dto;
 
-/**
- * commentId as id,userComment,header,commTime,userMail,userHome,userIp,userName,hide,logId
- */
-public class CommentDTO {
+public class VisitorCommentDTO {
 
     private Long id;
     private String userComment;
     private String header;
     private String commTime;
-    private String userMail;
     private String userHome;
-    private String userIp;
     private String userName;
-    private Boolean hide;
-    private Long logId;
 
     public Long getId() {
         return id;
@@ -48,14 +41,6 @@ public class CommentDTO {
         this.commTime = commTime;
     }
 
-    public String getUserMail() {
-        return userMail;
-    }
-
-    public void setUserMail(String userMail) {
-        this.userMail = userMail;
-    }
-
     public String getUserHome() {
         return userHome;
     }
@@ -64,35 +49,11 @@ public class CommentDTO {
         this.userHome = userHome;
     }
 
-    public String getUserIp() {
-        return userIp;
-    }
-
-    public void setUserIp(String userIp) {
-        this.userIp = userIp;
-    }
-
     public String getUserName() {
         return userName;
     }
 
     public void setUserName(String userName) {
         this.userName = userName;
-    }
-
-    public Boolean getHide() {
-        return hide;
-    }
-
-    public void setHide(Boolean hide) {
-        this.hide = hide;
-    }
-
-    public Long getLogId() {
-        return logId;
-    }
-
-    public void setLogId(Long logId) {
-        this.logId = logId;
     }
 }

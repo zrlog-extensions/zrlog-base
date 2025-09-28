@@ -5,6 +5,7 @@ import com.hibegin.common.dao.ResultValueConvertUtils;
 import com.hibegin.common.dao.dto.PageData;
 import com.hibegin.common.dao.dto.PageRequest;
 import com.zrlog.data.dto.CommentDTO;
+import com.zrlog.data.dto.VisitorCommentDTO;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -54,6 +55,14 @@ public class Comment extends BasePageableDAO {
             comment.put("commTime", ResultValueConvertUtils.formatDate(comment.get("commTime"), "yyyy-MM-dd HH:mm:ss"));
         }
         return comments;
+    }
+
+    public List<VisitorCommentDTO> visitorFindAllByLogId(int logId) throws SQLException {
+        List<Map<String, Object>> comments = queryListWithParams("select * from " + tableName + " where logId=?", logId);
+        for (Map<String, Object> comment : comments) {
+            comment.put("commTime", ResultValueConvertUtils.formatDate(comment.get("commTime"), "yyyy-MM-dd HH:mm:ss"));
+        }
+        return doConvertList(comments, VisitorCommentDTO.class);
     }
 
     public void doRead(long id) {

@@ -77,7 +77,7 @@ public class Log extends BasePageableDAO implements Serializable {
             if (ResultValueConvertUtils.toBoolean(detail.getCanComment()) && !Constants.zrLogConfig.getCacheService().getPublicWebSiteInfo().getDisable_comment_status()) {
                 futures.add(CompletableFuture.runAsync(() -> {
                     try {
-                        detail.setComments(new Comment().findAllByLogId(detail.getId().intValue()));
+                        detail.setComments(new Comment().visitorFindAllByLogId(detail.getId().intValue()));
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     }

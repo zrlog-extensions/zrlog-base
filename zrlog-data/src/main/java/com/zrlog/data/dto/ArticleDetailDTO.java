@@ -3,7 +3,6 @@ package com.zrlog.data.dto;
 import com.zrlog.common.vo.Outline;
 
 import java.util.List;
-import java.util.Map;
 
 public class ArticleDetailDTO extends ArticleBasicDTO {
 
@@ -11,7 +10,7 @@ public class ArticleDetailDTO extends ArticleBasicDTO {
     private List<TagsDTO> tags;
     private LastLogDTO lastLog;
     private NextLogDTO nextLog;
-    private List<Map<String, Object>> comments;
+    private List<VisitorCommentDTO> comments;
     private String tocHtml;
     private List<Outline> toc;
 
@@ -129,11 +128,11 @@ public class ArticleDetailDTO extends ArticleBasicDTO {
         }
     }
 
-    public List<Map<String, Object>> getComments() {
+    public List<VisitorCommentDTO> getComments() {
         return comments;
     }
 
-    public void setComments(List<Map<String, Object>> comments) {
+    public void setComments(List<VisitorCommentDTO> comments) {
         this.comments = comments;
     }
 
