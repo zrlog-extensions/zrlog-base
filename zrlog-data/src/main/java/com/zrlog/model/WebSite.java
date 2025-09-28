@@ -34,7 +34,6 @@ public class WebSite extends DAO {
     public static final String admin_compactMode = "admin_compactMode";
     public static final String rows = "rows";
     public static final String session_timeout = "session_timeout";
-    public static final String comment_plugin_status = "comment_plugin_status";
 
     //string
     public static final String appId = "appId";
@@ -57,7 +56,7 @@ public class WebSite extends DAO {
     static {
 
         String[] listNum = new String[]{generator_html_status, disable_comment_status,
-                article_thumbnail_status, article_auto_digest_length, admin_darkMode, admin_compactMode, rows, session_timeout, comment_plugin_status};
+                article_thumbnail_status, article_auto_digest_length, admin_darkMode, admin_compactMode, rows, session_timeout};
         websitePublicQueryKeys = new ArrayList<>();
         //str
         websitePublicQueryStrKeys = Arrays.asList(appId, changyan_status, title, second_title, keywords, description, host,

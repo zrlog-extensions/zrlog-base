@@ -28,7 +28,6 @@ public class PublicWebSiteInfo implements Serializable {
     private String robotRuleContent;
     private Long session_timeout;
     private String comment_plugin_name;
-    private Boolean comment_plugin_status;
     private String system_notification;
 
     public String getAppId() {
@@ -207,14 +206,6 @@ public class PublicWebSiteInfo implements Serializable {
 
     public void setComment_plugin_name(String comment_plugin_name) {
         this.comment_plugin_name = comment_plugin_name;
-    }
-
-    public Boolean getComment_plugin_status() {
-        return comment_plugin_status;
-    }
-
-    public void setComment_plugin_status(Boolean comment_plugin_status) {
-        this.comment_plugin_status = comment_plugin_status;
     }
 
     public String getSystem_notification() {
