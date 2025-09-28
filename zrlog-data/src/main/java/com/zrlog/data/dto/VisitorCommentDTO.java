@@ -8,6 +8,7 @@ public class VisitorCommentDTO {
     private String commTime;
     private String userHome;
     private String userName;
+    private String gravatarId;
 
     public Long getId() {
         return id;
@@ -55,5 +56,13 @@ public class VisitorCommentDTO {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getGravatarId() {
+        return gravatarId;
+    }
+
+    public void setGravatarId(String gravatarId) {
+        this.gravatarId = gravatarId;
     }
 }

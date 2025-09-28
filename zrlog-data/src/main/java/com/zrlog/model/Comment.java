@@ -4,6 +4,7 @@ import com.hibegin.common.dao.BasePageableDAO;
 import com.hibegin.common.dao.ResultValueConvertUtils;
 import com.hibegin.common.dao.dto.PageData;
 import com.hibegin.common.dao.dto.PageRequest;
+import com.hibegin.common.util.SecurityUtils;
 import com.zrlog.data.dto.CommentDTO;
 import com.zrlog.data.dto.VisitorCommentDTO;
 
@@ -12,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 对应数据里面的comment表，用于存放文章对应的评论信息。
@@ -61,6 +63,12 @@ public class Comment extends BasePageableDAO {
         List<Map<String, Object>> comments = queryListWithParams("select * from " + tableName + " where logId=?", logId);
         for (Map<String, Object> comment : comments) {
             comment.put("commTime", ResultValueConvertUtils.formatDate(comment.get("commTime"), "yyyy-MM-dd HH:mm:ss"));
+            String email = (String) comment.get("userMail");
+            if (Objects.isNull(email)) {
+                comment.put("gravatarId", "");
+            } else {
+                comment.put("gravatarId", SecurityUtils.md5(email));
+            }
         }
         return doConvertList(comments, VisitorCommentDTO.class);
     }
