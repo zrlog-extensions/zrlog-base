@@ -116,11 +116,6 @@ public class ParseUtil {
         return defaultValue;
     }
 
-    public static boolean isGarbageComment(String str) {
-        // TODO　如何过滤垃圾信息
-        return false;
-    }
-
     /**
      * 输入一段纯文本，通过指定关键字提取相关的上下文
      */
