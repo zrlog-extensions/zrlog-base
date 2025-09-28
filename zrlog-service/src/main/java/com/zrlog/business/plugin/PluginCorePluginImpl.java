@@ -113,8 +113,7 @@ public class PluginCorePluginImpl extends BaseLockObject implements PluginCorePl
     public CloseResponseHandle getContext(String uri, HttpMethod method, HttpRequest request, AdminTokenVO adminTokenVO) throws IOException, URISyntaxException, InterruptedException {
         waitToStarted();
         CloseResponseHandle handle = new CloseResponseHandle();
-        String appendQueryStr = StringUtils.isEmpty(request.getQueryStr()) ? "?" + request.getQueryStr() : "";
-        String forwardUrl = pluginServerBaseUrl + uri + appendQueryStr;
+        String forwardUrl = pluginServerBaseUrl + uri + (uri.contains("?") ? "&" : "?") + request.getQueryStr();
         //GET请求不关心request.getInputStream() 的数据
         if (method.equals(request.getMethod()) && method == HttpMethod.GET) {
             HttpUtil.getInstance().sendGetRequest(forwardUrl, new HashMap<>(), handle, genHeaderMapByRequest(request, adminTokenVO));
