@@ -43,6 +43,9 @@ public class WebSiteUtils {
                 info.setComment_plugin_name("changyan");
             }
         }
+        if (StringUtils.isEmpty(info.getComment_plugin_name())) {
+            info.setComment_plugin_name("comment");
+        }
         return info;
     }
 }
