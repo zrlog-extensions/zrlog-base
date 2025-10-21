@@ -39,7 +39,7 @@ public class CacheServiceImpl implements CacheService {
 
     private final AtomicLong version;
     private volatile BaseDataInitVO cacheInit;
-    private final String CACHE_KEY = "base_data_init_cache_v2";
+    private final String CACHE_KEY = "base_data_init_cache_v3";
     private final long sqlVersion;
     private final Lock lock = new DistributedLock("base-data-init-cache");
 
