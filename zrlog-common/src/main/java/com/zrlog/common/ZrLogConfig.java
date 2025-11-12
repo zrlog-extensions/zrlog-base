@@ -28,7 +28,9 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
+/**
+ * 全局服务配置，包含 数据库，插件，更新的实现者等
+ */
 public abstract class ZrLogConfig extends AbstractServerConfig {
 
     protected static final Logger LOGGER = LoggerUtil.getLogger(ZrLogConfig.class);

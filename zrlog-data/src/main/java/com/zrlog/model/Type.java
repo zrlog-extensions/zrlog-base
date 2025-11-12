@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 存放文章的分类信息，对应数据的type表
+ * 存放文章的分类信息，对应数据的 type 表
  */
 public class Type extends BasePageableDAO {
 

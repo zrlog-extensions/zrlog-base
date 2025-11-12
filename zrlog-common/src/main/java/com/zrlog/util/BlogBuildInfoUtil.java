@@ -17,8 +17,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * 读取ZrLog构建信息，及build.properties。
- * 注 build.properties 为使用CI工具自动加入的，git代码仓库并没有该文件。
+ * 读取 ZrLog 构建信息，及 build.properties。
+ * 注 build.properties 为使用 CI 工具自动加入的，git代码仓库并没有该文件。
  */
 public class BlogBuildInfoUtil {
 

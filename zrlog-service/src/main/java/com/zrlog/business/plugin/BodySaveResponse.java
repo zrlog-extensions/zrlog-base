@@ -10,6 +10,9 @@ import java.util.Objects;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * 静态化核心逻辑，拦截 httpResponse 的 body 写入到文件
+ */
 public class BodySaveResponse extends SimpleHttpResponse implements AutoCloseable {
 
     private OutputStream outputStream;

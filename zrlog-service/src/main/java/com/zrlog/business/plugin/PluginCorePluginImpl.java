@@ -29,11 +29,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * 运行ZrLog的插件，当 conf/plugins/这里目录下面不存在插件核心服务时，会通过网络请求下载最新的插件核心服务，也可以通过
- * 这种方式进行插件的及时更新。
- * 插件核心服务通过调用系统命令的命令进行启动的。
- */
 public class PluginCorePluginImpl extends BaseLockObject implements PluginCorePlugin {
 
     private static final Logger LOGGER = LoggerUtil.getLogger(PluginCorePluginImpl.class);

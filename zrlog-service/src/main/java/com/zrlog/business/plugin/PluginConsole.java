@@ -11,6 +11,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+/**
+ * 读取 plugin 日志文件，并输出到控制台
+ */
 public class PluginConsole implements AutoCloseable {
 
     private static final Logger LOGGER = LoggerUtil.getLogger(PluginConsole.class);

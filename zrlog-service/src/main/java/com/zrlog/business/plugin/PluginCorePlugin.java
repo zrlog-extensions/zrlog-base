@@ -12,6 +12,11 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 运行 ZrLog 的插件，当 conf/plugins/ 这里目录下面不存在插件核心服务时，会通过网络请求下载最新的插件核心服务，也可以通过
+ * 这种方式进行插件的及时更新。
+ * 插件核心服务通过调用系统命令的命令进行启动的。
+ */
 public interface PluginCorePlugin extends IPlugin {
 
     boolean refreshCache(String cacheVersion, HttpRequest request);

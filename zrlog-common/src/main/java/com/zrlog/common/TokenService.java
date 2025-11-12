@@ -4,6 +4,9 @@ import com.hibegin.http.server.api.HttpRequest;
 import com.hibegin.http.server.api.HttpResponse;
 import com.zrlog.common.vo.AdminFullTokenVO;
 
+/**
+ * 验证 token 相关相关逻辑
+ */
 public interface TokenService {
 
 

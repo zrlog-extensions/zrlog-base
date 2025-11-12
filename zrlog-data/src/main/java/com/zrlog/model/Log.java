@@ -25,7 +25,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
 /**
- * 存放文章数据，对应数据的log表。
+ * 存放文章数据，对应数据的 log 表。
  */
 public class Log extends BasePageableDAO implements Serializable {
 

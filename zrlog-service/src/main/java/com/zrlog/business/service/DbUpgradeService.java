@@ -18,6 +18,9 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * 程序升级设计到数据表结构变更，数据的更新
+ */
 public class DbUpgradeService {
     public static final Integer SQL_VERSION = 19;
 

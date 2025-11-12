@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 存放用于管理员的相关信息，对应数据的user表
+ * 存放用于管理员的相关信息，对应数据的 user 表
  */
 public class User extends BasePageableDAO {
 

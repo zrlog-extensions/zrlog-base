@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * 对应数据里面的comment表，用于存放文章对应的评论信息。
+ * 对应数据里面的 comment 表，用于存放文章对应的评论信息。
  */
 public class Comment extends BasePageableDAO {
 

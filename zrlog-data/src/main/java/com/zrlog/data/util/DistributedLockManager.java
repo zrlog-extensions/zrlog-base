@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 对分布式锁进行管理
+ */
 public class DistributedLockManager {
 
     private static final DistributedLockManager instance = new DistributedLockManager();

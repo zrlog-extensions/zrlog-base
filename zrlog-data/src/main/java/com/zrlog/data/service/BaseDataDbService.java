@@ -23,6 +23,9 @@ import java.util.concurrent.Executor;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+/**
+ * 全局基础数据的查询
+ */
 public class BaseDataDbService {
 
     private static final Logger LOGGER = LoggerUtil.getLogger(BaseDataDbService.class);

@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * 存放导航条的信息，对应数据库的lognav表
+ * 存放导航条的信息，对应数据库的 lognav 表
  */
 public class LogNav extends BasePageableDAO {
 

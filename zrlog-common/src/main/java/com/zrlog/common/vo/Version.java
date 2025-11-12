@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 这个对应了 last.runType.json 里面的字段
+ * 这个对应了 last.version.json 里面的字段
  */
 public class Version implements Serializable {
 

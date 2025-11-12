@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * 存放程序的友情链接，对应数据库link表
+ * 存放程序的友情链接，对应数据库 link 表
  */
 public class Link extends BasePageableDAO {
 

@@ -5,7 +5,7 @@ import com.zrlog.common.vo.AdminTokenVO;
 import java.util.Objects;
 
 /**
- * 使用ThreadLocal作多个类之间取值，和设值。而不是向传统方式需要获得HttpRequest对象才能取值，设值。
+ * 使用 ThreadLocal 作多个类之间取值，和设值。而不是向传统方式需要获得 HttpRequest 对象才能取值，设值。
  */
 public class AdminTokenThreadLocal {
 

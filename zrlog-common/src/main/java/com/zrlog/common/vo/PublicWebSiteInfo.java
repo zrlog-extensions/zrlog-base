@@ -3,6 +3,9 @@ package com.zrlog.common.vo;
 
 import java.io.Serializable;
 
+/**
+ * 存放全局对外可以访问的配置
+ */
 public class PublicWebSiteInfo implements Serializable {
 
     private String appId;

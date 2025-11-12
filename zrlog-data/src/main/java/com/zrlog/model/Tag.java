@@ -13,7 +13,7 @@ import java.util.*;
 import java.util.logging.Logger;
 
 /**
- * 统计文章中标签出现的次数，方便展示。文章的数据发生变化后，会自动更新记录，无需额外程序控制，对应数据库的tag表
+ * 统计文章中标签出现的次数，方便展示。文章的数据发生变化后，会自动更新记录，无需额外程序控制，对应数据库的 tag 表
  */
 public class Tag extends BasePageableDAO {
 
