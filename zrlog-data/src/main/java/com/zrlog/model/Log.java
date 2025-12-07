@@ -10,6 +10,7 @@ import com.hibegin.common.dao.dto.PageRequestImpl;
 import com.hibegin.common.util.BeanUtil;
 import com.hibegin.common.util.StringUtils;
 import com.zrlog.common.Constants;
+import com.zrlog.data.exception.DAOException;
 import com.zrlog.data.dto.ArticleBasicDTO;
 import com.zrlog.data.dto.ArticleDetailDTO;
 import com.zrlog.util.ParseUtil;
@@ -79,7 +80,7 @@ public class Log extends BasePageableDAO implements Serializable {
                     try {
                         detail.setComments(new Comment().visitorFindAllByLogId(detail.getId().intValue()));
                     } catch (SQLException e) {
-                        throw new RuntimeException(e);
+                        throw new DAOException(e);
                     }
                 }, executor));
             } else {
@@ -89,14 +90,14 @@ public class Log extends BasePageableDAO implements Serializable {
                 try {
                     detail.setLastLog(findLastLog(Math.toIntExact(detail.getId())));
                 } catch (SQLException e) {
-                    throw new RuntimeException(e);
+                    throw new DAOException(e);
                 }
             }, executor));
             futures.add(CompletableFuture.runAsync(() -> {
                 try {
                     detail.setNextLog(findNextLog(Math.toIntExact(detail.getId())));
                 } catch (SQLException e) {
-                    throw new RuntimeException(e);
+                    throw new DAOException(e);
                 }
             }, executor));
             CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
@@ -296,7 +297,7 @@ public class Log extends BasePageableDAO implements Serializable {
         try {
             return ((Number) queryFirstObj("select count(1) as count from " + tableName + " where typeId=?", typeId)).longValue();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DAOException(e);
         }
     }
 

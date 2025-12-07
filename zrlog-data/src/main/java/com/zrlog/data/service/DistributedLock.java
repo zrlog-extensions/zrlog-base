@@ -2,6 +2,7 @@ package com.zrlog.data.service;
 
 import com.hibegin.common.dao.ResultValueConvertUtils;
 import com.hibegin.common.util.LoggerUtil;
+import com.zrlog.data.exception.DAOException;
 import com.zrlog.model.WebSite;
 
 import java.sql.SQLException;
@@ -76,7 +77,7 @@ public class DistributedLock implements Lock {
         try {
             new WebSite().set("name", lockKey).delete();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DAOException(e);
         }
     }
 

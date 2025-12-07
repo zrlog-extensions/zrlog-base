@@ -11,6 +11,7 @@ import com.zrlog.common.cache.dto.TagDTO;
 import com.zrlog.common.cache.dto.TypeDTO;
 import com.zrlog.common.cache.dto.UserBasicDTO;
 import com.zrlog.common.cache.vo.BaseDataInitVO;
+import com.zrlog.data.exception.DAOException;
 import com.zrlog.common.vo.PublicWebSiteInfo;
 import com.zrlog.data.service.BaseDataDbService;
 import com.zrlog.data.service.DistributedLock;
@@ -107,7 +108,7 @@ public class CacheServiceImpl implements CacheService {
                     LOGGER.warning("RefreshInitDataCache [" + version.get() + "] get lock missing");
                 }
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                throw new DAOException(e);
             }
             if (!Objects.equals(version.get(), expectVersion)) {
                 if (Constants.debugLoggerPrintAble()) {
@@ -145,7 +146,7 @@ public class CacheServiceImpl implements CacheService {
         try {
             return new Type().findAll();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DAOException(e);
         }
     }
 
@@ -157,7 +158,7 @@ public class CacheServiceImpl implements CacheService {
         try {
             return new Tag().findAll();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DAOException(e);
         }
     }
 
@@ -172,7 +173,7 @@ public class CacheServiceImpl implements CacheService {
         try {
             return ResultBeanUtils.convert(new User().loadById(userId), UserBasicDTO.class);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DAOException(e);
         }
     }
 

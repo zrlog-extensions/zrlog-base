@@ -12,6 +12,7 @@ import com.zrlog.common.cache.vo.Archive;
 import com.zrlog.common.cache.vo.BaseDataInitVO;
 import com.zrlog.common.cache.vo.HotLogBasicInfoEntry;
 import com.zrlog.common.cache.vo.HotTypeLogInfo;
+import com.zrlog.data.exception.DAOException;
 import com.zrlog.common.vo.PublicWebSiteInfo;
 import com.zrlog.data.dto.ArticleBasicDTO;
 import com.zrlog.model.*;
@@ -71,7 +72,7 @@ public class BaseDataDbService {
             try {
                 cacheInit.setLinks(new Link().findAll());
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                throw new DAOException(e);
             }
         }, executor));
         futures.add(CompletableFuture.runAsync(() -> {
@@ -94,7 +95,7 @@ public class BaseDataDbService {
                     }, executor));
                 }
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                throw new DAOException(e);
             }
         }, executor));
         futures.add(CompletableFuture.runAsync(() -> {
@@ -105,14 +106,14 @@ public class BaseDataDbService {
             try {
                 cacheInit.setLogNavs(new LogNav().findAll());
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                throw new DAOException(e);
             }
         }, executor));
         futures.add(CompletableFuture.runAsync(() -> {
             try {
                 cacheInit.setPlugins(new Plugin().findAll());
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                throw new DAOException(e);
             }
         }, executor));
         futures.add(CompletableFuture.runAsync(() -> {
@@ -120,21 +121,21 @@ public class BaseDataDbService {
                 cacheInit.setArchives(new Log().getArchives());
                 cacheInit.setArchiveList(getConvertedArchives(cacheInit.getArchives()));
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                throw new DAOException(e);
             }
         }, executor));
         futures.add(CompletableFuture.runAsync(() -> {
             try {
                 cacheInit.setUsers(new User().findBasicAll());
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                throw new DAOException(e);
             }
         }, executor));
         futures.add(CompletableFuture.runAsync(() -> {
             try {
                 cacheInit.setTags(new Tag().refreshTag());
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                throw new DAOException(e);
             }
             statistics.setTotalTagSize((long) cacheInit.getTags().size());
         }, executor));

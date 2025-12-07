@@ -7,6 +7,7 @@ import com.hibegin.common.dao.dto.PageRequest;
 import com.hibegin.common.util.LoggerUtil;
 import com.hibegin.common.util.StringUtils;
 import com.zrlog.common.cache.dto.TagDTO;
+import com.zrlog.data.exception.DAOException;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -143,7 +144,7 @@ public class Tag extends BasePageableDAO {
                     new Tag().set("count", (int) t.get("count") + 1).updateById(t.get(pk));
                 }
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                throw new DAOException(e);
             }
         }
     }
@@ -160,7 +161,7 @@ public class Tag extends BasePageableDAO {
                     }
                 }
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                throw new DAOException(e);
             }
 
         }

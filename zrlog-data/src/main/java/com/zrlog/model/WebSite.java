@@ -8,6 +8,7 @@ import com.hibegin.common.dao.DataSourceWrapper;
 import com.hibegin.common.dao.ResultBeanUtils;
 import com.hibegin.common.util.BeanUtil;
 import com.hibegin.common.util.StringUtils;
+import com.zrlog.data.exception.DAOException;
 import com.zrlog.common.vo.PublicWebSiteInfo;
 import com.zrlog.data.dto.FaviconBase64DTO;
 import com.zrlog.data.util.WebSiteUtils;
@@ -117,7 +118,7 @@ public class WebSite extends DAO {
         try {
             lw = queryListWithParams("select name,remark,value from " + tableName + " where name in " + "(" + sj + ")", params);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DAOException(e);
         }
         return fillToMap(lw, names);
     }

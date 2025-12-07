@@ -7,6 +7,7 @@ import com.hibegin.common.dao.dto.PageRequest;
 import com.hibegin.common.util.SecurityUtils;
 import com.zrlog.data.dto.CommentDTO;
 import com.zrlog.data.dto.VisitorCommentDTO;
+import com.zrlog.data.exception.DAOException;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -77,7 +78,7 @@ public class Comment extends BasePageableDAO {
         try {
             new Comment().set("have_read", true).updateById(id);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DAOException(e);
         }
     }
 }
