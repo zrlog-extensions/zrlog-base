@@ -131,7 +131,8 @@ public class I18nUtil {
         if (Objects.nonNull(request)) {
             if (request.getUri().contains(Constants.ADMIN_URI_BASE_PATH + "/")
                     || request.getUri().contains("/api" + Constants.ADMIN_URI_BASE_PATH + "/")
-                    || request.getUri().contains("/api/public/adminResource")
+                    || request.getUri().contains(Constants.API_PUBLIC_VERSION)
+                    || request.getUri().contains(Constants.API_PUBLIC_ADMIN_RESOURCE)
             ) {
                 locale = Constants.getLanguage();
             } else {

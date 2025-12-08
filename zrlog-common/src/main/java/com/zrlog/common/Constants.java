@@ -13,6 +13,8 @@ import java.util.Objects;
 public class Constants {
 
     public static final String ADMIN_URI_BASE_PATH = "/admin";
+    public static final String API_PUBLIC_ADMIN_RESOURCE = "/api/public/adminResource";
+    public static final String API_PUBLIC_VERSION = "/api/public/version";
     public static final String TEMPLATE_BASE_PATH = "/include/templates/";
     public static final String DEFAULT_TEMPLATE_PATH = TEMPLATE_BASE_PATH + "default";
     public static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd HH:mm:ssXXX";
