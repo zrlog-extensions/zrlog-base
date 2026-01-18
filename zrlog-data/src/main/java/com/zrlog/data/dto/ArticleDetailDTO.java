@@ -7,7 +7,6 @@ import java.util.List;
 public class ArticleDetailDTO extends ArticleBasicDTO {
 
     //
-    private List<TagsDTO> tags;
     private LastLogDTO lastLog;
     private NextLogDTO nextLog;
     private List<VisitorCommentDTO> comments;
@@ -20,14 +19,6 @@ public class ArticleDetailDTO extends ArticleBasicDTO {
 
     public void setToc(List<Outline> toc) {
         this.toc = toc;
-    }
-
-    public List<TagsDTO> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<TagsDTO> tags) {
-        this.tags = tags;
     }
 
     public LastLogDTO getLastLog() {

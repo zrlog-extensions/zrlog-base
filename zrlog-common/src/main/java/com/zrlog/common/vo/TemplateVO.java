@@ -1,5 +1,7 @@
 package com.zrlog.common.vo;
 
+import com.zrlog.business.type.TemplateType;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -20,8 +22,10 @@ public class TemplateVO {
     private boolean preview;
     private TemplateConfigMap config;
     private String viewType;
+    private TemplateType templateType;
     private boolean use;
     private String adminPreviewImage;
+    private boolean classpathTemplate;
     private List<String> staticResources = new ArrayList<>();
 
     public String getViewType() {
@@ -229,5 +233,21 @@ public class TemplateVO {
 
     public void setStaticResources(List<String> staticResources) {
         this.staticResources = staticResources;
+    }
+
+    public TemplateType getTemplateType() {
+        return templateType;
+    }
+
+    public void setTemplateType(TemplateType templateType) {
+        this.templateType = templateType;
+    }
+
+    public boolean isClasspathTemplate() {
+        return classpathTemplate;
+    }
+
+    public void setClasspathTemplate(boolean classpathTemplate) {
+        this.classpathTemplate = classpathTemplate;
     }
 }

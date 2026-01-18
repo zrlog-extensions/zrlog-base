@@ -5,11 +5,14 @@ import com.hibegin.common.util.EnvKit;
 import com.hibegin.common.util.Pid;
 import com.hibegin.common.util.StringUtils;
 import com.hibegin.http.server.util.NativeImageUtils;
+import com.zrlog.business.version.UpgradeVersionHandler;
+import com.zrlog.business.version.UpgradeVersionHandlerHelpers;
 import com.zrlog.common.Constants;
 import com.zrlog.common.cache.dto.*;
 import com.zrlog.common.cache.vo.Archive;
 import com.zrlog.common.cache.vo.BaseDataInitVO;
 import com.zrlog.common.cache.vo.HotLogBasicInfoEntry;
+import com.zrlog.common.cache.vo.HotTypeLogInfo;
 import com.zrlog.common.vo.*;
 import org.apache.commons.dbutils.BasicRowProcessor;
 
@@ -47,12 +50,12 @@ public class ZrLogBaseNativeImageUtils {
         if (EnvKit.isFaaSMode()) {
             return ZrLogUtil.getFaaSRoot() + "/zrlog";
         }
-        String envBinFile = System.getenv("_");
-        if (Objects.isNull(envBinFile)) {
-            return "zrlog";
+        if (BlogBuildInfoUtil.getFileArch().contains("Windows")) {
+            return getWindowsExecutablePath();
         }
+        String envBinFile = System.getenv("_");
         if (StringUtils.isEmpty(envBinFile)) {
-            envBinFile = getWindowsExecutablePath();
+            return "zrlog";
         }
         String execFile = envBinFile.replace("./", "");
         if (!execFile.startsWith(Constants.getZrLogHome())) {
@@ -89,9 +92,14 @@ public class ZrLogBaseNativeImageUtils {
         regWithGetMethod(TypeDTO.class,
                 LinkDTO.class, LogNavDTO.class, TagDTO.class, PluginDTO.class,
                 BaseDataInitVO.class, BaseDataInitVO.Statistics.class,
-                HotLogBasicInfoEntry.class, PageData.class,
+                HotLogBasicInfoEntry.class, PageData.class, HotTypeLogInfo.class,
                 Version.class, Archive.class, Outline.class,
-                PublicWebSiteInfo.class);
+                PublicWebSiteInfo.class, UserBasicDTO.class);
+
+        //register version update
+        for (int i = 1; i <= UpgradeVersionHandler.SQL_VERSION; i++) {
+            UpgradeVersionHandlerHelpers.getUpgradeVersionHandler(i);
+        }
     }
 
     public static void regWithGetMethod(Class<?>... objects) {

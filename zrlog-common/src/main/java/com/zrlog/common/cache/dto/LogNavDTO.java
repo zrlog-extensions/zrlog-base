@@ -10,6 +10,7 @@ public class LogNavDTO implements Serializable {
     private Long sort;
     private Long id;
     private Boolean current;
+    private String icon;
 
     public String getNavName() {
         return navName;
@@ -57,5 +58,13 @@ public class LogNavDTO implements Serializable {
 
     public void setCurrent(Boolean current) {
         this.current = current;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 }

@@ -1,4 +1,4 @@
-package com.zrlog.business.util;
+package com.zrlog.business.template.util;
 
 import com.hibegin.common.util.EnvKit;
 import com.hibegin.common.util.LoggerUtil;

@@ -4,7 +4,7 @@ import com.hibegin.common.util.FileUtils;
 import com.hibegin.common.util.LoggerUtil;
 import com.hibegin.common.util.SecurityUtils;
 import com.hibegin.http.server.util.PathUtil;
-import com.zrlog.common.Constants;
+import com.zrlog.business.service.TemplateInfoHelper;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -76,6 +76,10 @@ public class StaticFileCacheUtils {
     }
 
     public String getFileFlagFirstByCache(String uri) {
+        //外部链接，不查询缓存 id
+        if (uri.startsWith("https://") || uri.startsWith("http://")) {
+            return null;
+        }
         if (uri.startsWith("/")) {
             uri = uri.substring(1);
         }
@@ -83,7 +87,7 @@ public class StaticFileCacheUtils {
         if (Objects.nonNull(s)) {
             return s;
         }
-        if (("/" + uri).startsWith(Constants.DEFAULT_TEMPLATE_PATH) || uri.startsWith("assets/") || uri.startsWith("pwa/") || Objects.equals(uri, "favicon.ico")) {
+        if (TemplateInfoHelper.isDefaultTemplateStartWith("/" + uri) || uri.startsWith("assets/") || uri.startsWith("pwa/") || Objects.equals(uri, "favicon.ico")) {
             InputStream inputStream = StaticFileCacheUtils.class.getResourceAsStream("/" + uri);
             if (Objects.isNull(inputStream)) {
                 return null;

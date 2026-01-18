@@ -13,10 +13,13 @@ import com.zrlog.plugin.BaseStaticSitePlugin;
 import com.zrlog.util.StaticFileCacheUtils;
 import com.zrlog.util.ThreadUtils;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Comment;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
 import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
+import org.jsoup.select.NodeVisitor;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -79,7 +82,7 @@ public class HtmlTemplateProcessor {
     }
 
     public String transform(String htmlStr) {
-        Document document = Jsoup.parse(htmlStr, "", Parser.xmlParser());
+        Document document = Jsoup.parse(htmlStr, "", Parser.htmlParser());
         Map<String, String> replaceMap = new ConcurrentHashMap<>();
         for (Element tag : document.getAllElements()) {
             String tagName = tag.tagName();
