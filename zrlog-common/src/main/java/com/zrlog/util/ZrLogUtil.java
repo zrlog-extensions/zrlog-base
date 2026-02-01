@@ -178,4 +178,8 @@ public class ZrLogUtil {
         return "/app";
     }
 
+    public static boolean isShellDockerMode() {
+        return Objects.equals(System.getenv().get("DOCKER_MODE_START_BY"), "shell");
+    }
+
 }

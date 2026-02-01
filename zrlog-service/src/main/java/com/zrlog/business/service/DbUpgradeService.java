@@ -8,8 +8,8 @@ import com.hibegin.common.util.StringUtils;
 import com.hibegin.http.server.util.PathUtil;
 import com.zrlog.business.util.SqlConvertUtils;
 import com.zrlog.business.version.UpgradeVersionHandler;
+import com.zrlog.business.version.UpgradeVersionHandlerHelpers;
 import com.zrlog.common.CacheService;
-import com.zrlog.common.Constants;
 import com.zrlog.model.WebSite;
 
 import java.io.InputStream;
@@ -22,7 +22,6 @@ import java.util.logging.Logger;
  * 程序升级设计到数据表结构变更，数据的更新
  */
 public class DbUpgradeService {
-    public static final Integer SQL_VERSION = 19;
 
 
     private static final Logger LOGGER = LoggerUtil.getLogger(DbUpgradeService.class);
@@ -44,7 +43,7 @@ public class DbUpgradeService {
 
     private static Map<Integer, String> getSqlFileList() {
         Map<Integer, String> fileList = new LinkedHashMap<>();
-        for (int i = 1; i <= SQL_VERSION; i++) {
+        for (int i = 1; i <= UpgradeVersionHandler.SQL_VERSION; i++) {
             InputStream sqlStream = PathUtil.getConfInputStream("/update-sql/" + i + ".sql");
             if (Objects.nonNull(sqlStream)) {
                 fileList.put(i, IOUtil.getStringInputStream(sqlStream));
@@ -99,20 +98,16 @@ public class DbUpgradeService {
                 }
                 //执行需要转换的数据
                 try {
-                    UpgradeVersionHandler upgradeVersionHandler = (UpgradeVersionHandler) Class.forName("com.zrlog.business.version.V" + entry.getKey() + "UpgradeVersionHandler").getDeclaredConstructor().newInstance();
-                    try {
+                    UpgradeVersionHandler upgradeVersionHandler = UpgradeVersionHandlerHelpers.getUpgradeVersionHandler(entry.getKey());
+                    if (Objects.nonNull(upgradeVersionHandler)) {
                         upgradeVersionHandler.doUpgrade(dao);
-                    } catch (Exception e) {
-                        LOGGER.log(Level.SEVERE, "", e);
-                        return;
                     }
-                } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
-                    if (Constants.debugLoggerPrintAble()) {
-                        LOGGER.log(Level.WARNING, "Try exec upgrade method error, " + e.getMessage());
-                    }
+                } catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, "", e);
+                    return;
                 }
             }
-            webSite.updateByKV(CacheService.ZRLOG_SQL_VERSION_KEY, SQL_VERSION + "");
+            webSite.updateByKV(CacheService.ZRLOG_SQL_VERSION_KEY, UpgradeVersionHandler.SQL_VERSION + "");
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "", e);
         }

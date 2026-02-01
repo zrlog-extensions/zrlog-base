@@ -4,9 +4,9 @@ import com.hibegin.common.util.EnvKit;
 import com.hibegin.common.util.LoggerUtil;
 import com.hibegin.common.util.ZipUtil;
 import com.hibegin.http.server.util.PathUtil;
-import com.zrlog.business.util.NativeUtils;
 import com.zrlog.business.util.PluginCoreUtils;
 import com.zrlog.common.Constants;
+import com.zrlog.util.BlogBuildInfoUtil;
 import com.zrlog.util.ThreadUtils;
 import com.zrlog.util.ZrLogUtil;
 
@@ -125,7 +125,7 @@ public class PluginCoreProcessImpl implements PluginCoreProcess {
         args.add(Constants.zrLogConfig.getServerConfig().getPort() + "");
         args.add(token);
         if (EnvKit.isNativeImage()) {
-            args.add(NativeUtils.getRealFileArch());
+            args.add(BlogBuildInfoUtil.getFileArch());
         } else {
             args.add("-");
         }

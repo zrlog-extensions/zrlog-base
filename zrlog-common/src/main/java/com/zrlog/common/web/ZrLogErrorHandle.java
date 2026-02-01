@@ -6,6 +6,7 @@ import com.hibegin.http.server.api.HttpRequest;
 import com.hibegin.http.server.api.HttpResponse;
 import com.hibegin.http.server.execption.NotFindResourceException;
 import com.hibegin.http.server.util.PathUtil;
+import com.zrlog.blog.web.util.WebTools;
 import com.zrlog.common.Constants;
 import com.zrlog.common.exception.AbstractBusinessException;
 import com.zrlog.common.exception.NotFindDbEntryException;
@@ -74,6 +75,7 @@ public class ZrLogErrorHandle implements HttpErrorHandle {
             return;
         }
         InputStream errorInputStream = getErrorInputStream(e, httpStatueCode);
+        response.addHeader("Content-Type", "text/html;charset=utf-8");
         if (Objects.isNull(errorInputStream)) {
             response.renderCode(500);
             return;
@@ -88,7 +90,7 @@ public class ZrLogErrorHandle implements HttpErrorHandle {
                 if (Objects.isNull(htmlInputStream)) {
                     htmlInputStream = PathUtil.getConfInputStream("/error/" + 500 + ".html");
                 }
-                String body = "<pre style='color:red;white-space:pre-wrap'>" + LoggerUtil.recordStackTraceMsg(e) + "</pre>";
+                String body = "<pre style='color:red;white-space:pre-wrap'>" + WebTools.htmlEncode(LoggerUtil.recordStackTraceMsg(e)) + "</pre>";
                 Document document = Jsoup.parse(htmlInputStream, "utf-8", "/");
                 document.body().append(body);
                 return new ByteArrayInputStream(document.html().getBytes());

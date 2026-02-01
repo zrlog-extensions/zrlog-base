@@ -17,6 +17,7 @@ public class Constants {
     public static final String API_PUBLIC_VERSION = "/api/public/version";
     public static final String TEMPLATE_BASE_PATH = "/include/templates/";
     public static final String DEFAULT_TEMPLATE_PATH = TEMPLATE_BASE_PATH + "default";
+    public static final String TEMPLATE_CONFIG_STR_KEY = "configStr";
     public static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd HH:mm:ssXXX";
     public static ZrLogConfig zrLogConfig;
     private static volatile long lastAccessTime = System.currentTimeMillis();

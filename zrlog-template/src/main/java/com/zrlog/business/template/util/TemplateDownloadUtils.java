@@ -1,4 +1,4 @@
-package com.zrlog.business.util;
+package com.zrlog.business.template.util;
 
 import com.hibegin.common.util.EnvKit;
 import com.hibegin.common.util.LoggerUtil;
@@ -36,7 +36,7 @@ public class TemplateDownloadUtils {
         fileHandle.getT().delete();
     }
 
-    private static void installByZipFile(File zipFile, String templatePath) throws IOException {
+    public static void installByZipFile(File zipFile, String templatePath) throws IOException {
         ZipUtil.unZip(zipFile.toString(), PathUtil.getStaticFile(templatePath).toString());
         LOGGER.info("Install template [" + new File(templatePath).getName() + "] success");
 
@@ -52,18 +52,21 @@ public class TemplateDownloadUtils {
         return PathUtil.getStaticFile(templatePath + ".zip");
     }
 
-    public static void installByTemplateName(String templatePath, boolean forceUpdate) throws IOException, URISyntaxException, InterruptedException {
+    public static boolean exists(String templatePath) {
         File file = PathUtil.getStaticFile(templatePath);
-        if (!forceUpdate) {
-            if (file.exists()) {
-                return;
-            }
-            File zipFile = getTemplateZipFile(templatePath);
-            if (zipFile.exists()) {
-                installByZipFile(zipFile, templatePath);
-                return;
-            }
+        return file.exists();
+    }
+
+    public static void installByTemplateName(String templatePath, boolean forceUpdate) throws IOException, URISyntaxException, InterruptedException {
+        if (!forceUpdate && exists(templatePath)) {
+            return;
         }
+        File zipFile = getTemplateZipFile(templatePath);
+        if (zipFile.exists()) {
+            installByZipFile(zipFile, templatePath);
+            return;
+        }
+        File file = PathUtil.getStaticFile(templatePath);
         installByUrl(BlogBuildInfoUtil.getResourceDownloadUrl() + "/attachment/template/" + file.getName() + ".zip");
     }
 }

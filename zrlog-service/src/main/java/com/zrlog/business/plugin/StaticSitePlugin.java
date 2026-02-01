@@ -169,6 +169,30 @@ public interface StaticSitePlugin extends BaseStaticSitePlugin {
         return HttpRequestBuilder.buildRequest(method, uri, ZrLogUtil.getBlogHostByWebSite(), STATIC_USER_AGENT, requestConfig, applicationContext);
     }
 
+    private String getUri(String href) {
+        if (href.startsWith("#")) {
+            return "";
+        }
+        if (href.startsWith("javascript:;")) {
+            return "";
+        }
+        String uri = href.split("#")[0];
+        if (uri.isEmpty()) {
+            return "";
+        }
+        if (uri.startsWith("//")) {
+            String baseUrl = "//" + ZrLogUtil.getBlogHostByWebSite();
+            if (uri.equals(baseUrl)) {
+                return "/";
+            }
+            if (uri.startsWith(baseUrl + "/")) {
+                return uri.substring(baseUrl.length());
+            }
+            return "";
+        }
+        return uri;
+    }
+
     private void doParseHtml(File file) throws IOException {
         if (file.getName().endsWith(".js") || file.getName().endsWith(".json") || file.getName().endsWith(".css")) {
             return;
@@ -178,16 +202,13 @@ public interface StaticSitePlugin extends BaseStaticSitePlugin {
             Document document = Jsoup.parse(file);
             Elements links = document.select("a");
             links.forEach(element -> {
-                String href = element.attr("href");
-                if (href.startsWith("//")) {
-                    return;
-                }
+                String uri = getUri(element.attr("href"));
                 //exists jobs
-                if (getHandleStatusPageMap().containsKey(href)) {
+                if (getHandleStatusPageMap().containsKey(uri)) {
                     return;
                 }
-                if (href.startsWith("/") && href.endsWith(".html")) {
-                    getHandleStatusPageMap().put(href, HandleState.NEW);
+                if (uri.startsWith("/") && uri.endsWith(".html")) {
+                    getHandleStatusPageMap().put(uri, HandleState.NEW);
                 }
             });
         } finally {
@@ -209,7 +230,7 @@ public interface StaticSitePlugin extends BaseStaticSitePlugin {
             try {
                 httpRequest = buildMockRequest(HttpMethod.GET, key, serverConfig.getRequestConfig(), applicationContext);
             } catch (Exception e) {
-                LOGGER.warning("Generator " + key + " error: " + e.getMessage());
+                LOGGER.warning("Build mock request " + key + " error: " + e.getMessage());
                 return;
             }
             String uri = httpRequest.getUri();

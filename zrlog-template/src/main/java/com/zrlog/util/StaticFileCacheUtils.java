@@ -4,7 +4,7 @@ import com.hibegin.common.util.FileUtils;
 import com.hibegin.common.util.LoggerUtil;
 import com.hibegin.common.util.SecurityUtils;
 import com.hibegin.http.server.util.PathUtil;
-import com.zrlog.common.Constants;
+import com.zrlog.business.template.util.BlogResourceUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -76,6 +76,10 @@ public class StaticFileCacheUtils {
     }
 
     public String getFileFlagFirstByCache(String uri) {
+        //外部链接，不查询缓存 id
+        if (uri.startsWith("https://") || uri.startsWith("http://")) {
+            return null;
+        }
         if (uri.startsWith("/")) {
             uri = uri.substring(1);
         }
@@ -83,14 +87,13 @@ public class StaticFileCacheUtils {
         if (Objects.nonNull(s)) {
             return s;
         }
-        if (("/" + uri).startsWith(Constants.DEFAULT_TEMPLATE_PATH) || uri.startsWith("assets/") || uri.startsWith("pwa/") || Objects.equals(uri, "favicon.ico")) {
+        if (BlogResourceUtils.getInstance().existsResource(uri)) {
             InputStream inputStream = StaticFileCacheUtils.class.getResourceAsStream("/" + uri);
-            if (Objects.isNull(inputStream)) {
-                return null;
+            if (Objects.nonNull(inputStream)) {
+                String flag = getStreamTag(inputStream);
+                cacheFileMap.put(uri, flag);
+                return flag;
             }
-            String flag = getStreamTag(inputStream);
-            cacheFileMap.put(uri, flag);
-            return flag;
         }
         File staticFile = PathUtil.getStaticFile("/" + uri);
         if (!staticFile.exists()) {

@@ -79,7 +79,7 @@ public class HtmlTemplateProcessor {
     }
 
     public String transform(String htmlStr) {
-        Document document = Jsoup.parse(htmlStr, "", Parser.xmlParser());
+        Document document = Jsoup.parse(htmlStr, "", Parser.htmlParser());
         Map<String, String> replaceMap = new ConcurrentHashMap<>();
         for (Element tag : document.getAllElements()) {
             String tagName = tag.tagName();

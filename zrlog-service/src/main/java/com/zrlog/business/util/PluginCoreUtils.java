@@ -21,10 +21,10 @@ public class PluginCoreUtils {
         if (!EnvKit.isNativeImage()) {
             return new File(pluginsFolder + "/plugin-core.jar");
         }
-        if (NativeUtils.getRealFileArch().contains("Window")) {
-            return new File(pluginsFolder + "/plugin-core-" + NativeUtils.getRealFileArch() + ".exe");
+        if (BlogBuildInfoUtil.getFileArch().contains("Window")) {
+            return new File(pluginsFolder + "/plugin-core-" + BlogBuildInfoUtil.getFileArch() + ".exe");
         }
-        return new File(pluginsFolder + "/plugin-core-" + NativeUtils.getRealFileArch() + ".bin");
+        return new File(pluginsFolder + "/plugin-core-" + BlogBuildInfoUtil.getFileArch() + ".bin");
     }
 
 

@@ -10,6 +10,7 @@ public class LinkDTO implements Serializable {
     private String alt;
     private Long sort;
     private Long id;
+    private String icon;
 
     public String getLinkName() {
         return linkName;
@@ -57,5 +58,13 @@ public class LinkDTO implements Serializable {
 
     public void setJumpUrl(String jumpUrl) {
         this.jumpUrl = jumpUrl;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 }

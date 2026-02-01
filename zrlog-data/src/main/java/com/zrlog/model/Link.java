@@ -20,10 +20,10 @@ public class Link extends BasePageableDAO {
     }
 
     public List<LinkDTO> findAll() throws SQLException {
-        return doConvertList(queryListWithParams("select linkName,linkId as id,sort,url,alt from " + tableName + " order by sort"), LinkDTO.class);
+        return doConvertList(queryListWithParams("select linkName,linkId as id,sort,url,alt,icon from " + tableName + " order by sort"), LinkDTO.class);
     }
 
     public PageData<LinkDTO> find(PageRequest page) {
-        return queryPageData("select linkName,linkId as id,sort,url,alt from " + tableName + " order by sort", page, new Object[0], LinkDTO.class);
+        return queryPageData("select linkName,linkId as id,sort,url,alt,icon from " + tableName + " order by sort", page, new Object[0], LinkDTO.class);
     }
 }

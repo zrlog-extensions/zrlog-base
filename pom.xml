@@ -4,12 +4,13 @@
     <groupId>com.hibegin</groupId>
     <artifactId>zrlog-base</artifactId>
     <packaging>pom</packaging>
-    <version>3.2.126-SNAPSHOT</version>
+    <version>3.3.8-SNAPSHOT</version>
     <modules>
         <module>zrlog-admin-token</module>
         <module>zrlog-service</module>
         <module>zrlog-common</module>
         <module>zrlog-data</module>
+        <module>zrlog-template</module>
     </modules>
     <name>ZrLog Base</name>
     <description>ZrLog base logic code repo</description>
@@ -21,8 +22,8 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.test.skip>true</maven.test.skip>
-        <sws.version>4.0.115</sws.version>
-        <project.build.outputTimestamp>2025-12-08T14:37:36Z</project.build.outputTimestamp>
+        <sws.version>4.0.121</sws.version>
+        <project.build.outputTimestamp>2026-01-18T16:00:48Z</project.build.outputTimestamp>
         <gpg.passphrase/>
     </properties>
 
@@ -91,22 +92,27 @@
             <dependency>
                 <groupId>com.hibegin</groupId>
                 <artifactId>zrlog-common</artifactId>
-                <version>3.2.126-SNAPSHOT</version>
+                <version>3.3.8-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.hibegin</groupId>
                 <artifactId>zrlog-data</artifactId>
-                <version>3.2.126-SNAPSHOT</version>
+                <version>3.3.8-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.hibegin</groupId>
                 <artifactId>zrlog-service</artifactId>
-                <version>3.2.126-SNAPSHOT</version>
+                <version>3.3.8-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.hibegin</groupId>
                 <artifactId>zrlog-admin-token</artifactId>
-                <version>3.2.126-SNAPSHOT</version>
+                <version>3.3.8-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hibegin</groupId>
+                <artifactId>zrlog-template</artifactId>
+                <version>3.3.8-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.google.code.gson</groupId>

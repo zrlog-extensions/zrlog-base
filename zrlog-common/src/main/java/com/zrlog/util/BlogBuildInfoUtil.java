@@ -32,6 +32,7 @@ public class BlogBuildInfoUtil {
     private static Date time = Date.from(LocalDateTime.of(2015, 3, 29, 0, 0, 0)
             .atZone(ZoneOffset.systemDefault()).toInstant());
     private static String runMode = "RELEASE";
+    private static String fileArch = "";
     private static String resourceDownloadUrl = "https://dl.zrlog.com/";
     public static final String BUILD_PROPERTIES_FILE_PATH = "/build.properties";
 
@@ -56,6 +57,9 @@ public class BlogBuildInfoUtil {
             if (properties.get("mirrorWebSite") != null && !"".equals(properties.get("mirrorWebSite"))) {
                 resourceDownloadUrl = properties.get("mirrorWebSite").toString();
             }
+            if (properties.get("fileArch") != null && !"".equals(properties.get("fileArch"))) {
+                fileArch = properties.get("fileArch").toString();
+            }
         } catch (IOException | ParseException e) {
             LOGGER.log(Level.SEVERE, "doRead stream error", e);
         }
@@ -78,6 +82,10 @@ public class BlogBuildInfoUtil {
 
     public static String getRunMode() {
         return runMode;
+    }
+
+    public static String getFileArch() {
+        return fileArch;
     }
 
     public static String getResourceDownloadUrl() {

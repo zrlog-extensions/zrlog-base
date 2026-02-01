@@ -24,6 +24,10 @@ public class GlobalBaseInterceptor implements Interceptor {
         forbiddenUriExtSet.add(".ftl");
         //这主要用在主题目录下面的配置文件。
         forbiddenUriExtSet.add(".properties");
+        forbiddenUriExtSet.add(".yml");
+        forbiddenUriExtSet.add(".ejs");
+        forbiddenUriExtSet.add(".pug");
+        forbiddenUriExtSet.add(".styl");
         if (ZrLogUtil.isWarMode()) {
             forbiddenUriExtSet.add(".jsp");
         }

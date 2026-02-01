@@ -81,9 +81,6 @@ public class WebTools {
                 case '"':
                     buffer.append("&quot;");
                     break;
-                case 10:
-                case 13:
-                    break;
                 default:
                     buffer.append(c);
             }

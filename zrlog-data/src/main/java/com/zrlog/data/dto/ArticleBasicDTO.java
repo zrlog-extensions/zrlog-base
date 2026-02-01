@@ -1,5 +1,7 @@
 package com.zrlog.data.dto;
 
+import java.util.List;
+
 public class ArticleBasicDTO {
 
     private Long id;
@@ -15,6 +17,7 @@ public class ArticleBasicDTO {
     private String keywords;
     private Boolean recommended;
     private String releaseTime;
+    private String fullReleaseTime;
     private String last_update_date;
     private String lastUpdateDate;
     private String title;
@@ -34,6 +37,8 @@ public class ArticleBasicDTO {
     private String thumbnailAlt;
     private String noSchemeUrl;
     private String commentUrl;
+    private List<ArticleDetailDTO.TagsDTO> tags;
+
 
     public Long getLogId() {
         return logId;
@@ -289,5 +294,21 @@ public class ArticleBasicDTO {
 
     public void setCommentUrl(String commentUrl) {
         this.commentUrl = commentUrl;
+    }
+
+    public List<ArticleDetailDTO.TagsDTO> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<ArticleDetailDTO.TagsDTO> tags) {
+        this.tags = tags;
+    }
+
+    public String getFullReleaseTime() {
+        return fullReleaseTime;
+    }
+
+    public void setFullReleaseTime(String fullReleaseTime) {
+        this.fullReleaseTime = fullReleaseTime;
     }
 }

@@ -11,6 +11,7 @@ import com.hibegin.http.server.config.RequestConfig;
 import com.hibegin.http.server.config.ResponseConfig;
 import com.hibegin.http.server.config.ServerConfig;
 import com.hibegin.http.server.util.PathUtil;
+import com.zrlog.common.hooks.TermSignalHandler;
 import com.zrlog.common.web.ZrLogErrorHandle;
 import com.zrlog.common.web.ZrLogHttpJsonMessageConverter;
 import com.zrlog.common.web.ZrLogHttpRequestListener;
@@ -19,6 +20,7 @@ import com.zrlog.plugin.Plugins;
 import com.zrlog.util.*;
 import com.zrlog.web.BaseWebSetup;
 import com.zrlog.web.WebSetup;
+import sun.misc.Signal;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -46,6 +48,7 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
     protected CacheService cacheService;
     protected TokenService tokenService;
     protected ZrLogHttpRequestListener zrLogHttpRequestListener = new ZrLogHttpRequestListener();
+    private static final String TERM_SIGNAL = "TERM";
 
 
     static {
@@ -207,6 +210,8 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
         });
         Runtime rt = Runtime.getRuntime();
         rt.addShutdownHook(new Thread(this::stop));
+        Signal signalTerm = new Signal(TERM_SIGNAL);
+        Signal.handle(signalTerm, new TermSignalHandler(this));
         return serverConfig;
     }
 
@@ -266,13 +271,15 @@ public abstract class ZrLogConfig extends AbstractServerConfig {
         }
     }
 
-    public boolean isContainerMode() {
-        //return true;
-        return ZrLogUtil.isDockerMode() || EnvKit.isFaaSMode();
+    public boolean isAskConfig() {
+        if (EnvKit.isFaaSMode()) {
+            return true;
+        }
+        return ZrLogUtil.isShellDockerMode();
     }
 
     public boolean isMissingConfig() {
-        if (!isContainerMode()) {
+        if (!isAskConfig()) {
             return false;
         }
         return StringUtils.isEmpty(ZrLogUtil.getDbInfoByEnv());
