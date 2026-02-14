@@ -71,7 +71,7 @@ public class StaticFileCacheUtils {
     }
 
 
-    private String getStreamTag(InputStream inputStream) {
+    public String getStreamTag(InputStream inputStream) {
         return Math.abs(SecurityUtils.md5(inputStream).hashCode()) + "";
     }
 
