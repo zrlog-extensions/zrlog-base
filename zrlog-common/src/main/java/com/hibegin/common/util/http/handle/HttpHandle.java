@@ -16,5 +16,7 @@ public abstract class HttpHandle<T> {
         this.t = t;
     }
 
+    public abstract int getStatusCode();
+
     public abstract boolean handle(HttpRequest request, HttpResponse<InputStream> response);
 }

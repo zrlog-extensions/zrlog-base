@@ -13,6 +13,12 @@ import java.util.zip.GZIPInputStream;
 public class HttpResponseJsonHandle<T> extends HttpHandle<T> {
 
     private final Class<T> clazz;
+    private int statusCode;
+
+    @Override
+    public int getStatusCode() {
+        return statusCode;
+    }
 
     public HttpResponseJsonHandle(Class<T> clazz) {
         this.clazz = clazz;
@@ -20,6 +26,7 @@ public class HttpResponseJsonHandle<T> extends HttpHandle<T> {
 
     @Override
     public boolean handle(HttpRequest request, HttpResponse<InputStream> response) {
+        this.statusCode = response.statusCode();
         Optional<String> s = response.headers().firstValue("Content-Encoding");
         InputStream inputStream = response.body();
         if (s.isPresent() && s.get().equals("gzip")) {

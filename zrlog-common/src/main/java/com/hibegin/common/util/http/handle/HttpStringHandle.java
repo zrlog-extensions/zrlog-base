@@ -15,6 +15,7 @@ public class HttpStringHandle extends HttpHandle<String> {
     private int statusCode;
 
 
+    @Override
     public int getStatusCode() {
         return statusCode;
     }

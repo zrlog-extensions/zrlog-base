@@ -16,6 +16,7 @@ public class CloseResponseHandle extends HttpHandle<HttpResponse<InputStream>> {
         return true;
     }
 
+    @Override
     public int getStatusCode() {
         return statusCode;
     }

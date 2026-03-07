@@ -21,6 +21,8 @@ public class HttpFileHandle extends HttpHandle<File> {
 
     private final String filePath;
     private final String fileName;
+    private int statusCode;
+
 
     public HttpFileHandle(String filePath) {
         this.filePath = filePath;
@@ -58,7 +60,13 @@ public class HttpFileHandle extends HttpHandle<File> {
     }
 
     @Override
+    public int getStatusCode() {
+        return statusCode;
+    }
+
+    @Override
     public boolean handle(HttpRequest request, HttpResponse<InputStream> response) {
+        this.statusCode = response.statusCode();
         String contentDis = response.headers().firstValue("Content-Disposition").orElse(null);
         if (Objects.nonNull(contentDis)) {
             String fileName = getFileNameByHeader(contentDis);
