@@ -22,6 +22,7 @@ public class PublicWebSiteInfo implements Serializable {
     private String webCm;
     private String language;
     private String admin_color_primary;
+    private String admin_theme;
     private Long article_auto_digest_length;
     private Boolean admin_darkMode;
     private Boolean admin_compactMode;
@@ -225,5 +226,13 @@ public class PublicWebSiteInfo implements Serializable {
 
     public void setAdmin_compactMode(Boolean admin_compactMode) {
         this.admin_compactMode = admin_compactMode;
+    }
+
+    public String getAdmin_theme() {
+        return admin_theme;
+    }
+
+    public void setAdmin_theme(String admin_theme) {
+        this.admin_theme = admin_theme;
     }
 }
