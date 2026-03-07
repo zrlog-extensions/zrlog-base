@@ -8,9 +8,9 @@ import com.hibegin.common.dao.DataSourceWrapper;
 import com.hibegin.common.dao.ResultBeanUtils;
 import com.hibegin.common.util.BeanUtil;
 import com.hibegin.common.util.StringUtils;
-import com.zrlog.data.exception.DAOException;
 import com.zrlog.common.vo.PublicWebSiteInfo;
 import com.zrlog.data.dto.FaviconBase64DTO;
+import com.zrlog.data.exception.DAOException;
 import com.zrlog.data.util.WebSiteUtils;
 
 import java.sql.SQLException;
@@ -32,6 +32,7 @@ public class WebSite extends DAO {
     public static final String article_thumbnail_status = "article_thumbnail_status";
     public static final String article_auto_digest_length = "article_auto_digest_length";
     public static final String admin_darkMode = "admin_darkMode";
+    public static final String admin_theme = "admin_theme";
     public static final String admin_compactMode = "admin_compactMode";
     public static final String rows = "rows";
     public static final String session_timeout = "session_timeout";
@@ -61,7 +62,7 @@ public class WebSite extends DAO {
         websitePublicQueryKeys = new ArrayList<>();
         //str
         websitePublicQueryStrKeys = Arrays.asList(appId, changyan_status, title, second_title, keywords, description, host,
-                icp, robotRuleContent, comment_plugin_name, webCm, language, admin_color_primary,
+                icp, robotRuleContent, comment_plugin_name, webCm, language, admin_color_primary, admin_theme,
                 staticResourceHost, template, system_notification);
         websitePublicQueryKeys.addAll(websitePublicQueryStrKeys);
         websitePublicQueryKeys.addAll(Arrays.asList(listNum));
