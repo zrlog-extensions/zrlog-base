@@ -32,7 +32,7 @@ public class WebSiteUtils {
             info.setAdmin_color_primary(DEFAULT_COLOR_PRIMARY_COLOR);
         }
         if (StringUtils.isEmpty(info.getAdmin_theme())) {
-            info.setAdmin_theme("mui");
+            info.setAdmin_theme("default");
         }
         if (StringUtils.isEmpty(info.getLanguage())) {
             info.setLanguage(Constants.DEFAULT_LANGUAGE);
