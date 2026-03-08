@@ -31,6 +31,9 @@ public class WebSiteUtils {
         if (StringUtils.isEmpty(info.getAdmin_color_primary())) {
             info.setAdmin_color_primary(DEFAULT_COLOR_PRIMARY_COLOR);
         }
+        if (StringUtils.isEmpty(info.getAdmin_theme())) {
+            info.setAdmin_theme("mui");
+        }
         if (StringUtils.isEmpty(info.getLanguage())) {
             info.setLanguage(Constants.DEFAULT_LANGUAGE);
         }
