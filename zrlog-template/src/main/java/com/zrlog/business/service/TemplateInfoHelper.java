@@ -24,7 +24,7 @@ public class TemplateInfoHelper {
 
     private static final Logger LOGGER = LoggerUtil.getLogger(TemplateInfoHelper.class);
     private static final List<String> CLASS_PATH_TEMPLATES = Arrays.asList(DEFAULT_TEMPLATE_PATH,
-            TEMPLATE_BASE_PATH + "hexo-theme-fluid", TEMPLATE_BASE_PATH + "hexo-theme-butterfly", TEMPLATE_BASE_PATH + "template-www");
+            TEMPLATE_BASE_PATH + "hexo-theme-fluid", TEMPLATE_BASE_PATH + "hexo-theme-butterfly", TEMPLATE_BASE_PATH + "template-www", TEMPLATE_BASE_PATH + "hexo-theme-shiro");
     public static final String ADMIN_PREVIEW_IMAGE_URI = Constants.ADMIN_URI_BASE_PATH + "/template/preview-image";
 
     public static List<TemplateVO> getClassPathTemplates() {
