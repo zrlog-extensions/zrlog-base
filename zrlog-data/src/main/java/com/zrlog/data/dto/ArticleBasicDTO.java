@@ -20,6 +20,7 @@ public class ArticleBasicDTO {
     private String fullReleaseTime;
     private String last_update_date;
     private String lastUpdateDate;
+    private String fullLastUpdateDate;
     private String title;
     private Long typeId;
     private Long userId;
@@ -310,5 +311,13 @@ public class ArticleBasicDTO {
 
     public void setFullReleaseTime(String fullReleaseTime) {
         this.fullReleaseTime = fullReleaseTime;
+    }
+
+    public String getFullLastUpdateDate() {
+        return fullLastUpdateDate;
+    }
+
+    public void setFullLastUpdateDate(String fullLastUpdateDate) {
+        this.fullLastUpdateDate = fullLastUpdateDate;
     }
 }
