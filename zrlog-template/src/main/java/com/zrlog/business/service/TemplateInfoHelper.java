@@ -24,7 +24,9 @@ public class TemplateInfoHelper {
 
     private static final Logger LOGGER = LoggerUtil.getLogger(TemplateInfoHelper.class);
     private static final List<String> CLASS_PATH_TEMPLATES = Arrays.asList(DEFAULT_TEMPLATE_PATH,
-            TEMPLATE_BASE_PATH + "hexo-theme-fluid", TEMPLATE_BASE_PATH + "hexo-theme-butterfly", TEMPLATE_BASE_PATH + "template-www");
+            TEMPLATE_BASE_PATH + "hexo-theme-fluid", TEMPLATE_BASE_PATH + "hexo-theme-butterfly", TEMPLATE_BASE_PATH + "template-www",
+            TEMPLATE_BASE_PATH + "hexo-theme-shiro",
+            TEMPLATE_BASE_PATH + "hexo-theme-next");
     public static final String ADMIN_PREVIEW_IMAGE_URI = Constants.ADMIN_URI_BASE_PATH + "/template/preview-image";
 
     public static List<TemplateVO> getClassPathTemplates() {
@@ -76,7 +78,8 @@ public class TemplateInfoHelper {
     }
 
     private static String getTemplateView(TemplateVO templateVO) {
-        Map<String, String> viewMap = Map.of("layout/index.ejs", ".ejs", "layout/index.pug", ".pug", "index.ftl", ".ftl");
+        Map<String, String> viewMap = Map.of("layout/index.ejs", ".ejs",
+                "layout/index.pug", ".pug", "index.ftl", ".ftl", "layout/index.njk", ".njk");
         if (templateVO.isClasspathTemplate()) {
             for (Map.Entry<String, String> entry : viewMap.entrySet()) {
                 if (ZrLogResourceLoader.exists("classpath:" + templateVO.getTemplate() + "/" + entry.getKey())) {
