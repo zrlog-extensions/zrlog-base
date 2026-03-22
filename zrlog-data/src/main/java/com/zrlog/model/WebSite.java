@@ -54,6 +54,7 @@ public class WebSite extends DAO {
     public static final String robotRuleContent = "robotRuleContent";
     public static final String comment_plugin_name = "comment_plugin_name";
     public static final String system_notification = "system_notification";
+    public static final String author = "author";
 
     static {
 
@@ -63,7 +64,7 @@ public class WebSite extends DAO {
         //str
         websitePublicQueryStrKeys = Arrays.asList(appId, changyan_status, title, second_title, keywords, description, host,
                 icp, robotRuleContent, comment_plugin_name, webCm, language, admin_color_primary, admin_theme,
-                staticResourceHost, template, system_notification);
+                staticResourceHost, template, system_notification, author);
         websitePublicQueryKeys.addAll(websitePublicQueryStrKeys);
         websitePublicQueryKeys.addAll(Arrays.asList(listNum));
     }

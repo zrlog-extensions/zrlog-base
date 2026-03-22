@@ -33,6 +33,7 @@ public class PublicWebSiteInfo implements Serializable {
     private Long session_timeout;
     private String comment_plugin_name;
     private String system_notification;
+    private String author;
 
     public String getAppId() {
         return appId;
@@ -234,5 +235,13 @@ public class PublicWebSiteInfo implements Serializable {
 
     public void setAdmin_theme(String admin_theme) {
         this.admin_theme = admin_theme;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
     }
 }

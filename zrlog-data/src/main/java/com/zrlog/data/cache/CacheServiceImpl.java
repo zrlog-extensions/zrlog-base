@@ -211,6 +211,7 @@ public class CacheServiceImpl implements CacheService {
             publicWebSiteInfo.setComment_plugin_name("");
             publicWebSiteInfo.setHost("");
             publicWebSiteInfo.setSystem_notification("");
+            publicWebSiteInfo.setAuthor("");
             return publicWebSiteInfo;
         }
         if (Objects.nonNull(cacheInit)) {
