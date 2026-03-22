@@ -83,6 +83,7 @@ public class ZrLogBaseNativeImageUtils {
         NativeImageUtils.doResourceLoadByResourceNames(resourceFiles);
         //
         NativeImageUtils.gsonNativeAgentByClazz(Arrays.asList(LockVO.class, I18nVO.class,
+                BaseTemplateVO.class,
                 TemplateVO.class,
                 TemplateVO.TemplateConfigMap.class,
                 TemplateVO.TemplateConfigVO.class,
