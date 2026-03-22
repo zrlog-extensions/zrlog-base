@@ -66,8 +66,10 @@ public class PagerUtil {
         map.setDesc(desc);
         map.setCurrent(currentPage == page);
         map.setNumber(page);
-        map.setNext(page < totalPage);
-        map.setPrev(page > 1 && totalPage > 1);
+        if (map.getCurrent()) {
+            map.setNext(page < totalPage);
+            map.setPrev(page > 1 && totalPage > 1);
+        }
         return map;
     }
 
