@@ -34,7 +34,7 @@ import java.util.logging.Logger;
 public class AdminTokenService implements TokenService {
 
     private static final String ADMIN_TOKEN_KEY_IN_COOKIE = "admin-token";
-    private static final String ADMIN_TOKEN_KEY_IN_REQUEST_HEADER = "X-ZrLog-Admin-Token";
+    public static final String ADMIN_TOKEN_KEY_IN_REQUEST_HEADER = "X-ZrLog-Admin-Token";
     private static final Logger LOGGER = LoggerUtil.getLogger(AdminTokenService.class);
     private final String TOKEN_SPLIT_CHAR = "#";
     private final IvParameterSpec iv;
