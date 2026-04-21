@@ -22,7 +22,7 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.test.skip>true</maven.test.skip>
-        <sws.version>4.1.4-SNAPSHOT</sws.version>
+        <sws.version>4.1.5</sws.version>
         <project.build.outputTimestamp>2026-04-06T01:50:57Z</project.build.outputTimestamp>
         <gpg.passphrase/>
     </properties>
