@@ -4,7 +4,7 @@
     <groupId>com.hibegin</groupId>
     <artifactId>zrlog-base</artifactId>
     <packaging>pom</packaging>
-    <version>3.3.10-SNAPSHOT</version>
+    <version>3.3.10</version>
     <modules>
         <module>zrlog-admin-token</module>
         <module>zrlog-service</module>
@@ -92,27 +92,27 @@
             <dependency>
                 <groupId>com.hibegin</groupId>
                 <artifactId>zrlog-common</artifactId>
-                <version>3.3.10-SNAPSHOT</version>
+                <version>3.3.10</version>
             </dependency>
             <dependency>
                 <groupId>com.hibegin</groupId>
                 <artifactId>zrlog-data</artifactId>
-                <version>3.3.10-SNAPSHOT</version>
+                <version>3.3.10</version>
             </dependency>
             <dependency>
                 <groupId>com.hibegin</groupId>
                 <artifactId>zrlog-service</artifactId>
-                <version>3.3.10-SNAPSHOT</version>
+                <version>3.3.10</version>
             </dependency>
             <dependency>
                 <groupId>com.hibegin</groupId>
                 <artifactId>zrlog-admin-token</artifactId>
-                <version>3.3.10-SNAPSHOT</version>
+                <version>3.3.10</version>
             </dependency>
             <dependency>
                 <groupId>com.hibegin</groupId>
                 <artifactId>zrlog-template</artifactId>
-                <version>3.3.10-SNAPSHOT</version>
+                <version>3.3.10</version>
             </dependency>
             <dependency>
                 <groupId>com.google.code.gson</groupId>
