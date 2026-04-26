@@ -169,6 +169,13 @@ public class Log extends BasePageableDAO implements Serializable {
      * 管理员查询文章
      */
     public PageData<ArticleBasicDTO> adminFind(PageRequest pageRequest, String keywords, String typeAlias) {
+        return adminFind(pageRequest, keywords, typeAlias, "");
+    }
+
+    /**
+     * 管理员查询文章
+     */
+    public PageData<ArticleBasicDTO> adminFind(PageRequest pageRequest, String keywords, String typeAlias, String status) {
         String searchKeywords = "";
         List<Object> searchParam = new ArrayList<>();
         if (StringUtils.isNotEmpty(keywords)) {
@@ -181,6 +188,24 @@ public class Log extends BasePageableDAO implements Serializable {
         if (StringUtils.isNotEmpty(typeAlias)) {
             searchKeywords += " and t.alias = ?";
             searchParam.add(typeAlias);
+        }
+        if (StringUtils.isNotEmpty(status)) {
+            switch (status) {
+                case "published":
+                    searchKeywords += " and l.rubbish = ? and l.privacy = ?";
+                    searchParam.add(false);
+                    searchParam.add(false);
+                    break;
+                case "private":
+                    searchKeywords += " and l.rubbish = ? and l.privacy = ?";
+                    searchParam.add(false);
+                    searchParam.add(true);
+                    break;
+                case "draft":
+                    searchKeywords += " and l.rubbish = ?";
+                    searchParam.add(true);
+                    break;
+            }
         }
         String pageSort = getPageSort(pageRequest);
         String sql =
