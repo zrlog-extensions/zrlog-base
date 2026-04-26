@@ -197,8 +197,7 @@ public class Log extends BasePageableDAO implements Serializable {
                     searchParam.add(false);
                     break;
                 case "private":
-                    searchKeywords += " and l.rubbish = ? and l.privacy = ?";
-                    searchParam.add(false);
+                    searchKeywords += " and l.privacy = ?";
                     searchParam.add(true);
                     break;
                 case "draft":
