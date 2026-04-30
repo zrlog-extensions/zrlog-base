@@ -2,11 +2,11 @@ package com.zrlog.business.service;
 
 import com.hibegin.common.dao.DAO;
 import com.hibegin.common.dao.DataSourceWrapper;
+import com.hibegin.common.dao.SqlConvertUtils;
 import com.hibegin.common.util.IOUtil;
 import com.hibegin.common.util.LoggerUtil;
 import com.hibegin.common.util.StringUtils;
 import com.hibegin.http.server.util.PathUtil;
-import com.zrlog.business.util.SqlConvertUtils;
 import com.zrlog.business.version.UpgradeVersionHandler;
 import com.zrlog.business.version.UpgradeVersionHandlerHelpers;
 import com.zrlog.common.CacheService;
@@ -27,12 +27,14 @@ public class DbUpgradeService {
     private static final Logger LOGGER = LoggerUtil.getLogger(DbUpgradeService.class);
 
     private final DAO dao;
+    private final DataSourceWrapper dataSource;
     private final WebSite webSite;
     private final String dbName;
     private final long currentSqlVersion;
 
     public DbUpgradeService(DataSourceWrapper dataSource,
                             long currentSqlVersion) {
+        this.dataSource = dataSource;
         this.dao = new DAO(dataSource);
         this.webSite = new WebSite(dataSource);
         URI uri = URI.create(dataSource.getDataSourceProperties().getProperty("jdbcUrl").replace("jdbc:", ""));
@@ -53,13 +55,19 @@ public class DbUpgradeService {
         return fileList;
     }
 
-    private static List<Map.Entry<Integer, List<String>>> getExecSqlList(Long dbVersion) {
+    private List<Map.Entry<Integer, List<String>>> getExecSqlList(Long dbVersion) {
         List<Map.Entry<Integer, List<String>>> sqlList = new ArrayList<>();
 
         for (Map.Entry<Integer, String> f : getSqlFileList().entrySet()) {
             int fileVersion = f.getKey();
             if (fileVersion > dbVersion) {
-                Map.Entry<Integer, List<String>> entry = new AbstractMap.SimpleEntry<>(fileVersion, SqlConvertUtils.extractExecutableSql(f.getValue()));
+                List<String> executableSql;
+                if (dataSource.isWebApi()) {
+                    executableSql = SqlConvertUtils.doMySQLToSqliteBySqlText(f.getValue());
+                } else {
+                    executableSql = SqlConvertUtils.extractExecutableSql(f.getValue());
+                }
+                Map.Entry<Integer, List<String>> entry = new AbstractMap.SimpleEntry<>(fileVersion, executableSql);
                 LOGGER.info("Need update sql " + fileVersion + ".sql \n" + String.join(";\n", entry.getValue()) + ";");
                 sqlList.add(entry);
             }

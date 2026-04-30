@@ -1,1 +1,0 @@
-alter table `lognav`add COLUMN `icon` longtext DEFAULT null;

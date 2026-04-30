@@ -122,7 +122,7 @@
             <dependency>
                 <groupId>com.hibegin</groupId>
                 <artifactId>common-dao</artifactId>
-                <version>1.1.6</version>
+                <version>1.1.7-SNAPSHOT</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
