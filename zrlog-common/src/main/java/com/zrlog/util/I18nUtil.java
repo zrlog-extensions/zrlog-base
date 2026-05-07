@@ -25,7 +25,6 @@ public class I18nUtil {
     private static final Logger LOGGER = LoggerUtil.getLogger(I18nUtil.class);
     private static final I18nVO i18nVOCache = new I18nVO();
     private static final String I18N_BLOG_KEY = "blog";
-    private static final String I18N_ADMIN_KEY = "admin";
     private static final String I18N_ADMIN_BACKEND_KEY = "admin_backend";
     private static final String I18N_BACKEND_KEY = "backend";
     private static final String DEFAULT_LANG = "zh_CN";
@@ -35,8 +34,6 @@ public class I18nUtil {
     }
 
     private static void reloadSystemI18N() {
-        loadI18N(I18nUtil.class.getResourceAsStream("/i18n/admin_en_US.properties"), "admin_en_US.properties", I18N_ADMIN_KEY);
-        loadI18N(I18nUtil.class.getResourceAsStream("/i18n/admin_zh_CN.properties"), "admin_zh_CN.properties", I18N_ADMIN_KEY);
         loadI18N(I18nUtil.class.getResourceAsStream("/i18n/admin_backend_en_US.properties"), "admin_backend_en_US.properties", I18N_ADMIN_BACKEND_KEY);
         loadI18N(I18nUtil.class.getResourceAsStream("/i18n/admin_backend_zh_CN.properties"), "admin_backend_zh_CN.properties", I18N_ADMIN_BACKEND_KEY);
         loadI18N(I18nUtil.class.getResourceAsStream("/i18n/blog_en_US.properties"), "blog_en_US.properties", I18N_BLOG_KEY);
@@ -61,9 +58,6 @@ public class I18nUtil {
         switch (resourceName) {
             case I18N_BLOG_KEY:
                 resMap = i18nVOCache.getBlog();
-                break;
-            case I18N_ADMIN_KEY:
-                resMap = i18nVOCache.getAdmin();
                 break;
             case I18N_BACKEND_KEY:
                 resMap = i18nVOCache.getBackend();
@@ -191,14 +185,6 @@ public class I18nUtil {
         return i18nVO.getBackend().get(getCurrentLocale());
     }
 
-    public static Map<String, Object> getAdmin() {
-        I18nVO i18nVO = threadLocal.get();
-        if (Objects.isNull(i18nVO)) {
-            return new ConcurrentHashMap<>(i18nVOCache.getAdmin().get(getCurrentLocale()));
-        }
-        Map<String, Map<String, Object>> admin = i18nVO.getAdmin();
-        return admin.get(getCurrentLocale());
-    }
 
     public static Map<String, Object> getAdminBackend() {
         I18nVO i18nVO = threadLocal.get();
@@ -224,14 +210,6 @@ public class I18nUtil {
             return obj.toString();
         }
         return "";
-    }
-
-    public static String getAdminStringFromRes(String key) {
-        Map<String, Object> local = getAdmin();
-        if (Objects.isNull(local)) {
-            return "";
-        }
-        return Objects.requireNonNullElse(local.get(key), "").toString();
     }
 
     public static String getAdminBackendStringFromRes(String key) {
