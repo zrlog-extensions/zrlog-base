@@ -1,0 +1,2 @@
+ALTER TABLE user ADD COLUMN mfaEnabled bit(1) DEFAULT b'0';
+ALTER TABLE user ADD COLUMN mfaSecret varchar(128) DEFAULT NULL;
