@@ -4,7 +4,7 @@
     <groupId>com.hibegin</groupId>
     <artifactId>zrlog-base</artifactId>
     <packaging>pom</packaging>
-    <version>3.4.1-SNAPSHOT</version>
+    <version>3.5.4-SNAPSHOT</version>
     <modules>
         <module>zrlog-admin-token</module>
         <module>zrlog-service</module>
@@ -23,7 +23,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.test.skip>true</maven.test.skip>
         <sws.version>4.1.6</sws.version>
-        <project.build.outputTimestamp>2026-05-10T02:50:55Z</project.build.outputTimestamp>
+        <project.build.outputTimestamp>2026-05-30T13:35:44Z</project.build.outputTimestamp>
         <gpg.passphrase/>
     </properties>
 
@@ -92,27 +92,27 @@
             <dependency>
                 <groupId>com.hibegin</groupId>
                 <artifactId>zrlog-common</artifactId>
-                <version>3.4.1-SNAPSHOT</version>
+                <version>3.5.4-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.hibegin</groupId>
                 <artifactId>zrlog-data</artifactId>
-                <version>3.4.1-SNAPSHOT</version>
+                <version>3.5.4-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.hibegin</groupId>
                 <artifactId>zrlog-service</artifactId>
-                <version>3.4.1-SNAPSHOT</version>
+                <version>3.5.4-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.hibegin</groupId>
                 <artifactId>zrlog-admin-token</artifactId>
-                <version>3.4.1-SNAPSHOT</version>
+                <version>3.5.4-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.hibegin</groupId>
                 <artifactId>zrlog-template</artifactId>
-                <version>3.4.1-SNAPSHOT</version>
+                <version>3.5.4-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.google.code.gson</groupId>

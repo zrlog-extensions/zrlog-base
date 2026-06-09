@@ -12,6 +12,12 @@ public class WebSiteUtils {
     public static long DEFAULT_SESSION_TIMEOUT = 1000 * 60 * 60 * 24L;
     public static final String DEFAULT_COLOR_PRIMARY_COLOR = "#1677ff";
     public static final long DEFAULT_ARTICLE_DIGEST_LENGTH = 200;
+    public static final String DEFAULT_CONTENT_PROTECTOR_LICENSE_TYPE = "ALL_RIGHTS_RESERVED";
+    public static final String DEFAULT_CONTENT_PROTECTOR_TEMPLATE = "<div class=\"zrlog-content-protector\" data-license=\"{licenseType}\">\n"
+            + "  <p>本文作者：{author}</p>\n"
+            + "  <p>原文链接：<a href=\"{url}\">{url}</a></p>\n"
+            + "  <p>版权声明：{licenseName}，转载请注明出处。</p>\n"
+            + "</div>";
 
     public static PublicWebSiteInfo fillDefaultInfo(PublicWebSiteInfo info) {
         if (Objects.isNull(info.getRows())) {
@@ -28,6 +34,13 @@ public class WebSiteUtils {
         info.setGenerator_html_status(Objects.equals(info.getGenerator_html_status(), true));
         info.setArticle_thumbnail_status(Objects.equals(info.getArticle_thumbnail_status(), true));
         info.setAdmin_compactMode(Objects.equals(info.getAdmin_compactMode(), true));
+        info.setContent_protector_enabled(Objects.equals(info.getContent_protector_enabled(), true));
+        if (StringUtils.isEmpty(info.getContent_protector_license_type())) {
+            info.setContent_protector_license_type(DEFAULT_CONTENT_PROTECTOR_LICENSE_TYPE);
+        }
+        if (StringUtils.isEmpty(info.getContent_protector_template())) {
+            info.setContent_protector_template(DEFAULT_CONTENT_PROTECTOR_TEMPLATE);
+        }
         if (StringUtils.isEmpty(info.getAdmin_color_primary())) {
             info.setAdmin_color_primary(DEFAULT_COLOR_PRIMARY_COLOR);
         }

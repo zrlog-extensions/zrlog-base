@@ -54,11 +54,6 @@ public class HttpFileHandle extends HttpHandle<File> {
         return null;
     }
 
-    public static void main(String[] args) {
-        String fileName = getFileNameByHeader("attachment;filename=1.png");
-        System.out.println("fileName = " + fileName);
-    }
-
     @Override
     public int getStatusCode() {
         return statusCode;

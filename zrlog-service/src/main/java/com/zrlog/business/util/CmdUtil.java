@@ -1,6 +1,7 @@
 package com.zrlog.business.util;
 
 import com.hibegin.common.util.IOUtil;
+import com.hibegin.common.util.LoggerUtil;
 import com.hibegin.common.util.RuntimeMessage;
 import com.hibegin.common.util.SystemType;
 
@@ -8,8 +9,12 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CmdUtil {
+
+    private static final Logger LOGGER = LoggerUtil.getLogger(CmdUtil.class);
 
     public static int findPidByPort(int port) {
         String cmdStr;
@@ -46,8 +51,7 @@ public class CmdUtil {
                 if (ipPort.length >= 2) {
                     int tempPort = Integer.parseInt(ipPort[ipPort.length - 1]);
                     if (port == tempPort) {
-                        //
-                        System.out.println(nContext);
+                        LOGGER.fine(nContext.toString());
                         String procMsg = strings[6];
                         if (RuntimeMessage.getSystemRm() == SystemType.LINUX && procMsg.contains("/")) {
                             return Integer.parseInt(procMsg.substring(0, strings[6].indexOf("/")));
@@ -70,9 +74,9 @@ public class CmdUtil {
             if (pid != -1) {
                 killProcByPid(pid);
             }
-            System.out.println(System.currentTimeMillis() - start);
+            LOGGER.fine("Kill process by port cost " + (System.currentTimeMillis() - start) + "ms");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Kill process by port failed: " + port, e);
         }
     }
 
@@ -111,13 +115,9 @@ public class CmdUtil {
         try {
             return rt.exec(cmd);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Exec command failed: " + cmd, e);
         }
         return null;
-    }
-
-    public static void main(String[] args) {
-        killProcByPort(80);
     }
 
 }

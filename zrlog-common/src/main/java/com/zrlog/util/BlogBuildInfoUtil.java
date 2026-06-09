@@ -34,6 +34,9 @@ public class BlogBuildInfoUtil {
     private static String runMode = "RELEASE";
     private static String fileArch = "";
     private static String resourceDownloadUrl = "https://dl.zrlog.com/";
+    private static String runtimeType = "java";
+    private static String packageType = "zip";
+    private static String updateVersionJsonFilename = "last.version.json";
     public static final String BUILD_PROPERTIES_FILE_PATH = "/build.properties";
 
     static {
@@ -59,6 +62,15 @@ public class BlogBuildInfoUtil {
             }
             if (properties.get("fileArch") != null && !"".equals(properties.get("fileArch"))) {
                 fileArch = properties.get("fileArch").toString();
+            }
+            if (properties.get("runtimeType") != null && !"".equals(properties.get("runtimeType"))) {
+                runtimeType = properties.get("runtimeType").toString();
+            }
+            if (properties.get("packageType") != null && !"".equals(properties.get("packageType"))) {
+                packageType = properties.get("packageType").toString();
+            }
+            if (properties.get("updateVersionJsonFilename") != null && !"".equals(properties.get("updateVersionJsonFilename"))) {
+                updateVersionJsonFilename = properties.get("updateVersionJsonFilename").toString();
             }
         } catch (IOException | ParseException e) {
             LOGGER.log(Level.SEVERE, "doRead stream error", e);
@@ -86,6 +98,18 @@ public class BlogBuildInfoUtil {
 
     public static String getFileArch() {
         return fileArch;
+    }
+
+    public static String getRuntimeType() {
+        return runtimeType;
+    }
+
+    public static String getPackageType() {
+        return packageType;
+    }
+
+    public static String getUpdateVersionJsonFilename() {
+        return updateVersionJsonFilename;
     }
 
     public static String getResourceDownloadUrl() {

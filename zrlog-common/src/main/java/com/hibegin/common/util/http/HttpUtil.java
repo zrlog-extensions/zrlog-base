@@ -55,11 +55,6 @@ public class HttpUtil {
         return buildUserAgent("ZrLog", BlogBuildInfoUtil.getVersion(), BlogBuildInfoUtil.getBuildId());
     }
 
-    public static void main(String[] args) {
-        String userAgent = getUserAgent();
-        System.out.println("userAgent = " + userAgent);
-    }
-
     public void closeHttpClient() {
         this.executorService.shutdown();
         //close thread

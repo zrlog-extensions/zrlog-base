@@ -28,6 +28,7 @@ public class ArticleBasicDTO {
     private Boolean rubbish;
     private Boolean privacy;
     private String userName;
+    private String header;
     private Long commentSize;
     private String typeAlias;
     private String typeName;
@@ -319,5 +320,13 @@ public class ArticleBasicDTO {
 
     public void setFullLastUpdateDate(String fullLastUpdateDate) {
         this.fullLastUpdateDate = fullLastUpdateDate;
+    }
+
+    public String getHeader() {
+        return header;
+    }
+
+    public void setHeader(String header) {
+        this.header = header;
     }
 }

@@ -45,7 +45,7 @@ public class ControllerUtil {
             String[] args = sort.split(",");
             String key = args[0].trim();
             if (args.length > 1) {
-                //FIXME 页面路由问题
+                // 兼容路由查询串被拼到排序方向上的旧请求。
                 orders.add(new OrderBy(key, Direction.valueOf(args[1].split("\\?")[0].toUpperCase())));
             } else {
                 orders.add(new OrderBy(key, Direction.DESC));

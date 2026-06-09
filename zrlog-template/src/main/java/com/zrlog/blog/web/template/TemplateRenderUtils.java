@@ -22,6 +22,9 @@ import com.zrlog.common.vo.I18nVO;
 import com.zrlog.common.vo.PublicWebSiteInfo;
 import com.zrlog.data.dto.ArticleBasicDTO;
 import com.zrlog.data.dto.ArticleDetailDTO;
+import com.zrlog.common.vo.SocialPreviewDTO;
+import com.zrlog.data.util.ContentProtectorUtils;
+import com.zrlog.data.util.SocialPreviewUtils;
 import com.zrlog.plugin.BaseStaticSitePlugin;
 import com.zrlog.util.I18nUtil;
 import com.zrlog.util.TemplateHelper;
@@ -191,6 +194,7 @@ public class TemplateRenderUtils {
             ((ArticleListPageVO) pageInfo).setYurl((String) request.getAttr().get("yurl"));
         } else if (pageInfo instanceof ArticleDetailPageVO) {
             ArticleDetailDTO objectMap = ((ArticleDetailPageVO) pageInfo).getLog();
+            objectMap.setContentProtectorHtml(ContentProtectorUtils.render(webSite, objectMap, ZrLogUtil.getFullUrl(request)));
             tryEnableArrangePlugin(objectMap.getArrange_plugin(), pageInfo);
             String articleTitle = objectMap.getTitle();
             if (StringUtils.isNotEmpty(articleTitle)) {
@@ -213,6 +217,20 @@ public class TemplateRenderUtils {
         }
         pageInfo.setTitle(sj.toString());
         pageInfo.setDescription(webSite.getDescription());
+        fillSocialPreview(request, pageInfo, webSite);
+    }
+
+    private static void fillSocialPreview(HttpRequest request, BasePageInfo pageInfo, PublicWebSiteInfo webSite) {
+        SocialPreviewDTO socialPreview;
+        String fullUrl = ZrLogUtil.getFullUrl(request);
+        if (pageInfo instanceof ArticleDetailPageVO) {
+            ArticleDetailDTO log = ((ArticleDetailPageVO) pageInfo).getLog();
+            socialPreview = SocialPreviewUtils.article(webSite, log, pageInfo.getTitle(), fullUrl, log.getThumbnail());
+        } else {
+            socialPreview = SocialPreviewUtils.website(webSite, pageInfo.getTitle(), pageInfo.getDescription(), fullUrl, "");
+        }
+        pageInfo.setSocialPreview(socialPreview);
+        pageInfo.setSocialPreviewHtml(socialPreview.getMetaHtml());
     }
 
     private static void tryEnableArrangePlugin(String pluginName, BasePageInfo basePageInfo) {

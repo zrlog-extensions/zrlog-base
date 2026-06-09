@@ -2,6 +2,7 @@ package com.zrlog.blog.web.template.vo;
 
 import com.zrlog.common.cache.vo.BaseDataInitVO;
 import com.zrlog.common.vo.PublicWebSiteInfo;
+import com.zrlog.common.vo.SocialPreviewDTO;
 
 import java.util.Map;
 import java.util.Objects;
@@ -36,6 +37,8 @@ public class BasePageInfo {
     private String basePath;
     private String baseWithHostPath;
     private String contextPath;
+    private SocialPreviewDTO socialPreview;
+    private String socialPreviewHtml;
 
     public String getRequrl() {
         return requrl;
@@ -269,5 +272,21 @@ public class BasePageInfo {
 
     public void setContextPath(String contextPath) {
         this.contextPath = contextPath;
+    }
+
+    public SocialPreviewDTO getSocialPreview() {
+        return socialPreview;
+    }
+
+    public void setSocialPreview(SocialPreviewDTO socialPreview) {
+        this.socialPreview = socialPreview;
+    }
+
+    public String getSocialPreviewHtml() {
+        return socialPreviewHtml;
+    }
+
+    public void setSocialPreviewHtml(String socialPreviewHtml) {
+        this.socialPreviewHtml = socialPreviewHtml;
     }
 }

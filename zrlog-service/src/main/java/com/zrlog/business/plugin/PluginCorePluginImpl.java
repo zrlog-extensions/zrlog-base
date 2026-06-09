@@ -12,6 +12,7 @@ import com.hibegin.http.server.api.HttpRequest;
 import com.hibegin.http.server.api.HttpResponse;
 import com.hibegin.http.server.config.ConfigKit;
 import com.hibegin.http.server.util.PathUtil;
+import com.zrlog.blog.web.util.WebTools;
 import com.zrlog.business.rest.response.PluginCoreStatus;
 import com.zrlog.business.rest.response.PluginStatusResponse;
 import com.zrlog.common.Constants;
@@ -82,6 +83,14 @@ public class PluginCorePluginImpl extends BaseLockObject implements PluginCorePl
         if (StringUtils.isNotEmpty(request.getHeader("Referer"))) {
             map.put("Referer", request.getHeader("Referer"));
         }
+        //透传新字段
+        if (StringUtils.isNotEmpty(request.getHeader("User-Agent"))) {
+            map.put("User-Agent", request.getHeader("User-Agent"));
+        }
+        if (StringUtils.isNotEmpty(request.getHeader("Authorization"))) {
+            map.put("Authorization", request.getHeader("Authorization"));
+        }
+        WebTools.putRealIpHeader(map, request);
         String fullUrl;
         if (Objects.nonNull(adminTokenVO)) {
             fullUrl = request.getFullUrl().replaceFirst("http://", adminTokenVO.getProtocol() + "://");

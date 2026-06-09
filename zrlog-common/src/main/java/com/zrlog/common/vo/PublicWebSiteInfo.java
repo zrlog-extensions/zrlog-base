@@ -34,6 +34,9 @@ public class PublicWebSiteInfo implements Serializable {
     private String comment_plugin_name;
     private String system_notification;
     private String author;
+    private Boolean content_protector_enabled;
+    private String content_protector_license_type;
+    private String content_protector_template;
 
     public String getAppId() {
         return appId;
@@ -243,5 +246,29 @@ public class PublicWebSiteInfo implements Serializable {
 
     public void setAuthor(String author) {
         this.author = author;
+    }
+
+    public Boolean getContent_protector_enabled() {
+        return content_protector_enabled;
+    }
+
+    public void setContent_protector_enabled(Boolean content_protector_enabled) {
+        this.content_protector_enabled = content_protector_enabled;
+    }
+
+    public String getContent_protector_license_type() {
+        return content_protector_license_type;
+    }
+
+    public void setContent_protector_license_type(String content_protector_license_type) {
+        this.content_protector_license_type = content_protector_license_type;
+    }
+
+    public String getContent_protector_template() {
+        return content_protector_template;
+    }
+
+    public void setContent_protector_template(String content_protector_template) {
+        this.content_protector_template = content_protector_template;
     }
 }

@@ -12,6 +12,7 @@ public class ArticleDetailDTO extends ArticleBasicDTO {
     private List<VisitorCommentDTO> comments;
     private String tocHtml;
     private List<Outline> toc;
+    private String contentProtectorHtml;
 
     public List<Outline> getToc() {
         return toc;
@@ -133,5 +134,13 @@ public class ArticleDetailDTO extends ArticleBasicDTO {
 
     public void setTocHtml(String tocHtml) {
         this.tocHtml = tocHtml;
+    }
+
+    public String getContentProtectorHtml() {
+        return contentProtectorHtml;
+    }
+
+    public void setContentProtectorHtml(String contentProtectorHtml) {
+        this.contentProtectorHtml = contentProtectorHtml;
     }
 }

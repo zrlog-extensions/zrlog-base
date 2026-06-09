@@ -163,8 +163,4 @@ public class FileUtils {
         return name.substring(name.lastIndexOf(".") + 1);
     }
 
-    public static void main(String[] args) {
-        String fileExt = getFileExt("1.png");
-        System.out.println("fileExt = " + fileExt);
-    }
 }

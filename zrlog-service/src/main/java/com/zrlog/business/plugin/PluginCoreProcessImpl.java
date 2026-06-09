@@ -24,8 +24,8 @@ public class PluginCoreProcessImpl implements PluginCoreProcess {
 
     private AbstractPluginCoreProcessHandle pluginCoreProcessHandle;
     private final AtomicBoolean stopped = new AtomicBoolean(false);
-    private final File infoLogFile;
-    private final File errorLogFile;
+    private File infoLogFile;
+    private File errorLogFile;
     private final Runnable onStopRunnable;
     //插件服务存放的物理路径
     private final File pluginsFolder;
@@ -35,22 +35,12 @@ public class PluginCoreProcessImpl implements PluginCoreProcess {
 
     private File getLogFile(boolean error) {
         File logFile = new File(PathUtil.getLogPath() + "/plugin-core-" + (error ? "error" : "info") + "." + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".log");
-        if (logFile.exists()) {
-            return logFile;
-        }
-        try {
-            logFile.getParentFile().mkdirs();
-            logFile.createNewFile();
-        } catch (IOException e) {
-            LOGGER.warning("Can't create plugin log file " + logFile.getName());
-        }
+        logFile.getParentFile().mkdirs();
         return logFile;
     }
 
     public PluginCoreProcessImpl(Runnable onStopRunnable, String contextPath) {
         this.contextPath = contextPath;
-        infoLogFile = getLogFile(false);
-        errorLogFile = getLogFile(true);
         this.onStopRunnable = onStopRunnable;
         if (EnvKit.isFaaSMode()) {
             this.pluginsFolder = new File(ZrLogUtil.getFaaSRoot() + "/conf/plugins/");
@@ -106,6 +96,10 @@ public class PluginCoreProcessImpl implements PluginCoreProcess {
                 //ignore
             }
             return null;
+        }
+        if (Objects.isNull(infoLogFile) || Objects.isNull(errorLogFile)) {
+            infoLogFile = getLogFile(false);
+            errorLogFile = getLogFile(true);
         }
         List<String> args = new ArrayList<>();
         if (!EnvKit.isNativeImage()) {

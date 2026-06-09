@@ -17,11 +17,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class ParseUtil {
 
-    public static void main(String[] args) {
-        String s = autoDigest("这是一个测试文本。它包含了一些文字和<span style='color:red;'>红色</span>内容。还有更多内容...", 20);
-        System.out.println(s);
-    }
-
     public static String getPlainSearchText(String content) {
         if (StringUtils.isEmpty(content)) {
             return "";

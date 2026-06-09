@@ -36,6 +36,7 @@ public class WebSite extends DAO {
     public static final String admin_compactMode = "admin_compactMode";
     public static final String rows = "rows";
     public static final String session_timeout = "session_timeout";
+    public static final String content_protector_enabled = "content_protector_enabled";
 
     //string
     public static final String appId = "appId";
@@ -55,22 +56,22 @@ public class WebSite extends DAO {
     public static final String comment_plugin_name = "comment_plugin_name";
     public static final String system_notification = "system_notification";
     public static final String author = "author";
+    public static final String content_protector_license_type = "content_protector_license_type";
+    public static final String content_protector_template = "content_protector_template";
 
     static {
 
         String[] listNum = new String[]{generator_html_status, disable_comment_status,
-                article_thumbnail_status, article_auto_digest_length, admin_darkMode, admin_compactMode, rows, session_timeout};
+                article_thumbnail_status, article_auto_digest_length, admin_darkMode, admin_compactMode, rows,
+                session_timeout, content_protector_enabled};
         websitePublicQueryKeys = new ArrayList<>();
         //str
         websitePublicQueryStrKeys = Arrays.asList(appId, changyan_status, title, second_title, keywords, description, host,
                 icp, robotRuleContent, comment_plugin_name, webCm, language, admin_color_primary, admin_theme,
-                staticResourceHost, template, system_notification, author);
+                staticResourceHost, template, system_notification, author, content_protector_license_type,
+                content_protector_template);
         websitePublicQueryKeys.addAll(websitePublicQueryStrKeys);
         websitePublicQueryKeys.addAll(Arrays.asList(listNum));
-    }
-
-    public static void main(String[] args) {
-        System.out.println(websitePublicQueryKeys);
     }
 
     public WebSite() {

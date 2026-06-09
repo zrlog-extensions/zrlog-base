@@ -1,0 +1,259 @@
+package com.zrlog.business.service;
+
+import com.hibegin.common.util.*;
+import com.hibegin.common.util.http.HttpUtil;
+import com.hibegin.common.util.http.handle.HttpFileHandle;
+import com.hibegin.http.server.util.PathUtil;
+import com.zrlog.business.exception.DownloadUpgradeFileException;
+import com.zrlog.business.rest.response.CheckVersionResponse;
+import com.zrlog.business.rest.response.PreCheckVersionResponse;
+import com.zrlog.business.rest.response.UpgradeProcessResponse;
+import com.zrlog.business.updater.UpdateVersionInfoPlugin;
+import com.zrlog.common.updater.*;
+import com.zrlog.common.updater.handle.*;
+import com.zrlog.common.Constants;
+import com.zrlog.common.vo.Version;
+import com.zrlog.util.I18nUtil;
+import com.zrlog.util.ThreadUtils;
+import com.zrlog.util.ZrLogUtil;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
+
+public class UpgradeService {
+
+    private final UpgradeNoticeService upgradeNoticeService = new UpgradeNoticeService();
+
+    public CheckVersionResponse getCheckVersionResponse(boolean fetchAble, UpdateVersionInfoPlugin plugin) {
+        if (Objects.isNull(plugin)) {
+            return upgradeNoticeService.getNotice();
+        }
+        if (fetchAble) {
+            plugin.getLastVersion(true);
+            CheckVersionResponse storedResponse = upgradeNoticeService.getNotice();
+            if (Objects.nonNull(storedResponse.getVersion())) {
+                return storedResponse;
+            }
+        }
+        CheckVersionResponse storedResponse = upgradeNoticeService.getNotice();
+        if (Objects.nonNull(storedResponse.getVersion())) {
+            return storedResponse;
+        }
+        CheckVersionResponse checkVersionResponse = new CheckVersionResponse();
+        Version version = plugin.getLastVersion(false);
+        if (Objects.isNull(version)) {
+            checkVersionResponse.setUpgrade(false);
+            return checkVersionResponse;
+        }
+        checkVersionResponse.setUpgrade(ZrLogUtil.greatThenCurrentVersion(version.getBuildId(), version.getBuildDate(), version.getVersion()));
+        checkVersionResponse.setVersion(version);
+        return checkVersionResponse;
+    }
+
+    public PreCheckVersionResponse getPreCheckVersionResponse(boolean fetchAble, UpdateVersionInfoPlugin plugin) {
+        CheckVersionResponse checkVersionResponse = getCheckVersionResponse(fetchAble, plugin);
+        return BeanUtil.convert(checkVersionResponse, PreCheckVersionResponse.class);
+
+    }
+
+    public PreCheckVersionResponse preUpgradeVersion(boolean fetchAble, UpdateVersionInfoPlugin plugin) {
+        PreCheckVersionResponse checkVersionResponse = getPreCheckVersionResponse(fetchAble, plugin);
+        checkVersionResponse.setDockerMode(ZrLogUtil.isDockerMode());
+        checkVersionResponse.setSystemServiceMode(ZrLogUtil.isSystemServiceMode());
+        boolean disable = isOnlineUpgradeDisabled();
+        checkVersionResponse.setOnlineUpgradable(!disable);
+        if (disable && Objects.equals(checkVersionResponse.getUpgrade(), true)) {
+            UpgradeProcessResponse upgradeProcessResponse = buildManualUpgradeResponse(checkVersionResponse.getVersion(),
+                    I18nUtil.getBackend());
+            checkVersionResponse.setDisableUpgradeReason(upgradeProcessResponse.getMessage());
+        }
+        return checkVersionResponse;
+    }
+
+    private static boolean isErrorFile(File file, long length, String md5sum) {
+        try {
+            if (Objects.isNull(file) || !file.exists()) {
+                return true;
+            }
+            //先比较文件大小
+            if (length > 0 && length != file.length()) {
+                return true;
+            }
+            if (StringUtils.isNotEmpty(md5sum)) {
+                return !SecurityUtils.md5ByFile(file).equals(md5sum);
+            }
+            return file.length() <= 0;
+        } catch (Exception e) {
+            return true;
+        }
+    }
+
+    private static int getDownloadProcess(File file, long totalLength) {
+        if (totalLength <= 0 || Objects.isNull(file) || !file.exists()) {
+            return 0;
+        }
+        return (int) Math.min(file.length() * 100 / totalLength, 100);
+    }
+
+    private HttpFileHandle createFileHandle() {
+        File updateTempPath = Objects.nonNull(Constants.zrLogConfig.getUpdater()) ?
+                Constants.zrLogConfig.getUpdater().getUpdateTempPath() : new File(PathUtil.getTempPath());
+        File file = new File(updateTempPath, "zrlog-" + System.currentTimeMillis() + "-" +
+                Math.abs(System.nanoTime()) + ".zip");
+        file.getParentFile().mkdirs();
+        HttpFileHandle handle = new HttpFileHandle(file.getParentFile().toString(), file.getName());
+        handle.setT(file);
+        return handle;
+    }
+
+    private static String getPackageDownloadUrl(Version version) {
+        return ZrLogUtil.isWarMode() ? version.getWarDownloadUrl() : version.getZipDownloadUrl();
+    }
+
+    private static long getPackageFileSize(Version version) {
+        return ZrLogUtil.isWarMode() ? version.getWarFileSize() : version.getZipFileSize();
+    }
+
+    private static String getPackageMd5sum(Version version) {
+        return ZrLogUtil.isWarMode() ? version.getWarMd5sum() : version.getZipMd5sum();
+    }
+
+    private File downloadUpgradePackage(Version version, UpgradeProgressListener progressListener,
+                                        Map<String, Object> backend) {
+        HttpFileHandle fileHandle = createFileHandle();
+        File file = fileHandle.getT();
+        String downloadUrl = getPackageDownloadUrl(version);
+        long fileSize = getPackageFileSize(version);
+        String md5sum = getPackageMd5sum(version);
+        publishProgress(progressListener, UpgradeProgressEvent.STAGE_DOWNLOAD, UpgradeProgressEvent.STATUS_RUNNING,
+                getDownloadMessage(backend, null), null);
+        AtomicReference<Exception> downloadException = new AtomicReference<>();
+        Thread downloadThread = ThreadUtils.start(() -> {
+            try {
+                HttpUtil.getInstance().sendGetRequest(downloadUrl, fileHandle, new HashMap<>());
+            } catch (IOException | InterruptedException | URISyntaxException e) {
+                downloadException.set(e);
+                if (e instanceof InterruptedException) {
+                    Thread.currentThread().interrupt();
+                }
+                LoggerUtil.getLogger(UpgradeService.class).severe("Download file error " + e.getMessage());
+            }
+        });
+        int lastPercent = 0;
+        while (downloadThread.isAlive()) {
+            int percent = getDownloadProcess(file, fileSize);
+            if (percent > lastPercent) {
+                publishProgress(progressListener, UpgradeProgressEvent.STAGE_DOWNLOAD,
+                        UpgradeProgressEvent.STATUS_RUNNING,
+                        getDownloadMessage(backend, percent), null);
+                lastPercent = percent;
+            }
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                downloadThread.interrupt();
+                Thread.currentThread().interrupt();
+                throw new DownloadUpgradeFileException(e);
+            }
+        }
+        if (Objects.nonNull(downloadException.get()) || fileHandle.getStatusCode() != 200 ||
+                isErrorFile(file, fileSize, md5sum)) {
+            throw new DownloadUpgradeFileException(downloadException.get());
+        }
+        publishProgress(progressListener, UpgradeProgressEvent.STAGE_DOWNLOAD, UpgradeProgressEvent.STATUS_COMPLETE,
+                backendString(backend, "upgrade.status.downloaded"), file.getName());
+        return file;
+    }
+
+    public UpgradeProcessResponse doUpgrade(UpdateVersionInfoPlugin plugin) {
+        return doUpgrade(plugin, UpgradeProgressListener.NONE);
+    }
+
+    public UpgradeProcessResponse doUpgrade(UpdateVersionInfoPlugin plugin, UpgradeProgressListener progressListener) {
+        return doUpgrade(plugin, progressListener, I18nUtil.getBackend());
+    }
+
+    public UpgradeProcessResponse doUpgrade(UpdateVersionInfoPlugin plugin, UpgradeProgressListener progressListener,
+                                            Map<String, Object> backend) {
+        CheckVersionResponse checkVersionResponse = getCheckVersionResponse(true, plugin);
+        Version version = checkVersionResponse.getVersion();
+        if (Objects.isNull(version) || !Objects.equals(checkVersionResponse.getUpgrade(), true)) {
+            return new UpgradeProcessResponse(true, backendString(backend, "upgrade.result.noChange"));
+        }
+        if (isOnlineUpgradeDisabled()) {
+            return buildManualUpgradeResponse(version, backend);
+        }
+        File upgradePackage = downloadUpgradePackage(version, progressListener, backend);
+        UpdateVersionHandler updateVersionHandler;
+        if (EnvKit.isFaaSMode()) {
+            updateVersionHandler = new FaasUpdateVersionHandler(backend, version, upgradePackage,
+                    progressListener);
+        } else if (ZrLogUtil.isWarMode()) {
+            updateVersionHandler = new WarUpdateVersionHandle(upgradePackage, backend,
+                    buildUpgradeKey(version), version, progressListener);
+        } else {
+            updateVersionHandler = new ZipUpdateVersionHandle(upgradePackage, backend, version,
+                    progressListener);
+        }
+        updateVersionHandler.doHandle();
+        return new UpgradeProcessResponse(updateVersionHandler.isFinish(), updateVersionHandler.getMessage());
+    }
+
+    private boolean isOnlineUpgradeDisabled() {
+        return ZrLogUtil.isDockerMode() || ZrLogUtil.isSystemServiceMode() ||
+                (EnvKit.isFaaSMode() && !FaasUpdateVersionHandler.isOnlineUpgradeSupported());
+    }
+
+    private UpgradeProcessResponse buildManualUpgradeResponse(Version version, Map<String, Object> backend) {
+        UpdateVersionHandler updateVersionHandler;
+        if (ZrLogUtil.isDockerMode()) {
+            updateVersionHandler = new DockerUpdateVersionHandle(backend);
+        } else if (ZrLogUtil.isSystemServiceMode()) {
+            updateVersionHandler = new SystemServiceUpdateVersionHandle(backend, version);
+        } else if (EnvKit.isFaaSMode()) {
+            updateVersionHandler = new FaasUpdateVersionHandler(backend, version);
+        } else {
+            return new UpgradeProcessResponse(false, "");
+        }
+        updateVersionHandler.doHandle();
+        return new UpgradeProcessResponse(updateVersionHandler.isFinish(), updateVersionHandler.getMessage());
+    }
+
+    private static String buildUpgradeKey(Version version) {
+        String versionTag = Objects.nonNull(version) ? version.getBuildId() : "";
+        if (StringUtils.isEmpty(versionTag) && Objects.nonNull(version)) {
+            versionTag = version.getVersion();
+        }
+        if (StringUtils.isEmpty(versionTag)) {
+            versionTag = String.valueOf(System.currentTimeMillis());
+        }
+        return ("upgrade-" + versionTag + "-" + System.currentTimeMillis()).replaceAll("[^A-Za-z0-9._-]", "-");
+    }
+
+    private static String backendString(Map<String, Object> backend, String key) {
+        return Objects.toString(backend.get(key), key);
+    }
+
+    private static String getDownloadMessage(Map<String, Object> backend, Integer percent) {
+        String message = backendString(backend, "upgrade.status.downloading");
+        if (Objects.nonNull(percent) && percent > 0) {
+            return message + " " + percent + "%";
+        }
+        return message;
+    }
+
+    private static void publishProgress(UpgradeProgressListener progressListener, String stage, String status,
+                                        String message, String detail) {
+        try {
+            progressListener.onProgress(UpgradeProgressEvent.EVENT,
+                    UpgradeProgressEvent.data(stage, status, message, detail));
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
+}

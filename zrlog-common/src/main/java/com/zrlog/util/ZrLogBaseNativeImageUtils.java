@@ -95,7 +95,7 @@ public class ZrLogBaseNativeImageUtils {
                 BaseDataInitVO.class, BaseDataInitVO.Statistics.class,
                 HotLogBasicInfoEntry.class, PageData.class, HotTypeLogInfo.class,
                 Version.class, Archive.class, Outline.class,
-                PublicWebSiteInfo.class, UserBasicDTO.class);
+                PublicWebSiteInfo.class, UserBasicDTO.class, SocialPreviewDTO.class);
 
         //register version update
         for (int i = 1; i <= UpgradeVersionHandler.SQL_VERSION; i++) {
