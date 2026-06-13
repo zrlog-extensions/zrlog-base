@@ -103,7 +103,7 @@ public interface StaticSitePlugin extends BaseStaticSitePlugin {
                 return true;
             }
             String versionFile = (Objects.nonNull(scheme) ? scheme : "https") + "://" + Constants.getHost() + getContextPath() + "/" + getVersionFileName();
-            String remoteSiteVersion = HttpUtil.getInstance().getSuccessTextByUrl(versionFile);
+            String remoteSiteVersion = HttpUtil.getInstance().getSuccessTextByUrl(versionFile + "?_t=" + System.currentTimeMillis());
             return Objects.equals(getSiteVersion(), remoteSiteVersion);
         } catch (Exception e) {
             if (Constants.debugLoggerPrintAble()) {
