@@ -28,10 +28,6 @@ public class I18nUtil {
     private static final String I18N_ADMIN_BACKEND_KEY = "admin_backend";
     private static final String I18N_BACKEND_KEY = "backend";
     private static final String DEFAULT_LANG = "zh_CN";
-    private static final String[] TEMPLATE_I18N_FILES = {
-            "i18n_en_US.properties",
-            "i18n_zh_CN.properties"
-    };
 
     static {
         reloadSystemI18N();
@@ -99,33 +95,26 @@ public class I18nUtil {
 
     public static I18nVO addToRequestWithTemplatePath(String templatePath, HttpRequest request) {
         if (StringUtils.isNotEmpty(templatePath)) {
-            loadTemplateClasspathI18N(templatePath);
-            if (!Objects.equals(templatePath, Constants.DEFAULT_TEMPLATE_PATH)) {
-                loadTemplateFileSystemI18N(templatePath);
-            }
-        }
-        return addToRequest(request);
-    }
-
-    private static void loadTemplateClasspathI18N(String templatePath) {
-        for (String fileName : TEMPLATE_I18N_FILES) {
-            String path = templatePath + "/language/" + fileName;
-            loadI18N(I18nUtil.class.getResourceAsStream(path.replace("\\", "/")), fileName, I18N_BLOG_KEY);
-        }
-    }
-
-    private static void loadTemplateFileSystemI18N(String templatePath) {
-        File filePath = PathUtil.getStaticFile(templatePath + "/language/");
-        File[] propertiesFiles = filePath.listFiles();
-        if (propertiesFiles != null) {
-            for (File propertiesFile : propertiesFiles) {
-                try {
-                    loadI18N(new FileInputStream(propertiesFile), propertiesFile.getName(), I18N_BLOG_KEY);
-                } catch (FileNotFoundException e) {
-                    //ignore
+            if (Objects.equals(templatePath, Constants.DEFAULT_TEMPLATE_PATH)) {
+                File enUSPropertiesFile = new File(templatePath + "/language/i18n_en_US.properties");
+                File zhCNPropertiesFile = new File(templatePath + "/language/i18n_zh_CN.properties");
+                loadI18N(I18nUtil.class.getResourceAsStream(enUSPropertiesFile.toString().replace("\\", "/")), enUSPropertiesFile.getName(), I18N_BLOG_KEY);
+                loadI18N(I18nUtil.class.getResourceAsStream(zhCNPropertiesFile.toString().replace("\\", "/")), zhCNPropertiesFile.getName(), I18N_BLOG_KEY);
+            } else {
+                File filePath = PathUtil.getStaticFile(templatePath + "/language/");
+                File[] propertiesFiles = filePath.listFiles();
+                if (propertiesFiles != null) {
+                    for (File propertiesFile : propertiesFiles) {
+                        try {
+                            loadI18N(new FileInputStream(propertiesFile), propertiesFile.getName(), I18N_BLOG_KEY);
+                        } catch (FileNotFoundException e) {
+                            //ignore
+                        }
+                    }
                 }
             }
         }
+        return addToRequest(request);
     }
 
     public static I18nVO addToRequest(HttpRequest request) {
