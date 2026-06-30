@@ -47,25 +47,78 @@ public class AwsLambdaUpdateServiceTest {
 
     @Test
     public void shouldUpdateWithInjectedClient() throws Exception {
-        File file = new File("/home/xiaochun/Download/https://dl.zrlog.com/preview/zrlog-3.4.1-SNAPSHOT-d5167b0-preview-Linux-amd64-faas.zip");
+        File file = tempPackageFile("zrlog-faas", ".zip");
         AwsLambdaUpdateConfig config = new AwsLambdaUpdateConfig(
-                new AwsCredentials("", "", null),
+                new AwsCredentials("ak", "sk", null),
                 "us-west-1",
                 "xiaochun-zrlog-com",
                 "zrlog-update-bucket"
         );
-        //FakeClient fakeClient = new FakeClient();
-        AwsLambdaUpdateClient lambdaUpdateClient = new AwsLambdaUpdateClient(config.getCredentials(), config.getRegion());
+        FakeClient fakeClient = new FakeClient();
 
         String key = "lambda/xiaochun-zrlog-com/test.zip";
-        JsonObject response = new AwsLambdaUpdateService(config, lambdaUpdateClient)
+        JsonObject response = new AwsLambdaUpdateService(config, fakeClient)
                 .update(file, key);
-        JsonObject jsonObject = lambdaUpdateClient.updateFunctionCode(config.getFunctionName(), config.getS3Bucket(), key);
 
         Assert.assertEquals("Successful", response.get("LastUpdateStatus").getAsString());
-        /*Assert.assertEquals("put:deploy-bucket/lambda/xiaochun-zrlog-com/test.zip", lambdaUpdateClient.calls.get(0));
-        Assert.assertEquals("update:xiaochun-zrlog-com:deploy-bucket/lambda/xiaochun-zrlog-com/test.zip",
-                lambdaUpdateClient.calls.get(1));*/
+        Assert.assertEquals("put:zrlog-update-bucket/lambda/xiaochun-zrlog-com/test.zip", fakeClient.calls.get(0));
+        Assert.assertEquals("update:xiaochun-zrlog-com:zrlog-update-bucket/lambda/xiaochun-zrlog-com/test.zip",
+                fakeClient.calls.get(1));
+    }
+
+    @Test
+    public void shouldRejectMissingS3KeyBeforeCallingClient() throws Exception {
+        FakeClient fakeClient = new FakeClient();
+
+        try {
+            new AwsLambdaUpdateService(validConfig(), fakeClient).update(tempPackageFile("zrlog-faas", ".zip"), "");
+            Assert.fail("Expected missing S3 key error");
+        } catch (IllegalArgumentException e) {
+            Assert.assertTrue(e.getMessage().contains("Missing S3 object key"));
+            Assert.assertTrue(fakeClient.calls.isEmpty());
+        }
+    }
+
+    @Test
+    public void shouldRejectMissingPackageFileBeforeCallingClient() throws Exception {
+        FakeClient fakeClient = new FakeClient();
+
+        try {
+            new AwsLambdaUpdateService(validConfig(), fakeClient).update(new File("/tmp/not-exists-zrlog-faas.zip"), "lambda/test.zip");
+            Assert.fail("Expected missing package file error");
+        } catch (IllegalArgumentException e) {
+            Assert.assertTrue(e.getMessage().contains("Missing package file"));
+            Assert.assertTrue(fakeClient.calls.isEmpty());
+        }
+    }
+
+    @Test
+    public void shouldRejectEmptyPackageFileBeforeCallingClient() throws Exception {
+        File file = File.createTempFile("zrlog-empty-faas", ".zip");
+        file.deleteOnExit();
+        FakeClient fakeClient = new FakeClient();
+
+        try {
+            new AwsLambdaUpdateService(validConfig(), fakeClient).update(file, "lambda/test.zip");
+            Assert.fail("Expected empty package file error");
+        } catch (IllegalArgumentException e) {
+            Assert.assertTrue(e.getMessage().contains("Empty package file"));
+            Assert.assertTrue(fakeClient.calls.isEmpty());
+        }
+    }
+
+    @Test
+    public void shouldRejectMissingConfigBeforeCallingClient() throws Exception {
+        FakeClient fakeClient = new FakeClient();
+
+        try {
+            new AwsLambdaUpdateService(AwsLambdaUpdateConfig.fromEnvironment(new HashMap<>()), fakeClient)
+                    .update(tempPackageFile("zrlog-faas", ".zip"), "lambda/test.zip");
+            Assert.fail("Expected missing config error");
+        } catch (IllegalArgumentException e) {
+            Assert.assertTrue(e.getMessage().contains("Missing Lambda update config"));
+            Assert.assertTrue(fakeClient.calls.isEmpty());
+        }
     }
 
     private static File tempPackageFile(String prefix, String suffix) throws Exception {
@@ -75,6 +128,15 @@ public class AwsLambdaUpdateServiceTest {
             outputStream.write("zip".getBytes());
         }
         return file;
+    }
+
+    private static AwsLambdaUpdateConfig validConfig() {
+        return new AwsLambdaUpdateConfig(
+                new AwsCredentials("ak", "sk", null),
+                "us-west-1",
+                "xiaochun-zrlog-com",
+                "zrlog-update-bucket"
+        );
     }
 
     private static class FakeClient implements AwsLambdaCodeUpdateClient {

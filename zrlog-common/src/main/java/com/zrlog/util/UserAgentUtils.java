@@ -82,7 +82,7 @@ public class UserAgentUtils {
             }
         } else if (lowerUa.contains("msie") || lowerUa.contains("trident")) {
             browser = "Internet Explorer";
-            version = getVersion(ua, "(MSIE |rv:)(\\d+(\\.\\d+)*)");
+            version = getVersion(ua, "(?:MSIE |rv:)(\\d+(\\.\\d+)*)");
         }
 
         return new UserAgentInfo(os, browser, version, crawler);

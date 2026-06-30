@@ -37,9 +37,38 @@ public class DbUpgradeService {
         this.dataSource = dataSource;
         this.dao = new DAO(dataSource);
         this.webSite = new WebSite(dataSource);
-        URI uri = URI.create(dataSource.getDataSourceProperties().getProperty("jdbcUrl").replace("jdbc:", ""));
-        this.dbName = uri.getPath().substring(1);
+        this.dbName = resolveDbName(dataSource.getDataSourceProperties().getProperty("jdbcUrl"));
         this.currentSqlVersion = currentSqlVersion;
+    }
+
+    private static String resolveDbName(String jdbcUrl) {
+        if (StringUtils.isEmpty(jdbcUrl)) {
+            return "";
+        }
+        String normalizedUrl = jdbcUrl.replace("jdbc:", "");
+        try {
+            URI uri = URI.create(normalizedUrl);
+            String path = uri.getPath();
+            if (StringUtils.isNotEmpty(path) && path.length() > 1) {
+                String pathWithoutLeadingSlash = path.substring(1);
+                int slashIndex = pathWithoutLeadingSlash.lastIndexOf('/');
+                if (slashIndex >= 0 && slashIndex < pathWithoutLeadingSlash.length() - 1) {
+                    return pathWithoutLeadingSlash.substring(slashIndex + 1);
+                }
+                return pathWithoutLeadingSlash;
+            }
+        } catch (IllegalArgumentException ignored) {
+        }
+        String urlWithoutParams = normalizedUrl.split(";", 2)[0];
+        int slashIndex = urlWithoutParams.lastIndexOf('/');
+        if (slashIndex >= 0 && slashIndex < urlWithoutParams.length() - 1) {
+            return urlWithoutParams.substring(slashIndex + 1);
+        }
+        int colonIndex = urlWithoutParams.lastIndexOf(':');
+        if (colonIndex >= 0 && colonIndex < urlWithoutParams.length() - 1) {
+            return urlWithoutParams.substring(colonIndex + 1);
+        }
+        return urlWithoutParams;
     }
 
 

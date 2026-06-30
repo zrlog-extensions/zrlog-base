@@ -14,17 +14,23 @@ class PluginGhostWatcher {
     private static final Logger LOGGER = LoggerUtil.getLogger(PluginGhostWatcher.class);
     private final int port;
     private final String host;
+    private final long waitMillis;
 
     public PluginGhostWatcher(String host, int port) {
+        this(host, port, 3000);
+    }
+
+    PluginGhostWatcher(String host, int port, long waitMillis) {
         this.host = host;
         this.port = port;
+        this.waitMillis = waitMillis;
     }
 
     public void doWatch() {
         //使用Socket的方式进行监听，如果插件服务停止后，那么SocketServer也会被关闭，标记插件服务停止。
         try {
             //待插件启动
-            Thread.sleep(3000);
+            Thread.sleep(waitMillis);
             Socket socket = new Socket(host, port);
             IOUtil.getStringInputStream(socket.getInputStream());
         } catch (Exception e) {

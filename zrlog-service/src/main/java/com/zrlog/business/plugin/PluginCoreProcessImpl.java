@@ -172,10 +172,10 @@ public class PluginCoreProcessImpl implements PluginCoreProcess {
                         try {
                             infoPluginConsole.printAsync();
                             errroPluginConsole.printAsync();
-                            new PluginGhostWatcher("127.0.0.1", randomWatcherListenPort).doWatch();
+                            newPluginGhostWatcher("127.0.0.1", randomWatcherListenPort).doWatch();
                             //避免执行失败的情况下，重复执行
                             try {
-                                Thread.sleep(1000);
+                                pauseAfterPluginGhostWatcher();
                             } catch (InterruptedException e) {
                                 //ignore
                             }
@@ -204,13 +204,25 @@ public class PluginCoreProcessImpl implements PluginCoreProcess {
                     }
                 }
             };
-            Thread thread = ThreadUtils.start(pluginCoreProcessHandle);
+            Thread thread = startPluginCoreHandle(pluginCoreProcessHandle);
             thread.setUncaughtExceptionHandler((t, ex) -> pluginCoreProcessHandle.close());
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "start plugin exception ", e);
         }
         return randomServerPort;
 
+    }
+
+    PluginGhostWatcher newPluginGhostWatcher(String host, int port) {
+        return new PluginGhostWatcher(host, port);
+    }
+
+    void pauseAfterPluginGhostWatcher() throws InterruptedException {
+        Thread.sleep(1000);
+    }
+
+    Thread startPluginCoreHandle(AbstractPluginCoreProcessHandle handle) {
+        return ThreadUtils.start(handle);
     }
 
     /**

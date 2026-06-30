@@ -24,7 +24,11 @@ public class CmdUtil {
             cmdStr = "netstat -atu";
         }
         String content = sendCmd(cmdStr);
-        if (!content.isEmpty() && content.split("\n").length > 1) {
+        return findPidByPort(content, port, RuntimeMessage.getSystemRm());
+    }
+
+    static int findPidByPort(String content, int port, SystemType systemType) {
+        if (content != null && !content.isEmpty() && content.split("\n").length > 1) {
             String[] cons = content.split("\n");
             for (int i = 2; i < cons.length; i++) {
                 content = cons[i];
@@ -41,7 +45,7 @@ public class CmdUtil {
 
                 String[] strings = nContext.toString().trim().split(" ");
                 int flag = 1;
-                if (RuntimeMessage.getSystemRm() == SystemType.LINUX) {
+                if (systemType == SystemType.LINUX) {
                     flag = 3;
                 }
                 if (strings.length <= flag) {
@@ -49,11 +53,16 @@ public class CmdUtil {
                 }
                 String[] ipPort = strings[flag].split(":");
                 if (ipPort.length >= 2) {
-                    int tempPort = Integer.parseInt(ipPort[ipPort.length - 1]);
+                    int tempPort;
+                    try {
+                        tempPort = Integer.parseInt(ipPort[ipPort.length - 1]);
+                    } catch (NumberFormatException e) {
+                        continue;
+                    }
                     if (port == tempPort) {
                         LOGGER.fine(nContext.toString());
-                        String procMsg = strings[6];
-                        if (RuntimeMessage.getSystemRm() == SystemType.LINUX && procMsg.contains("/")) {
+                        if (systemType == SystemType.LINUX && strings.length > 6 && strings[6].contains("/")) {
+                            String procMsg = strings[6];
                             return Integer.parseInt(procMsg.substring(0, strings[6].indexOf("/")));
                         }
                     }
@@ -68,11 +77,15 @@ public class CmdUtil {
     }
 
     public static void killProcByPort(int port) {
+        killProcByPort(port, CmdUtil::findPidByPort, CmdUtil::killProcByPid);
+    }
+
+    static void killProcByPort(int port, PidFinder pidFinder, PidKiller pidKiller) {
         try {
             long start = System.currentTimeMillis();
-            int pid = findPidByPort(port);
+            int pid = pidFinder.find(port);
             if (pid != -1) {
-                killProcByPid(pid);
+                pidKiller.kill(pid);
             }
             LOGGER.fine("Kill process by port cost " + (System.currentTimeMillis() - start) + "ms");
         } catch (Exception e) {
@@ -120,4 +133,13 @@ public class CmdUtil {
         return null;
     }
 
+    @FunctionalInterface
+    interface PidFinder {
+        int find(int port);
+    }
+
+    @FunctionalInterface
+    interface PidKiller {
+        void kill(int pid);
+    }
 }

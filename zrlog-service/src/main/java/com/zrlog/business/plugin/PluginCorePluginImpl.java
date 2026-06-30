@@ -226,12 +226,16 @@ public class PluginCorePluginImpl extends BaseLockObject implements PluginCorePl
                 return;
             }
             try {
-                Thread.sleep(2000);
+                pauseBeforeRefreshCacheRetry();
             } catch (InterruptedException ex) {
                 throw new RuntimeException(ex);
             }
             refreshCacheWithRetry(rCount, cacheVersion);
         }
+    }
+
+    void pauseBeforeRefreshCacheRetry() throws InterruptedException {
+        Thread.sleep(2000);
     }
 
     private static void waitToStarted(String pluginServerBaseUrl, String token, int retryCount) {

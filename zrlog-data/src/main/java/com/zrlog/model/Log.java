@@ -42,7 +42,7 @@ public class Log extends BasePageableDAO implements Serializable {
             return null;
         }
         ArticleDetailDTO detail = null;
-        if (idOrAlias instanceof Integer || ParseUtil.isNumeric((String) idOrAlias)) {
+        if (idOrAlias instanceof Number || ParseUtil.isNumeric(String.valueOf(idOrAlias))) {
             String sql =
                     "select l.*,last_update_date as lastUpdateDate,u.userName,u.header as header,(select count(commentId) from " + Comment.TABLE_NAME + " where logId=l.logId) commentSize ,t.alias as typeAlias,t.typeName as typeName  from " + tableName + " l inner join user u,type t where t.typeId=l.typeId and u.userId=l.userId and rubbish=? and privacy=? and l.logId=?";
             Map<String, Object> log = queryFirstWithParams(sql, false, false, idOrAlias);
@@ -53,7 +53,7 @@ public class Log extends BasePageableDAO implements Serializable {
         if (Objects.isNull(detail)) {
             String sql =
                     "select l.*,last_update_date as lastUpdateDate,u.userName,u.header as header,(select count(commentId) from " + Comment.TABLE_NAME + " where logId=l.logId) commentSize ,t.alias as typeAlias,t.typeName as typeName  from " + tableName + " l inner join user u,type t where t.typeId=l.typeId and u.userId=l.userId and rubbish=? and privacy=? and l.alias=?";
-            Map<String, Object> log = queryFirstWithParams(sql, false, false, idOrAlias);
+            Map<String, Object> log = queryFirstWithParams(sql, false, false, String.valueOf(idOrAlias));
             if (Objects.nonNull(log)) {
                 detail = ResultBeanUtils.convert(log, ArticleDetailDTO.class);
             }
@@ -114,7 +114,7 @@ public class Log extends BasePageableDAO implements Serializable {
         if (idOrAlias == null) {
             return null;
         }
-        if (idOrAlias instanceof Integer || ParseUtil.isNumeric((String) idOrAlias)) {
+        if (idOrAlias instanceof Number || ParseUtil.isNumeric(String.valueOf(idOrAlias))) {
             String sql =
                     "select l.*,last_update_date as lastUpdateDate,u.userName,u.header as header,(select count(commentId) from " + Comment.TABLE_NAME + " where logId=l.logId) commentSize ,t.alias as typeAlias,t.typeName as typeName  from " + tableName + " l inner join user u,type t where t.typeId=l.typeId and u.userId=l.userId and l.logId=?";
             Map<String, Object> log = queryFirstWithParams(sql, idOrAlias);
@@ -124,7 +124,7 @@ public class Log extends BasePageableDAO implements Serializable {
         }
         String sql =
                 "select l.*,last_update_date as lastUpdateDate,u.userName,u.header as header,(select count(commentId) from " + Comment.TABLE_NAME + " where logId=l.logId) commentSize ,t.alias as typeAlias,t.typeName as typeName  from " + tableName + " l inner join user u,type t where t.typeId=l.typeId and u.userId=l.userId and l.alias=?";
-        Map<String, Object> log = queryFirstWithParams(sql, idOrAlias);
+        Map<String, Object> log = queryFirstWithParams(sql, String.valueOf(idOrAlias));
         if (Objects.isNull(log)) {
             return null;
         }

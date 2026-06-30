@@ -63,8 +63,8 @@ public class UpgradeService {
 
     public PreCheckVersionResponse preUpgradeVersion(boolean fetchAble, UpdateVersionInfoPlugin plugin) {
         PreCheckVersionResponse checkVersionResponse = getPreCheckVersionResponse(fetchAble, plugin);
-        checkVersionResponse.setDockerMode(ZrLogUtil.isDockerMode());
-        checkVersionResponse.setSystemServiceMode(ZrLogUtil.isSystemServiceMode());
+        checkVersionResponse.setDockerMode(isDockerMode());
+        checkVersionResponse.setSystemServiceMode(isSystemServiceMode());
         boolean disable = isOnlineUpgradeDisabled();
         checkVersionResponse.setOnlineUpgradable(!disable);
         if (disable && Objects.equals(checkVersionResponse.getUpgrade(), true)) {
@@ -101,7 +101,7 @@ public class UpgradeService {
     }
 
     private HttpFileHandle createFileHandle() {
-        File updateTempPath = Objects.nonNull(Constants.zrLogConfig.getUpdater()) ?
+        File updateTempPath = Objects.nonNull(Constants.zrLogConfig) && Objects.nonNull(Constants.zrLogConfig.getUpdater()) ?
                 Constants.zrLogConfig.getUpdater().getUpdateTempPath() : new File(PathUtil.getTempPath());
         File file = new File(updateTempPath, "zrlog-" + System.currentTimeMillis() + "-" +
                 Math.abs(System.nanoTime()) + ".zip");
@@ -111,16 +111,16 @@ public class UpgradeService {
         return handle;
     }
 
-    private static String getPackageDownloadUrl(Version version) {
-        return ZrLogUtil.isWarMode() ? version.getWarDownloadUrl() : version.getZipDownloadUrl();
+    private String getPackageDownloadUrl(Version version) {
+        return isWarMode() ? version.getWarDownloadUrl() : version.getZipDownloadUrl();
     }
 
-    private static long getPackageFileSize(Version version) {
-        return ZrLogUtil.isWarMode() ? version.getWarFileSize() : version.getZipFileSize();
+    private long getPackageFileSize(Version version) {
+        return isWarMode() ? version.getWarFileSize() : version.getZipFileSize();
     }
 
-    private static String getPackageMd5sum(Version version) {
-        return ZrLogUtil.isWarMode() ? version.getWarMd5sum() : version.getZipMd5sum();
+    private String getPackageMd5sum(Version version) {
+        return isWarMode() ? version.getWarMd5sum() : version.getZipMd5sum();
     }
 
     private File downloadUpgradePackage(Version version, UpgradeProgressListener progressListener,
@@ -189,39 +189,65 @@ public class UpgradeService {
             return buildManualUpgradeResponse(version, backend);
         }
         File upgradePackage = downloadUpgradePackage(version, progressListener, backend);
-        UpdateVersionHandler updateVersionHandler;
-        if (EnvKit.isFaaSMode()) {
-            updateVersionHandler = new FaasUpdateVersionHandler(backend, version, upgradePackage,
-                    progressListener);
-        } else if (ZrLogUtil.isWarMode()) {
-            updateVersionHandler = new WarUpdateVersionHandle(upgradePackage, backend,
-                    buildUpgradeKey(version), version, progressListener);
-        } else {
-            updateVersionHandler = new ZipUpdateVersionHandle(upgradePackage, backend, version,
-                    progressListener);
-        }
+        UpdateVersionHandler updateVersionHandler = newOnlineUpdateVersionHandler(version, upgradePackage,
+                progressListener, backend);
         updateVersionHandler.doHandle();
         return new UpgradeProcessResponse(updateVersionHandler.isFinish(), updateVersionHandler.getMessage());
     }
 
+    UpdateVersionHandler newOnlineUpdateVersionHandler(Version version, File upgradePackage,
+                                                       UpgradeProgressListener progressListener,
+                                                       Map<String, Object> backend) {
+        if (isFaaSMode()) {
+            return new FaasUpdateVersionHandler(backend, version, upgradePackage,
+                    progressListener);
+        }
+        if (isWarMode()) {
+            return new WarUpdateVersionHandle(upgradePackage, backend,
+                    buildUpgradeKey(version), version, progressListener);
+        }
+        return new ZipUpdateVersionHandle(upgradePackage, backend, version,
+                progressListener);
+    }
+
     private boolean isOnlineUpgradeDisabled() {
-        return ZrLogUtil.isDockerMode() || ZrLogUtil.isSystemServiceMode() ||
-                (EnvKit.isFaaSMode() && !FaasUpdateVersionHandler.isOnlineUpgradeSupported());
+        return isDockerMode() || isSystemServiceMode() ||
+                (isFaaSMode() && !isFaaSOnlineUpgradeSupported());
     }
 
     private UpgradeProcessResponse buildManualUpgradeResponse(Version version, Map<String, Object> backend) {
         UpdateVersionHandler updateVersionHandler;
-        if (ZrLogUtil.isDockerMode()) {
+        if (isDockerMode()) {
             updateVersionHandler = new DockerUpdateVersionHandle(backend);
-        } else if (ZrLogUtil.isSystemServiceMode()) {
+        } else if (isSystemServiceMode()) {
             updateVersionHandler = new SystemServiceUpdateVersionHandle(backend, version);
-        } else if (EnvKit.isFaaSMode()) {
+        } else if (isFaaSMode()) {
             updateVersionHandler = new FaasUpdateVersionHandler(backend, version);
         } else {
             return new UpgradeProcessResponse(false, "");
         }
         updateVersionHandler.doHandle();
         return new UpgradeProcessResponse(updateVersionHandler.isFinish(), updateVersionHandler.getMessage());
+    }
+
+    boolean isDockerMode() {
+        return ZrLogUtil.isDockerMode();
+    }
+
+    boolean isSystemServiceMode() {
+        return ZrLogUtil.isSystemServiceMode();
+    }
+
+    boolean isWarMode() {
+        return ZrLogUtil.isWarMode();
+    }
+
+    boolean isFaaSMode() {
+        return EnvKit.isFaaSMode();
+    }
+
+    boolean isFaaSOnlineUpgradeSupported() {
+        return FaasUpdateVersionHandler.isOnlineUpgradeSupported();
     }
 
     private static String buildUpgradeKey(Version version) {

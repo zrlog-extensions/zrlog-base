@@ -163,9 +163,7 @@ public class Tag extends BasePageableDAO {
             } catch (SQLException e) {
                 throw new DAOException(e);
             }
-
         }
-        throw new RuntimeException();
     }
 
     public PageData<TagDTO> find(PageRequest page) {

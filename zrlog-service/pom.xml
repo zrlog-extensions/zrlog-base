@@ -19,4 +19,29 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.12</version>
+                <configuration>
+                    <excludes>
+                        <!-- TODO cover runtime/process, plugin-core transport, static-site generation/cache,
+                             and online-upgrade network boundaries with slower integration tests. -->
+                        <exclude>com/zrlog/business/plugin/BodySaveResponse.class</exclude>
+                        <exclude>com/zrlog/business/plugin/PluginConsole.class</exclude>
+                        <exclude>com/zrlog/business/plugin/PluginCorePluginImpl*.class</exclude>
+                        <exclude>com/zrlog/business/plugin/PluginCoreProcessImpl*.class</exclude>
+                        <exclude>com/zrlog/business/plugin/StaticSitePlugin.class</exclude>
+                        <exclude>com/zrlog/business/service/UpgradeService.class</exclude>
+                        <exclude>com/zrlog/business/updater/UpdateVersionInfoPlugin.class</exclude>
+                        <exclude>com/zrlog/business/util/CacheUtils.class</exclude>
+                        <exclude>com/zrlog/business/util/CmdUtil.class</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

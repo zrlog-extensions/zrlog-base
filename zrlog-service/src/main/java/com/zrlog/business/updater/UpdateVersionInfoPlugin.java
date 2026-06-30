@@ -60,20 +60,35 @@ public class UpdateVersionInfoPlugin implements IPlugin {
     }
 
     public static String getCurrentChangeLog(Map<String, Object> res) {
+        return getCurrentChangeLog(res, UpdateVersionInfoPlugin::fetchCurrentChangeLog);
+    }
+
+    static String getCurrentChangeLog(Map<String, Object> res, ChangeLogFetcher fetcher) {
         String version = BlogBuildInfoUtil.getVersion();
+        String buildId = BlogBuildInfoUtil.getBuildId();
         try {
-            String changeLogMd = HttpUtil.getInstance().getSuccessTextByUrl("https://www.zrlog.com/changelog/" +
-                    version + "-" + BlogBuildInfoUtil.getBuildId() + ".md?lang=" +
-                    I18nUtil.getCurrentLocale() + "&v=" + BlogBuildInfoUtil.getBuildId());
+            String changeLogMd = fetcher.fetch(version, buildId, I18nUtil.getCurrentLocale());
             if (StringUtils.isNotEmpty(changeLogMd) && !UpdateVersionTimerTask.isHtml(changeLogMd)) {
                 return changeLogMd;
             }
         } catch (IOException | InterruptedException | URISyntaxException e) {
             LOGGER.log(Level.SEVERE, "", e);
         }
-        String uriPath = "94fzb/zrlog/commits/" + BlogBuildInfoUtil.getBuildId();
+        String uriPath = "94fzb/zrlog/commits/" + buildId;
         String changeUrl = "https://github.com/" + uriPath;
         return (res.get("upgrade.result.noChangeLog") + "\n[" + uriPath + "](" + changeUrl + ")").replace("diff", "commit");
+    }
+
+    private static String fetchCurrentChangeLog(String version, String buildId, String locale)
+            throws IOException, InterruptedException, URISyntaxException {
+        return HttpUtil.getInstance().getSuccessTextByUrl("https://www.zrlog.com/changelog/" +
+                version + "-" + buildId + ".md?lang=" + locale + "&v=" + buildId);
+    }
+
+    @FunctionalInterface
+    interface ChangeLogFetcher {
+        String fetch(String version, String buildId, String locale)
+                throws IOException, InterruptedException, URISyntaxException;
     }
 
     private void initExecutorService() {
@@ -84,7 +99,7 @@ public class UpdateVersionInfoPlugin implements IPlugin {
         });
     }
 
-    private UpdateVersionTimerTask newUpdateVersionTimerTask(UpgradeWebSiteInfo upgradeWebSiteInfo) {
+    UpdateVersionTimerTask newUpdateVersionTimerTask(UpgradeWebSiteInfo upgradeWebSiteInfo) {
         return new UpdateVersionTimerTask(upgradeWebSiteInfo.getUpgradePreview(), Constants.getLanguage(),
                 version -> new UpgradeNoticeService().sync(version));
     }

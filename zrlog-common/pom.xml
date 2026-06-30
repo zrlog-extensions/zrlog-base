@@ -49,6 +49,29 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.12</version>
+                <configuration>
+                    <excludes>
+                        <exclude>META-INF/versions/**</exclude>
+                        <!-- TODO cover external update/network/runtime boundaries with slower integration tests. -->
+                        <exclude>com/zrlog/common/updater/**</exclude>
+                        <exclude>com/hibegin/common/util/http/**</exclude>
+                        <exclude>com/zrlog/common/hooks/TermSignalHandler.class</exclude>
+                        <exclude>com/zrlog/common/resource/ZrLogResourceLoader.class</exclude>
+                        <exclude>com/zrlog/util/DataSourceUtil.class</exclude>
+                        <exclude>com/zrlog/util/DbUtils.class</exclude>
+                        <exclude>com/zrlog/util/BlogBuildInfoUtil.class</exclude>
+                        <exclude>com/zrlog/util/I18nUtil.class</exclude>
+                        <exclude>com/zrlog/util/ZrLogBaseNativeImageUtils.class</exclude>
+                        <exclude>com/zrlog/common/ZrLogConfig.class</exclude>
+                        <exclude>com/zrlog/web/BaseWebSetup.class</exclude>
+                        <exclude>com/zrlog/web/WebSetupContext.class</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

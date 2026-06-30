@@ -1,13 +1,13 @@
 package com.zrlog.model;
 
 import com.hibegin.common.dao.BasePageableDAO;
-import com.hibegin.common.dao.ResultValueConvertUtils;
 import com.hibegin.common.dao.dto.PageData;
 import com.hibegin.common.dao.dto.PageRequest;
 import com.hibegin.common.util.SecurityUtils;
 import com.zrlog.data.dto.CommentDTO;
 import com.zrlog.data.dto.VisitorCommentDTO;
 import com.zrlog.data.exception.DAOException;
+import com.zrlog.data.util.DateValueFormatUtils;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -32,7 +32,7 @@ public class Comment extends BasePageableDAO {
         String sql = "select commentId as id,userComment,header,commTime,userMail,userHome,userIp,userName,hide,logId from " + tableName + " order by commTime desc";
         PageData<CommentDTO> commentDTOPageData = queryPageData(sql, page, new Object[0], CommentDTO.class);
         commentDTOPageData.getRows().forEach(e -> {
-            e.setCommTime(ResultValueConvertUtils.formatDate(e.getCommTime(), "yyyy-MM-dd HH:mm:ss"));
+            e.setCommTime(formatCommentTime(e.getCommTime()));
         });
         return commentDTOPageData;
     }
@@ -55,7 +55,7 @@ public class Comment extends BasePageableDAO {
     public List<Map<String, Object>> findAllByLogId(int logId) throws SQLException {
         List<Map<String, Object>> comments = queryListWithParams("select * from " + tableName + " where logId=?", logId);
         for (Map<String, Object> comment : comments) {
-            comment.put("commTime", ResultValueConvertUtils.formatDate(comment.get("commTime"), "yyyy-MM-dd HH:mm:ss"));
+            comment.put("commTime", formatCommentTime(comment.get("commTime")));
         }
         return comments;
     }
@@ -63,7 +63,7 @@ public class Comment extends BasePageableDAO {
     public List<VisitorCommentDTO> visitorFindAllByLogId(int logId) throws SQLException {
         List<Map<String, Object>> comments = queryListWithParams("select * from " + tableName + " where logId=?", logId);
         for (Map<String, Object> comment : comments) {
-            comment.put("commTime", ResultValueConvertUtils.formatDate(comment.get("commTime"), "yyyy-MM-dd HH:mm:ss"));
+            comment.put("commTime", formatCommentTime(comment.get("commTime")));
             String email = (String) comment.get("userMail");
             if (Objects.isNull(email)) {
                 comment.put("gravatarId", "");
@@ -72,6 +72,10 @@ public class Comment extends BasePageableDAO {
             }
         }
         return doConvertList(comments, VisitorCommentDTO.class);
+    }
+
+    private static String formatCommentTime(Object value) {
+        return DateValueFormatUtils.format(value, "yyyy-MM-dd HH:mm:ss");
     }
 
     public void doRead(long id) {

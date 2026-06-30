@@ -11,11 +11,15 @@ public class V6UpgradeVersionHandler implements UpgradeVersionHandler {
 
     @Override
     public void doUpgrade(DAO dao) throws SQLException, InterruptedException {
-        Thread.sleep(10000L);
+        beforeUpgrade();
         List<Map<String, Object>> maps = dao.queryListWithParams("select logid,content from log");
         for (Map<String, Object> map : maps) {
             Number id = (Number) map.get("logid");
             dao.execute("update log set search_content = ? where logid = ?", ParseUtil.getPlainSearchText((String) map.get("content")), id.longValue());
         }
+    }
+
+    protected void beforeUpgrade() throws InterruptedException {
+        Thread.sleep(10000L);
     }
 }
