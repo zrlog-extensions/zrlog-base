@@ -49,7 +49,7 @@ public class PluginCoreProcessImpl implements PluginCoreProcess {
         }
     }
 
-    private String programName(File pluginCoreFile) {
+    String programName(File pluginCoreFile) {
         if (EnvKit.isNativeImage()) {
             return pluginCoreFile.toString();
         }
@@ -79,14 +79,14 @@ public class PluginCoreProcessImpl implements PluginCoreProcess {
         }
     }
 
-    private String getPluginWorkerPath(File pluginsFolder) {
+    String getPluginWorkerPath(File pluginsFolder) {
         if (EnvKit.isLambda()) {
             return PathUtil.getConfFile("/conf/plugins").toString();
         }
         return pluginsFolder.getParent();
     }
 
-    private Process startPluginCore(final File pluginCoreFile, final String dbProperties, final String pluginJvmArgs, final String runtimePath, final String runTimeVersion, String token, int randomServerPort, int randomWatcherListenPort) throws IOException {
+    Process startPluginCore(final File pluginCoreFile, final String dbProperties, final String pluginJvmArgs, final String runtimePath, final String runTimeVersion, String token, int randomServerPort, int randomWatcherListenPort) throws IOException {
         final int randomMasterPort = randomServerPort + 20000;
         if (!pluginCoreFile.exists() || pluginCoreFile.length() <= 0) {
             LOGGER.warning("Missing plugin-core file " + pluginCoreFile.getName());
@@ -138,7 +138,7 @@ public class PluginCoreProcessImpl implements PluginCoreProcess {
         return new ProcessBuilder(cmd).redirectOutput(infoLogFile).redirectError(errorLogFile).start();
     }
 
-    private String getInstalledPluginFolder() {
+    String getInstalledPluginFolder() {
         return pluginsFolder + "/installed-plugins";
     }
 

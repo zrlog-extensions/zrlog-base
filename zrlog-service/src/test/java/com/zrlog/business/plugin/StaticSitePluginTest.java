@@ -27,7 +27,6 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.net.InetSocketAddress;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -64,9 +63,7 @@ public class StaticSitePluginTest {
                 + "<a href=\"relative.html\">relative</a>"
                 + "</body></html>", StandardCharsets.UTF_8);
 
-        Method doParseHtml = StaticSitePlugin.class.getDeclaredMethod("doParseHtml", File.class);
-        doParseHtml.setAccessible(true);
-        doParseHtml.invoke(plugin, html);
+        StaticSiteHtmlLinks.parseInto(html, "", plugin.handleStatusPageMap);
 
         assertEquals(StaticSitePlugin.HandleState.NEW, plugin.handleStatusPageMap.get("/article.html"));
         assertFalse(plugin.handleStatusPageMap.containsKey(""));
@@ -84,7 +81,7 @@ public class StaticSitePluginTest {
                 + "<a href=\"//cdn.example.com/asset.html\">external</a>"
                 + "</body></html>", StandardCharsets.UTF_8);
 
-        withConfig(true, "blog.example.com", () -> invokeParseHtml(plugin, html));
+        StaticSiteHtmlLinks.parseInto(html, "blog.example.com", plugin.handleStatusPageMap);
 
         assertEquals(StaticSitePlugin.HandleState.NEW, plugin.handleStatusPageMap.get("/about.html"));
         assertFalse(plugin.handleStatusPageMap.containsKey("/"));
@@ -97,7 +94,7 @@ public class StaticSitePluginTest {
         File css = Files.createTempFile("zrlog-static-style", ".css").toFile();
         Files.writeString(css.toPath(), "<a href=\"/ignored.html\">ignored</a>", StandardCharsets.UTF_8);
 
-        invokeParseHtml(plugin, css);
+        StaticSiteHtmlLinks.parseInto(css, "blog.example.com", plugin.handleStatusPageMap);
 
         assertTrue(plugin.handleStatusPageMap.isEmpty());
     }
@@ -346,12 +343,6 @@ public class StaticSitePluginTest {
             assertFalse(PathUtil.getStaticFile("/bad-favicon.ico").exists());
             assertFalse(plugin.getCacheFile("/bad-favicon.ico").exists());
         });
-    }
-
-    private static void invokeParseHtml(StaticSitePlugin plugin, File file) throws Exception {
-        Method doParseHtml = StaticSitePlugin.class.getDeclaredMethod("doParseHtml", File.class);
-        doParseHtml.setAccessible(true);
-        doParseHtml.invoke(plugin, file);
     }
 
     private void withConfig(boolean staticHtmlStatus, String host, ThrowingRunnable runnable) throws Exception {

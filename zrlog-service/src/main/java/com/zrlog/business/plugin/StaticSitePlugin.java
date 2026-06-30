@@ -20,10 +20,6 @@ import com.zrlog.data.cache.CacheServiceImpl;
 import com.zrlog.plugin.BaseStaticSitePlugin;
 import com.zrlog.util.I18nUtil;
 import com.zrlog.util.ZrLogUtil;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
-
 import java.io.*;
 import java.time.Duration;
 import java.util.*;
@@ -169,48 +165,10 @@ public interface StaticSitePlugin extends BaseStaticSitePlugin {
         return HttpRequestBuilder.buildRequest(method, uri, ZrLogUtil.getBlogHostByWebSite(), STATIC_USER_AGENT, requestConfig, applicationContext);
     }
 
-    private String getUri(String href) {
-        if (href.startsWith("#")) {
-            return "";
-        }
-        if (href.startsWith("javascript:;")) {
-            return "";
-        }
-        String uri = href.split("#")[0];
-        if (uri.isEmpty()) {
-            return "";
-        }
-        if (uri.startsWith("//")) {
-            String baseUrl = "//" + ZrLogUtil.getBlogHostByWebSite();
-            if (uri.equals(baseUrl)) {
-                return "/";
-            }
-            if (uri.startsWith(baseUrl + "/")) {
-                return uri.substring(baseUrl.length());
-            }
-            return "";
-        }
-        return uri;
-    }
-
     private void doParseHtml(File file) throws IOException {
-        if (file.getName().endsWith(".js") || file.getName().endsWith(".json") || file.getName().endsWith(".css")) {
-            return;
-        }
         getParseLock().lock();
         try {
-            Document document = Jsoup.parse(file);
-            Elements links = document.select("a");
-            links.forEach(element -> {
-                String uri = getUri(element.attr("href"));
-                //exists jobs
-                if (getHandleStatusPageMap().containsKey(uri)) {
-                    return;
-                }
-                if (uri.startsWith("/") && uri.endsWith(".html")) {
-                    getHandleStatusPageMap().put(uri, HandleState.NEW);
-                }
-            });
+            StaticSiteHtmlLinks.parseInto(file, ZrLogUtil.getBlogHostByWebSite(), getHandleStatusPageMap());
         } finally {
             getParseLock().unlock();
         }

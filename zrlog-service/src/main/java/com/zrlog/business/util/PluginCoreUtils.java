@@ -18,18 +18,26 @@ public class PluginCoreUtils {
     private static final Logger LOGGER = LoggerUtil.getLogger(PluginCoreUtils.class);
 
     private static File getPluginFileName(String pluginsFolder) {
-        if (!EnvKit.isNativeImage()) {
+        return getPluginFileName(pluginsFolder, EnvKit.isNativeImage(), BlogBuildInfoUtil.getFileArch());
+    }
+
+    static File getPluginFileName(String pluginsFolder, boolean nativeImage, String fileArch) {
+        if (!nativeImage) {
             return new File(pluginsFolder + "/plugin-core.jar");
         }
-        if (BlogBuildInfoUtil.getFileArch().contains("Window")) {
-            return new File(pluginsFolder + "/plugin-core-" + BlogBuildInfoUtil.getFileArch() + ".exe");
+        if (fileArch.contains("Window")) {
+            return new File(pluginsFolder + "/plugin-core-" + fileArch + ".exe");
         }
-        return new File(pluginsFolder + "/plugin-core-" + BlogBuildInfoUtil.getFileArch() + ".bin");
+        return new File(pluginsFolder + "/plugin-core-" + fileArch + ".bin");
     }
 
 
     public static File tryDownloadPluginCoreFile(String pluginsFolder) {
-        File pluginCoreFile = getPluginFileName(pluginsFolder);
+        return tryDownloadPluginCoreFile(pluginsFolder, EnvKit.isNativeImage(), BlogBuildInfoUtil.getFileArch());
+    }
+
+    static File tryDownloadPluginCoreFile(String pluginsFolder, boolean nativeImage, String fileArch) {
+        File pluginCoreFile = getPluginFileName(pluginsFolder, nativeImage, fileArch);
         try {
             if (pluginCoreFile.exists()) {
                 return pluginCoreFile;

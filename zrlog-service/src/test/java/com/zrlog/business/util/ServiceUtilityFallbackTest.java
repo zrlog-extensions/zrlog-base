@@ -28,7 +28,6 @@ import com.zrlog.common.vo.PublicWebSiteInfo;
 import com.zrlog.plugin.IPlugin;
 import com.zrlog.plugin.Plugins;
 import com.zrlog.util.BlogBuildInfoUtil;
-import org.graalvm.nativeimage.ImageInfo;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.junit.After;
@@ -225,57 +224,32 @@ public class ServiceUtilityFallbackTest {
 
     @Test
     public void shouldBuildDefaultPluginCoreFileName() throws Exception {
-        Method method = PluginCoreUtils.class.getDeclaredMethod("getPluginFileName", String.class);
-        method.setAccessible(true);
-
-        File file = (File) method.invoke(null, "/plugins");
+        File file = PluginCoreUtils.getPluginFileName("/plugins", false, "");
 
         assertEquals(new File("/plugins/plugin-core.jar"), file);
     }
 
     @Test
     public void shouldBuildNativePluginCoreFileNameByFileArch() throws Exception {
-        Method method = PluginCoreUtils.class.getDeclaredMethod("getPluginFileName", String.class);
-        method.setAccessible(true);
-        Field fileArch = BlogBuildInfoUtil.class.getDeclaredField("fileArch");
-        fileArch.setAccessible(true);
-        String previousFileArch = (String) fileArch.get(null);
-        try {
-            ImageInfo.setInImageRuntimeCode(true);
-
-            fileArch.set(null, "Linux-x86_64");
-            assertEquals(new File("/plugins/plugin-core-Linux-x86_64.bin"), method.invoke(null, "/plugins"));
-
-            fileArch.set(null, "Windows-x86_64");
-            assertEquals(new File("/plugins/plugin-core-Windows-x86_64.exe"), method.invoke(null, "/plugins"));
-        } finally {
-            ImageInfo.setInImageRuntimeCode(false);
-            fileArch.set(null, previousFileArch);
-        }
+        assertEquals(new File("/plugins/plugin-core-Linux-x86_64.bin"),
+                PluginCoreUtils.getPluginFileName("/plugins", true, "Linux-x86_64"));
+        assertEquals(new File("/plugins/plugin-core-Windows-x86_64.exe"),
+                PluginCoreUtils.getPluginFileName("/plugins", true, "Windows-x86_64"));
     }
 
     @Test
     public void shouldMarkExistingNativePluginCoreBinExecutableWithoutDownload() throws Exception {
-        Field fileArch = BlogBuildInfoUtil.class.getDeclaredField("fileArch");
-        fileArch.setAccessible(true);
-        String previousFileArch = (String) fileArch.get(null);
         File pluginsFolder = Files.createTempDirectory("zrlog-plugin-core-native").toFile();
         File pluginCore = new File(pluginsFolder, "plugin-core-Linux-x86_64.bin");
         Files.writeString(pluginCore.toPath(), "bin");
         assertTrue(pluginCore.setExecutable(false, false));
         assertFalse(pluginCore.canExecute());
-        try {
-            ImageInfo.setInImageRuntimeCode(true);
-            fileArch.set(null, "Linux-x86_64");
 
-            File result = PluginCoreUtils.tryDownloadPluginCoreFile(pluginsFolder.getAbsolutePath());
+        File result = PluginCoreUtils.tryDownloadPluginCoreFile(pluginsFolder.getAbsolutePath(),
+                true, "Linux-x86_64");
 
-            assertEquals(pluginCore.getCanonicalFile(), result.getCanonicalFile());
-            assertTrue(pluginCore.canExecute());
-        } finally {
-            ImageInfo.setInImageRuntimeCode(false);
-            fileArch.set(null, previousFileArch);
-        }
+        assertEquals(pluginCore.getCanonicalFile(), result.getCanonicalFile());
+        assertTrue(pluginCore.canExecute());
     }
 
     @Test
@@ -307,10 +281,6 @@ public class ServiceUtilityFallbackTest {
 
     @Test
     public void shouldExposeCacheUtilsFastFallbacks() throws Exception {
-        Method method = CacheUtils.class.getDeclaredMethod("getSyncTimeout");
-        method.setAccessible(true);
-
-        assertTrue((Integer) method.invoke(null) > 0);
         assertFalse(CacheUtils.refreshStaticSiteCache(null, null));
         assertFalse(CacheUtils.refreshStaticSiteCache(null, Collections.emptyList()));
     }

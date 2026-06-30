@@ -7,10 +7,8 @@ import com.hibegin.http.server.api.HttpRequest;
 import com.hibegin.http.server.web.Controller;
 import org.junit.Test;
 
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -19,11 +17,12 @@ public class ControllerUtilTest {
 
     @Test
     public void shouldDefaultToIdDescendingWhenSortIsMissing() throws Exception {
-        List<OrderBy> orders = orders(new HashMap<>());
+        PageRequest pageRequest = ControllerUtil.getPageRequest(controller(new HashMap<>()));
+        OrderBy orderBy = pageRequest.getSorts().get(0);
 
-        assertEquals(1, orders.size());
-        assertEquals("id", orders.get(0).getSortKey());
-        assertEquals(Direction.DESC, orders.get(0).getDirection());
+        assertEquals(1, pageRequest.getSorts().size());
+        assertEquals("id", orderBy.getSortKey());
+        assertEquals(Direction.DESC, orderBy.getDirection());
     }
 
     @Test
@@ -31,20 +30,23 @@ public class ControllerUtilTest {
         Map<String, String[]> sortParams = new HashMap<>();
         sortParams.put("sort", new String[]{"title,asc", "created"});
 
-        List<OrderBy> sortOrders = orders(sortParams);
+        PageRequest sortPageRequest = ControllerUtil.getPageRequest(controller(sortParams));
+        OrderBy titleOrder = sortPageRequest.getSorts().get(0);
+        OrderBy createdOrder = sortPageRequest.getSorts().get(1);
 
-        assertEquals("title", sortOrders.get(0).getSortKey());
-        assertEquals(Direction.ASC, sortOrders.get(0).getDirection());
-        assertEquals("created", sortOrders.get(1).getSortKey());
-        assertEquals(Direction.DESC, sortOrders.get(1).getDirection());
+        assertEquals("title", titleOrder.getSortKey());
+        assertEquals(Direction.ASC, titleOrder.getDirection());
+        assertEquals("created", createdOrder.getSortKey());
+        assertEquals(Direction.DESC, createdOrder.getDirection());
 
         Map<String, String[]> legacyParams = new HashMap<>();
         legacyParams.put("sidx", new String[]{"last_update_date,desc?page=2"});
 
-        List<OrderBy> legacyOrders = orders(legacyParams);
+        PageRequest legacyPageRequest = ControllerUtil.getPageRequest(controller(legacyParams));
+        OrderBy legacyOrder = legacyPageRequest.getSorts().get(0);
 
-        assertEquals("last_update_date", legacyOrders.get(0).getSortKey());
-        assertEquals(Direction.DESC, legacyOrders.get(0).getDirection());
+        assertEquals("last_update_date", legacyOrder.getSortKey());
+        assertEquals(Direction.DESC, legacyOrder.getDirection());
     }
 
     @Test
@@ -85,13 +87,6 @@ public class ControllerUtilTest {
         assertEquals(Long.valueOf(10), pageRequest.getSize());
         assertEquals("id", pageRequest.getSorts().get(0).getSortKey());
         assertEquals(Direction.DESC, pageRequest.getSorts().get(0).getDirection());
-    }
-
-    @SuppressWarnings("unchecked")
-    private static List<OrderBy> orders(Map<String, String[]> params) throws Exception {
-        Method method = ControllerUtil.class.getDeclaredMethod("getOrderByListByParamMap", Map.class);
-        method.setAccessible(true);
-        return (List<OrderBy>) method.invoke(null, params);
     }
 
     private static Controller controller(Map<String, String[]> params) {

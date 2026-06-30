@@ -41,7 +41,7 @@ public class DbUpgradeService {
         this.currentSqlVersion = currentSqlVersion;
     }
 
-    private static String resolveDbName(String jdbcUrl) {
+    static String resolveDbName(String jdbcUrl) {
         if (StringUtils.isEmpty(jdbcUrl)) {
             return "";
         }

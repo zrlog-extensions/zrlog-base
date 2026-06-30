@@ -75,7 +75,7 @@ public class UpgradeService {
         return checkVersionResponse;
     }
 
-    private static boolean isErrorFile(File file, long length, String md5sum) {
+    static boolean isErrorFile(File file, long length, String md5sum) {
         try {
             if (Objects.isNull(file) || !file.exists()) {
                 return true;
@@ -93,7 +93,7 @@ public class UpgradeService {
         }
     }
 
-    private static int getDownloadProcess(File file, long totalLength) {
+    static int getDownloadProcess(File file, long totalLength) {
         if (totalLength <= 0 || Objects.isNull(file) || !file.exists()) {
             return 0;
         }
@@ -250,7 +250,7 @@ public class UpgradeService {
         return FaasUpdateVersionHandler.isOnlineUpgradeSupported();
     }
 
-    private static String buildUpgradeKey(Version version) {
+    static String buildUpgradeKey(Version version) {
         String versionTag = Objects.nonNull(version) ? version.getBuildId() : "";
         if (StringUtils.isEmpty(versionTag) && Objects.nonNull(version)) {
             versionTag = version.getVersion();
@@ -261,11 +261,11 @@ public class UpgradeService {
         return ("upgrade-" + versionTag + "-" + System.currentTimeMillis()).replaceAll("[^A-Za-z0-9._-]", "-");
     }
 
-    private static String backendString(Map<String, Object> backend, String key) {
+    static String backendString(Map<String, Object> backend, String key) {
         return Objects.toString(backend.get(key), key);
     }
 
-    private static String getDownloadMessage(Map<String, Object> backend, Integer percent) {
+    static String getDownloadMessage(Map<String, Object> backend, Integer percent) {
         String message = backendString(backend, "upgrade.status.downloading");
         if (Objects.nonNull(percent) && percent > 0) {
             return message + " " + percent + "%";
@@ -273,8 +273,8 @@ public class UpgradeService {
         return message;
     }
 
-    private static void publishProgress(UpgradeProgressListener progressListener, String stage, String status,
-                                        String message, String detail) {
+    static void publishProgress(UpgradeProgressListener progressListener, String stage, String status,
+                                String message, String detail) {
         try {
             progressListener.onProgress(UpgradeProgressEvent.EVENT,
                     UpgradeProgressEvent.data(stage, status, message, detail));

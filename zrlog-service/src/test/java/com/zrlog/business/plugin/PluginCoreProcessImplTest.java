@@ -15,7 +15,6 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -56,16 +55,10 @@ public class PluginCoreProcessImplTest {
         try {
             PathUtil.setRootPath(root.toString());
             PluginCoreProcessImpl process = new PluginCoreProcessImpl(null, "/blog");
-            Method programName = PluginCoreProcessImpl.class.getDeclaredMethod("programName", File.class);
-            programName.setAccessible(true);
-            Method getPluginWorkerPath = PluginCoreProcessImpl.class.getDeclaredMethod("getPluginWorkerPath", File.class);
-            getPluginWorkerPath.setAccessible(true);
-            Method getInstalledPluginFolder = PluginCoreProcessImpl.class.getDeclaredMethod("getInstalledPluginFolder");
-            getInstalledPluginFolder.setAccessible(true);
 
-            String javaProgram = (String) programName.invoke(process, new File("plugin-core.jar"));
-            String workerPath = (String) getPluginWorkerPath.invoke(process, new File(root + "/conf/plugins"));
-            String installedPlugins = (String) getInstalledPluginFolder.invoke(process);
+            String javaProgram = process.programName(new File("plugin-core.jar"));
+            String workerPath = process.getPluginWorkerPath(new File(root + "/conf/plugins"));
+            String installedPlugins = process.getInstalledPluginFolder();
 
             assertTrue(javaProgram.replace("\\", "/").endsWith("/bin/java"));
             assertEquals(new File(root + "/conf").toString(), workerPath);
@@ -78,13 +71,11 @@ public class PluginCoreProcessImplTest {
     @Test
     public void shouldUsePluginCoreFileAsProgramInNativeImage() throws Exception {
         PluginCoreProcessImpl process = new PluginCoreProcessImpl(null, "/blog");
-        Method programName = PluginCoreProcessImpl.class.getDeclaredMethod("programName", File.class);
-        programName.setAccessible(true);
         File pluginCore = new File("plugin-core-Linux-x86_64.bin");
         try {
             ImageInfo.setInImageRuntimeCode(true);
 
-            assertEquals(pluginCore.toString(), programName.invoke(process, pluginCore));
+            assertEquals(pluginCore.toString(), process.programName(pluginCore));
         } finally {
             ImageInfo.setInImageRuntimeCode(false);
         }
@@ -107,12 +98,8 @@ public class PluginCoreProcessImplTest {
             Constants.zrLogConfig = new TestZrLogConfig();
             ImageInfo.setInImageRuntimeCode(true);
             PluginCoreProcessImpl process = new PluginCoreProcessImpl(null, "/blog");
-            Method startPluginCore = PluginCoreProcessImpl.class.getDeclaredMethod("startPluginCore",
-                    File.class, String.class, String.class, String.class, String.class, String.class,
-                    int.class, int.class);
-            startPluginCore.setAccessible(true);
 
-            Process started = (Process) startPluginCore.invoke(process, pluginCore.toFile(), "db=ok",
+            Process started = process.startPluginCore(pluginCore.toFile(), "db=ok",
                     "-Xmx64m", root.resolve("static").toString(), "3.6.0", "token-123",
                     21000, 51000);
 
@@ -147,12 +134,8 @@ public class PluginCoreProcessImplTest {
             System.setProperty("sws.root.path", root.toString());
             Constants.zrLogConfig = new TestZrLogConfig();
             PluginCoreProcessImpl process = new PluginCoreProcessImpl(null, "/blog");
-            Method startPluginCore = PluginCoreProcessImpl.class.getDeclaredMethod("startPluginCore",
-                    File.class, String.class, String.class, String.class, String.class, String.class,
-                    int.class, int.class);
-            startPluginCore.setAccessible(true);
 
-            Process started = (Process) startPluginCore.invoke(process, root.resolve("missing.jar").toFile(),
+            Process started = process.startPluginCore(root.resolve("missing.jar").toFile(),
                     "db=ok", "-Xmx64m", root.resolve("static").toString(), "3.6.0", "token-123",
                     21000, 51000);
 
@@ -181,12 +164,8 @@ public class PluginCoreProcessImplTest {
             Constants.zrLogConfig = new TestZrLogConfig();
             ImageInfo.setInImageRuntimeCode(true);
             PluginCoreProcessImpl process = new PluginCoreProcessImpl(null, "/");
-            Method startPluginCore = PluginCoreProcessImpl.class.getDeclaredMethod("startPluginCore",
-                    File.class, String.class, String.class, String.class, String.class, String.class,
-                    int.class, int.class);
-            startPluginCore.setAccessible(true);
 
-            Process started = (Process) startPluginCore.invoke(process, pluginCore.toFile(), "db=ok",
+            Process started = process.startPluginCore(pluginCore.toFile(), "db=ok",
                     "-Xmx64m", root.resolve("static").toString(), "3.6.0", "token-123",
                     21000, 51000);
 
