@@ -293,7 +293,7 @@ public class ServiceUtilityFallbackTest {
 
     @Test
     public void shouldReturnFalseWhenWebsiteKvQuietWriteFails() throws Exception {
-        Object previousDataSource = setDefaultDataSource(null);
+        DataSourceWrapper previousDataSource = setDefaultDataSource(null);
         try {
             setDefaultDataSource(dataSource(new FailingQueryRunner()));
             WebsiteKvService service = new WebsiteKvService();
@@ -318,7 +318,7 @@ public class ServiceUtilityFallbackTest {
     @Test
     public void shouldRefreshStaticSiteCacheWithPluginCoreNotification() throws Exception {
         ZrLogConfig previousConfig = Constants.zrLogConfig;
-        Object previousDataSource = setDefaultDataSource(null);
+        DataSourceWrapper previousDataSource = setDefaultDataSource(null);
         FakeQueryRunner queryRunner = new FakeQueryRunner();
         FakePluginCorePlugin pluginCorePlugin = new FakePluginCorePlugin();
         FakeStaticSitePlugin staticSitePlugin = new FakeStaticSitePlugin();
@@ -379,7 +379,7 @@ public class ServiceUtilityFallbackTest {
     @Test
     public void shouldContinueStaticSiteRefreshWhenVersionWriteFails() throws Exception {
         ZrLogConfig previousConfig = Constants.zrLogConfig;
-        Object previousDataSource = setDefaultDataSource(null);
+        DataSourceWrapper previousDataSource = setDefaultDataSource(null);
         FakePluginCorePlugin pluginCorePlugin = new FakePluginCorePlugin();
         FakeStaticSitePlugin staticSitePlugin = new FakeStaticSitePlugin();
         try {
@@ -401,7 +401,7 @@ public class ServiceUtilityFallbackTest {
     @Test
     public void shouldUpdateCacheAndRefreshStaticSiteWhenStaticHtmlIsEnabled() throws Exception {
         ZrLogConfig previousConfig = Constants.zrLogConfig;
-        Object previousDataSource = setDefaultDataSource(null);
+        DataSourceWrapper previousDataSource = setDefaultDataSource(null);
         FakePluginCorePlugin pluginCorePlugin = new FakePluginCorePlugin();
         FakeStaticSitePlugin staticSitePlugin = new FakeStaticSitePlugin();
         FakeCacheService cacheService = new FakeCacheService(99L, true, "blog.example.com");
@@ -466,18 +466,14 @@ public class ServiceUtilityFallbackTest {
                 });
     }
 
-    private static Object setDefaultDataSource(DataSourceWrapper dataSource) throws Exception {
-        var field = DAO.class.getDeclaredField("defaultDataSource");
-        field.setAccessible(true);
-        Object previous = field.get(null);
+    private static DataSourceWrapper setDefaultDataSource(DataSourceWrapper dataSource) {
+        DataSourceWrapper previous = DAO.getDefaultDataSource();
         DAO.setDs(dataSource);
         return previous;
     }
 
-    private static void restoreDefaultDataSource(Object previousDataSource) throws Exception {
-        var field = DAO.class.getDeclaredField("defaultDataSource");
-        field.setAccessible(true);
-        field.set(null, previousDataSource);
+    private static void restoreDefaultDataSource(DataSourceWrapper previousDataSource) {
+        DAO.setDs(previousDataSource);
     }
 
     private static String setBlogBuildInfoString(String fieldName, String value) throws Exception {
