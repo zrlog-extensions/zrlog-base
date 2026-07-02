@@ -8,6 +8,7 @@ import com.hibegin.http.server.util.PathUtil;
 import com.zrlog.business.type.TemplateType;
 import com.zrlog.common.Constants;
 import com.zrlog.common.resource.ZrLogResourceLoader;
+import com.zrlog.common.vo.TemplatePackageJson;
 import com.zrlog.common.vo.TemplateVO;
 import com.zrlog.util.I18nUtil;
 import com.zrlog.util.StaticFileCacheUtils;
@@ -175,20 +176,20 @@ public class TemplateInfoHelper {
             TemplateVO templateVO = new TemplateVO();
             templateVO.setTemplate(templatePath);
             templateVO.setShortTemplate(new File(templatePath).getName());
-            Map<String, Object> map = new Gson().fromJson(new InputStreamReader(in), Map.class);
-            Object author = map.get("author");
+            TemplatePackageJson packageJson = new Gson().fromJson(new InputStreamReader(in), TemplatePackageJson.class);
+            Object author = packageJson == null ? null : packageJson.getAuthor();
             if (Objects.nonNull(author)) {
                 if (author instanceof String) {
-                    templateVO.setAuthor((String) map.get("author"));
+                    templateVO.setAuthor((String) author);
                 } else {
                     templateVO.setAuthor(new Gson().toJson(author));
                 }
             }
 
-            templateVO.setName((String) map.get("name"));
-            templateVO.setDigest((String) map.get("description"));
-            templateVO.setVersion((String) map.get("version"));
-            templateVO.setUrl((String) map.get("homepage"));
+            templateVO.setName(packageJson == null ? null : packageJson.getName());
+            templateVO.setDigest(packageJson == null ? null : packageJson.getDescription());
+            templateVO.setVersion(packageJson == null ? null : packageJson.getVersion());
+            templateVO.setUrl(packageJson == null ? null : packageJson.getHomepage());
             templateVO.setTemplateType(TemplateType.NODE_JS);
             String staticResource = "source";
             templateVO.setStaticResources(List.of(staticResource.split(",")));

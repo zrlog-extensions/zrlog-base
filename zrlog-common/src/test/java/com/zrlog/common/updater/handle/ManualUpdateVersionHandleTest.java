@@ -55,7 +55,7 @@ public class ManualUpdateVersionHandleTest {
         Version version = new Version();
         version.setZipDownloadUrl("https://example.com/zrlog.zip");
         AtomicInteger events = new AtomicInteger();
-        AtomicReference<Map<String, Object>> lastData = new AtomicReference<>();
+        AtomicReference<UpgradeProgressEvent.Data> lastData = new AtomicReference<>();
         FaasUpdateVersionHandler handle = new FaasUpdateVersionHandler(
                 backend(),
                 version,
@@ -73,8 +73,8 @@ public class ManualUpdateVersionHandleTest {
         assertTrue(handle.isFinish());
         assertTrue(handle.getMessage().contains("https://example.com/zrlog.zip"));
         assertEquals(1, events.get());
-        assertEquals(UpgradeProgressEvent.STAGE_MANUAL, lastData.get().get("stage"));
-        assertEquals(UpgradeProgressEvent.STATUS_MANUAL, lastData.get().get("status"));
+        assertEquals(UpgradeProgressEvent.STAGE_MANUAL, lastData.get().getStage());
+        assertEquals(UpgradeProgressEvent.STATUS_MANUAL, lastData.get().getStatus());
     }
 
     @Test

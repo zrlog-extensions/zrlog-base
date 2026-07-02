@@ -56,10 +56,7 @@ public class AwsLambdaUpdateClient implements AwsLambdaCodeUpdateClient {
     public JsonObject updateFunctionCode(String functionName, String bucket, String key)
             throws IOException, InterruptedException {
         URI uri = lambdaUri(functionName, "code");
-        Map<String, String> body = new LinkedHashMap<>();
-        body.put("S3Bucket", bucket);
-        body.put("S3Key", key);
-        String requestBody = gson.toJson(body);
+        String requestBody = gson.toJson(new AwsLambdaUpdateCodeRequest(bucket, key));
         HttpResponse<String> response = null;
         for (int i = 1; i <= UPDATE_FUNCTION_CODE_MAX_ATTEMPTS; i++) {
             response = sendLambdaJsonRequest("PUT", uri, requestBody);

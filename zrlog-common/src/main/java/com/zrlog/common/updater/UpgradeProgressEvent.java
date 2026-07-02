@@ -1,7 +1,5 @@
 package com.zrlog.common.updater;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Objects;
 
 public final class UpgradeProgressEvent {
@@ -29,22 +27,66 @@ public final class UpgradeProgressEvent {
     private UpgradeProgressEvent() {
     }
 
-    public static Map<String, Object> data(String stage, String message) {
+    public static Data data(String stage, String message) {
         return data(stage, STATUS_RUNNING, message, null);
     }
 
-    public static Map<String, Object> data(String stage, String message, String detail) {
+    public static Data data(String stage, String message, String detail) {
         return data(stage, STATUS_RUNNING, message, detail);
     }
 
-    public static Map<String, Object> data(String stage, String status, String message, String detail) {
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("stage", stage);
-        data.put("status", status);
-        data.put("message", Objects.toString(message, ""));
-        if (Objects.nonNull(detail) && !detail.isBlank()) {
-            data.put("detail", detail);
+    public static Data data(String stage, String status, String message, String detail) {
+        return new Data(stage, status, Objects.toString(message, ""), detail);
+    }
+
+    public static class Data {
+
+        private String stage;
+        private String status;
+        private String message;
+        private String detail;
+
+        public Data() {
         }
-        return data;
+
+        public Data(String stage, String status, String message, String detail) {
+            this.stage = stage;
+            this.status = status;
+            this.message = Objects.toString(message, "");
+            setDetail(detail);
+        }
+
+        public String getStage() {
+            return stage;
+        }
+
+        public void setStage(String stage) {
+            this.stage = stage;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+
+        public void setStatus(String status) {
+            this.status = status;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = Objects.toString(message, "");
+        }
+
+        public String getDetail() {
+            return detail;
+        }
+
+        public void setDetail(String detail) {
+            this.detail = Objects.nonNull(detail) && !detail.isBlank() ? detail : null;
+        }
+
     }
 }

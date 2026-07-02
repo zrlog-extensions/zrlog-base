@@ -113,22 +113,22 @@ public class CommonDtoContractTest {
 
     @Test
     public void shouldBuildUpgradeProgressEventPayloads() {
-        Map<String, Object> running = UpgradeProgressEvent.data(UpgradeProgressEvent.STAGE_DOWNLOAD, "Downloading");
-        Map<String, Object> complete = UpgradeProgressEvent.data(
+        UpgradeProgressEvent.Data running = UpgradeProgressEvent.data(UpgradeProgressEvent.STAGE_DOWNLOAD, "Downloading");
+        UpgradeProgressEvent.Data complete = UpgradeProgressEvent.data(
                 UpgradeProgressEvent.STAGE_COMPLETE,
                 UpgradeProgressEvent.STATUS_COMPLETE,
                 null,
                 "done");
-        Map<String, Object> blankDetail = UpgradeProgressEvent.data("stage", "status", "message", " ");
+        UpgradeProgressEvent.Data blankDetail = UpgradeProgressEvent.data("stage", "status", "message", " ");
 
         assertEquals(UpgradeProgressEvent.EVENT, "upgrade-progress");
-        assertEquals(UpgradeProgressEvent.STAGE_DOWNLOAD, running.get("stage"));
-        assertEquals(UpgradeProgressEvent.STATUS_RUNNING, running.get("status"));
-        assertEquals("Downloading", running.get("message"));
-        assertFalse(running.containsKey("detail"));
-        assertEquals("", complete.get("message"));
-        assertEquals("done", complete.get("detail"));
-        assertFalse(blankDetail.containsKey("detail"));
+        assertEquals(UpgradeProgressEvent.STAGE_DOWNLOAD, running.getStage());
+        assertEquals(UpgradeProgressEvent.STATUS_RUNNING, running.getStatus());
+        assertEquals("Downloading", running.getMessage());
+        assertEquals(null, running.getDetail());
+        assertEquals("", complete.getMessage());
+        assertEquals("done", complete.getDetail());
+        assertEquals(null, blankDetail.getDetail());
     }
 
     private static void assertException(AbstractBusinessException exception, int error) {

@@ -84,10 +84,9 @@ public class UpgradeServiceHelpersTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void shouldPublishProgressAndWrapListenerFailures() throws Exception {
         AtomicReference<String> eventRef = new AtomicReference<>();
-        AtomicReference<Map<String, Object>> dataRef = new AtomicReference<>();
+        AtomicReference<UpgradeProgressEvent.Data> dataRef = new AtomicReference<>();
         UpgradeProgressListener listener = (event, data) -> {
             eventRef.set(event);
             dataRef.set(data);
@@ -97,12 +96,12 @@ public class UpgradeServiceHelpersTest {
                 "Downloading", "zrlog.zip");
 
         assertEquals(UpgradeProgressEvent.EVENT, eventRef.get());
-        Map<String, Object> data = dataRef.get();
+        UpgradeProgressEvent.Data data = dataRef.get();
         assertNotNull(data);
-        assertEquals(UpgradeProgressEvent.STAGE_DOWNLOAD, data.get("stage"));
-        assertEquals(UpgradeProgressEvent.STATUS_RUNNING, data.get("status"));
-        assertEquals("Downloading", data.get("message"));
-        assertEquals("zrlog.zip", data.get("detail"));
+        assertEquals(UpgradeProgressEvent.STAGE_DOWNLOAD, data.getStage());
+        assertEquals(UpgradeProgressEvent.STATUS_RUNNING, data.getStatus());
+        assertEquals("Downloading", data.getMessage());
+        assertEquals("zrlog.zip", data.getDetail());
 
         UpgradeProgressListener failing = (event, progressData) -> {
             throw new Exception("listener failed");

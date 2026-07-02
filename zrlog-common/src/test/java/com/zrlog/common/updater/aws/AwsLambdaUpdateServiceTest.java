@@ -1,5 +1,6 @@
 package com.zrlog.common.updater.aws;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.junit.Assert;
 import org.junit.Test;
@@ -64,6 +65,16 @@ public class AwsLambdaUpdateServiceTest {
         Assert.assertEquals("put:zrlog-update-bucket/lambda/xiaochun-zrlog-com/test.zip", fakeClient.calls.get(0));
         Assert.assertEquals("update:xiaochun-zrlog-com:zrlog-update-bucket/lambda/xiaochun-zrlog-com/test.zip",
                 fakeClient.calls.get(1));
+    }
+
+    @Test
+    public void shouldSerializeLambdaUpdateCodeRequestWithAwsFieldNames() {
+        AwsLambdaUpdateCodeRequest request = new AwsLambdaUpdateCodeRequest("deploy-bucket", "lambda/zrlog.zip");
+
+        JsonObject jsonObject = new Gson().toJsonTree(request).getAsJsonObject();
+
+        Assert.assertEquals("deploy-bucket", jsonObject.get("S3Bucket").getAsString());
+        Assert.assertEquals("lambda/zrlog.zip", jsonObject.get("S3Key").getAsString());
     }
 
     @Test

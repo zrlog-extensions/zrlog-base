@@ -156,15 +156,15 @@ public class UpgradeServicePublicFlowTest {
             version.setZipFileSize(packageBytes.length);
             version.setZipMd5sum("bad-md5");
             FakeUpdateVersionInfoPlugin plugin = new FakeUpdateVersionInfoPlugin(version);
-            List<Map<String, Object>> progressEvents = new ArrayList<>();
+            List<UpgradeProgressEvent.Data> progressEvents = new ArrayList<>();
 
             assertThrows(DownloadUpgradeFileException.class, () ->
                     new TestableUpgradeService(false, false, false, true)
-                            .doUpgrade(plugin, (event, data) -> progressEvents.add(new HashMap<>(data)), backend()));
+                            .doUpgrade(plugin, (event, data) -> progressEvents.add(data), backend()));
 
             assertFalse(progressEvents.isEmpty());
-            assertEquals(UpgradeProgressEvent.STAGE_DOWNLOAD, progressEvents.get(0).get("stage"));
-            assertEquals(UpgradeProgressEvent.STATUS_RUNNING, progressEvents.get(0).get("status"));
+            assertEquals(UpgradeProgressEvent.STAGE_DOWNLOAD, progressEvents.get(0).getStage());
+            assertEquals(UpgradeProgressEvent.STATUS_RUNNING, progressEvents.get(0).getStatus());
             assertEquals(1, plugin.fetchTrueCount);
             assertEquals(1, plugin.fetchFalseCount);
         } finally {
@@ -234,10 +234,10 @@ public class UpgradeServicePublicFlowTest {
             FakeUpdateVersionHandler handler = new FakeUpdateVersionHandler(true, "Updated");
             TestableUpgradeService service = new TestableUpgradeService(false, false, false, true);
             service.onlineHandler = handler;
-            List<Map<String, Object>> progressEvents = new ArrayList<>();
+            List<UpgradeProgressEvent.Data> progressEvents = new ArrayList<>();
 
             UpgradeProcessResponse response = service.doUpgrade(plugin,
-                    (event, data) -> progressEvents.add(new HashMap<>(data)), backend());
+                    (event, data) -> progressEvents.add(data), backend());
 
             assertTrue(response.getFinish());
             assertEquals("Updated", response.getMessage());
@@ -248,7 +248,7 @@ public class UpgradeServicePublicFlowTest {
             assertEquals(1, plugin.fetchTrueCount);
             assertEquals(1, plugin.fetchFalseCount);
             assertTrue(progressEvents.stream().anyMatch(data ->
-                    UpgradeProgressEvent.STATUS_COMPLETE.equals(data.get("status"))));
+                    UpgradeProgressEvent.STATUS_COMPLETE.equals(data.getStatus())));
         } finally {
             server.stop(0);
         }
