@@ -83,6 +83,10 @@ public class ZrLogUtilTest {
                 "localhost:7080", "/all-3")));
         assertEquals("//localhost:7080/", ZrLogUtil.getFullUrl(request("/",
                 "localhost:7080", "/")));
+
+        Constants.zrLogConfig = new TestZrLogConfig("blog.example.com/");
+        assertEquals("//blog.example.com/all-3", ZrLogUtil.getFullUrl(request("/",
+                "ignored.example.com", "/all-3")));
     }
 
     @Test
