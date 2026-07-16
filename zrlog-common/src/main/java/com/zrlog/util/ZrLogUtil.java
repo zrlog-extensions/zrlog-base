@@ -64,11 +64,14 @@ public class ZrLogUtil {
     }
 
     public static String getFullUrl(HttpRequest request) {
-        String host = getBlogHost(request);
+        String host = Objects.toString(getBlogHost(request), "");
         while (host.endsWith("/")) {
             host = host.substring(0, host.length() - 1);
         }
-        String uri = request.getUri();
+        String uri = Objects.toString(request.getUri(), "/");
+        if (uri.isEmpty()) {
+            uri = "/";
+        }
         return "//" + host + (uri.startsWith("/") ? uri : "/" + uri);
     }
 
