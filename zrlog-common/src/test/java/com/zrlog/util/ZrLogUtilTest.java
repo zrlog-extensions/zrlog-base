@@ -76,6 +76,16 @@ public class ZrLogUtilTest {
     }
 
     @Test
+    public void shouldBuildFullUrlFromRequestHostWithoutDroppingPathSeparator() throws Exception {
+        Constants.zrLogConfig = new TestZrLogConfig("");
+
+        assertEquals("//localhost:7080/all-3", ZrLogUtil.getFullUrl(request("/",
+                "localhost:7080", "/all-3")));
+        assertEquals("//localhost:7080/", ZrLogUtil.getFullUrl(request("/",
+                "localhost:7080", "/")));
+    }
+
+    @Test
     public void shouldFallbackToRequestHostWhenWebsiteHostIsMissing() throws Exception {
         Constants.zrLogConfig = new TestZrLogConfig("");
 

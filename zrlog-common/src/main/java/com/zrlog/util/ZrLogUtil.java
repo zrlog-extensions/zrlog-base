@@ -5,7 +5,6 @@ import com.hibegin.common.util.EnvKit;
 import com.hibegin.common.util.VersionComparator;
 import com.hibegin.http.server.api.HttpRequest;
 import com.hibegin.http.server.api.HttpResponse;
-import com.hibegin.http.server.config.ConfigKit;
 import com.zrlog.blog.web.util.WebTools;
 import com.zrlog.common.Constants;
 import com.zrlog.common.Updater;
@@ -65,7 +64,12 @@ public class ZrLogUtil {
     }
 
     public static String getFullUrl(HttpRequest request) {
-        return "//" + getBlogHost(request) + request.getUri().substring(1);
+        String host = getBlogHost(request);
+        while (host.endsWith("/")) {
+            host = host.substring(0, host.length() - 1);
+        }
+        String uri = request.getUri();
+        return "//" + host + (uri.startsWith("/") ? uri : "/" + uri);
     }
 
     public static boolean greatThenCurrentVersion(String buildId, Date releaseDate, String fetchedVersion) {

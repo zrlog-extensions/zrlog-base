@@ -185,8 +185,11 @@ public class TemplateRenderUtils {
         StringJoiner sj = new StringJoiner(" - ");
         if (pageInfo instanceof ArticleListPageVO) {
             pageInfo.setKeywords(webSite.getKeywords());
-            ((ArticleListPageVO) pageInfo).setTipsType((String) request.getAttr().get("tipsType"));
-            ((ArticleListPageVO) pageInfo).setTipsName((String) request.getAttr().get("tipsName"));
+            String tipsType = (String) request.getAttr().get("tipsType");
+            String tipsName = (String) request.getAttr().get("tipsName");
+            ((ArticleListPageVO) pageInfo).setTipsType(tipsType);
+            ((ArticleListPageVO) pageInfo).setTipsName(tipsName);
+            appendListPageTitle(sj, tipsType, tipsName);
             PagerVO pager = (PagerVO) request.getAttr().get("pager");
             if (Objects.nonNull(pager)) {
                 ((ArticleListPageVO) pageInfo).setPager(pager);
@@ -207,17 +210,25 @@ public class TemplateRenderUtils {
                 pageInfo.setKeywords(webSite.getKeywords());
             }
         } else if (pageInfo instanceof NotFindPageVO) {
-            sj.add(I18nUtil.getBackendStringFromRes("notFind"));
+            sj.add(notFoundPageTitle());
         }
-        if (StringUtils.isNotEmpty(webSiteTitle)) {
-            sj.add(webSiteTitle);
-        }
-        if (StringUtils.isNotEmpty(webSiteSecondTitle)) {
-            sj.add(webSiteSecondTitle);
-        }
+        appendListPageTitle(sj, webSiteTitle, webSiteSecondTitle);
         pageInfo.setTitle(sj.toString());
         pageInfo.setDescription(webSite.getDescription());
         fillSocialPreview(request, pageInfo, webSite);
+    }
+
+    static void appendListPageTitle(StringJoiner title, String tipsType, String tipsName) {
+        if (StringUtils.isNotEmpty(tipsType)) {
+            title.add(tipsType);
+        }
+        if (StringUtils.isNotEmpty(tipsName)) {
+            title.add(tipsName);
+        }
+    }
+
+    static String notFoundPageTitle() {
+        return I18nUtil.getBackendStringFromRes("notFound");
     }
 
     private static void fillSocialPreview(HttpRequest request, BasePageInfo pageInfo, PublicWebSiteInfo webSite) {
