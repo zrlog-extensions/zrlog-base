@@ -53,9 +53,9 @@
         </license>
     </licenses>
     <scm>
-        <connection>scm:git:https://github.com/zrlog-extensions/zrlog-base</connection>
-        <developerConnection>scm:git:https://github.com/zrlog-extensions/zrlog-base</developerConnection>
-        <url>https://github.com/zrlog-extensions/zrlog-base</url>
+        <connection>scm:git:https://github.com/zrlog/zrlog-base</connection>
+        <developerConnection>scm:git:https://github.com/zrlog/zrlog-base</developerConnection>
+        <url>https://github.com/zrlog/zrlog-base</url>
     </scm>
 
     <developers>
@@ -67,7 +67,7 @@
 
     <issueManagement>
         <system>Github Issue</system>
-        <url>https://github.com/zrlog-extensions/zrlog-base</url>
+        <url>https://github.com/zrlog/zrlog-base</url>
     </issueManagement>
 
     <dependencies>
